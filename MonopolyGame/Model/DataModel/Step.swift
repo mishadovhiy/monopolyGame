@@ -7,7 +7,56 @@
 
 import SwiftUI
 
-enum Step:String, CaseIterable {
+struct PlayerStepModel:Codable {
+    var playerPosition:Step
+    private var boughtDictionary:[String:Upgrade] = .testData1
+    //[brawn1:none] //test brawn1, then:brawn2 (brawn1 should be false)
+    //[brawn2:brawn1]
+    init(playerPosition: Step) {
+        self.playerPosition = playerPosition
+    }
+    var bought:[Step:Upgrade] {
+        get {
+            let dict = self.boughtDictionary.map { (key, value) in
+                (Step(rawValue: key) ?? .blue1, value)
+            }
+            return Dictionary(uniqueKeysWithValues: dict)
+        }
+        set {
+            let array = newValue.map { (key, value) in
+                (key.rawValue, value)
+            }
+            self.boughtDictionary = Dictionary(uniqueKeysWithValues: array)
+        }
+    }
+    func canUpdatePropery(_ property:Step) -> Bool {
+        let color = property.color
+        let all = Step.allCases.filter({$0.color == color})
+        let bought = bought.keys.filter({$0.color == color})
+        bought.forEach { key in
+            print(self.bought[key]?.index)
+        }
+        print("bought: ", bought.count, " / ", all.count)
+        if !bought.contains(property) {
+            return true
+        }
+        return all.count == bought.count
+    }
+    
+    enum Upgrade:String, Codable, CaseIterable {
+        case bought, smallest, small, bellowMiddle, middle, higherMiddle, bellowLarge, large, largest
+        
+        var index:Int {
+            Upgrade.allCases.firstIndex(of: self) ?? 0
+        }
+        
+        var nextValue:Upgrade? {
+            Upgrade.allCases.first(where: {(index + 1) == $0.index})
+        }
+    }
+}
+
+enum Step:String, Codable, CaseIterable {
     case go
     case chest1
     case tax1
@@ -132,5 +181,22 @@ enum Step:String, CaseIterable {
             default:nil
             }
         }
+    }
+}
+
+
+// MARK: - Test
+extension [String:PlayerStepModel.Upgrade] {
+    static var testData1:Self {
+        [
+            Step.brawn1.rawValue:.bought,//can upgrade brawn1
+            Step.brawn2.rawValue:.smallest//cannot upgared brawn2
+        ]
+    }
+    static var testData2:Self {
+        [
+//            Step.brawn1.rawValue:.bought,//can buy brawn1
+            Step.brawn2.rawValue:.bought//cannot upgared brawn2
+        ]
     }
 }
