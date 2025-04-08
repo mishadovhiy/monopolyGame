@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PlayerStepModel:Codable {
+    var id:UUID = .init()
     var playerPosition:Step
     private var boughtDictionary:[String:Upgrade] = .testData3
     //[brawn1:none] //test brawn1, then:brawn2 (brawn1 should be false)
