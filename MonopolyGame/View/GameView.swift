@@ -31,8 +31,6 @@ struct GameView: View {
         .padding()
         .onAppear {
             viewModel.startMove()
-        }
-        .onChange(of: viewModel.diceDestination) { newValue in
             self.move()
         }
     }
@@ -43,8 +41,12 @@ struct GameView: View {
                 (viewModel.playerPosition.playerPosition.index + 1) == $0.index
             }) ?? .go
         }
-//        viewModel.diceDestination -= 1
-        if viewModel.playerPosition.playerPosition.index >= viewModel.diceDestination {
+        print(viewModel.diceDestination, " newDestination ")
+        print(viewModel.playerPosition.playerPosition.index, " playerposition ")
+
+        viewModel.diceDestination -= 1
+        if viewModel.diceDestination >= 1 {
+//        if viewModel.playerPosition.playerPosition.index >= viewModel.diceDestination {
             print("movemovemove")
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
                 self.move()
@@ -52,6 +54,7 @@ struct GameView: View {
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
                 viewModel.startMove()
+                self.move()
                 //                self.viewModel.playerPosition.playerPosition = .go
                 //                self.move()
             })

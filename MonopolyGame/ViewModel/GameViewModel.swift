@@ -39,7 +39,8 @@ class GameViewModel:ObservableObject {
             currentPlayerIndex = 0
         }
         //(2..<12).randomElement() ?? 0
-        diceDestination = (array[currentPlayerIndex].playerPosition.index..<Step.allCases.count).randomElement() ?? 0
+        diceDestination = (2..<12).randomElement() ?? 0
+//        (array[currentPlayerIndex].playerPosition.index..<Step.allCases.count).randomElement() ?? 0
         
     }
 }
