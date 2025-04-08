@@ -192,7 +192,6 @@ extension PopupView {
                 messageContent
             case .property(let step):
                     .init(title: step.rawValue)
-            default:nil
             }
         }
         
@@ -206,9 +205,9 @@ extension PopupView {
         
         var canClose:Bool {
             switch self {
-            case .custom(let messageContent):
+            case .custom(_):
                 true
-            case .property(let step):
+            case .property(_):
                 false
             }
         }
