@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PlayerStepModel:Codable {
     var playerPosition:Step
-    private var boughtDictionary:[String:Upgrade] = .testData1
+    private var boughtDictionary:[String:Upgrade] = .testData3
     //[brawn1:none] //test brawn1, then:brawn2 (brawn1 should be false)
     //[brawn2:brawn1]
     init(playerPosition: Step) {
@@ -33,14 +33,30 @@ struct PlayerStepModel:Codable {
         let color = property.color
         let all = Step.allCases.filter({$0.color == color})
         let bought = bought.keys.filter({$0.color == color})
+        if bought.isEmpty {
+            print("canbuy1")
+
+            return true
+        }
+        var canBuy:[Bool] = []
         bought.forEach { key in
-            print(self.bought[key]?.index)
+            let i = self.bought[key]?.index ?? 0
+            print(i)
+            if i >= (self.bought[property]?.index ?? 0) {
+                print("canbuy")
+                canBuy.append(true)
+            } else {
+                canBuy.append(false)
+            }
         }
         print("bought: ", bought.count, " / ", all.count)
         if !bought.contains(property) {
             return true
         }
-        return all.count == bought.count
+        if all.count == bought.count {
+            return !canBuy.contains(false)
+        }
+        return false
     }
     
     enum Upgrade:String, Codable, CaseIterable {
@@ -197,6 +213,13 @@ extension [String:PlayerStepModel.Upgrade] {
         [
 //            Step.brawn1.rawValue:.bought,//can buy brawn1
             Step.brawn2.rawValue:.bought//cannot upgared brawn2
+        ]
+    }
+    
+    static var testData3:Self {
+        [
+//            Step.brawn1.rawValue:.bought,//can buy brawn1
+            Step.blue1.rawValue:.bought//cannot upgared brawn2
         ]
     }
 }

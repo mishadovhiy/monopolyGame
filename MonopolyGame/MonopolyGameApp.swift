@@ -14,7 +14,7 @@ struct MonopolyGameApp: App {
             GameView()
                 .onAppear {
                     let model = PlayerStepModel(playerPosition:.blue1)
-                    print(model.canUpdatePropery(.brawn2))
+                    print(model.canUpdatePropery(.brawn1))
                 }
         }
     }
