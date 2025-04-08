@@ -158,6 +158,10 @@ enum Step:String, Codable, CaseIterable {
         })
     }
     
+    var image:ImageResource? {
+        return .propery
+    }
+    
     enum ColorType:String, CaseIterable {
         case none
         case brawn, blue, pink, orange, red, yellow, green, purpure

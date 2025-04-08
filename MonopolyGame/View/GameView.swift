@@ -32,6 +32,15 @@ struct GameView: View {
         .onAppear {
             viewModel.startMove()
             self.move()
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                self.viewModel.messagePressed = .init(title: "Buy", pressed: {
+                    
+                })
+                self.viewModel.message = .property(.blue1)
+            })
+        }
+        .overlay {
+            PopupView(dataType: $viewModel.message)
         }
     }
     
@@ -46,7 +55,6 @@ struct GameView: View {
 
         viewModel.diceDestination -= 1
         if viewModel.diceDestination >= 1 {
-//        if viewModel.playerPosition.playerPosition.index >= viewModel.diceDestination {
             print("movemovemove")
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
                 self.move()
@@ -55,8 +63,6 @@ struct GameView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
                 viewModel.startMove()
                 self.move()
-                //                self.viewModel.playerPosition.playerPosition = .go
-                //                self.move()
             })
         }
     }

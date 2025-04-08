@@ -11,6 +11,9 @@ class GameViewModel:ObservableObject {
     @Published var diceDestination:Int = 0
     @Published var myPlayerPosition:PlayerStepModel = .init(playerPosition: .go)
     @Published var enemyPosition:PlayerStepModel = .init(playerPosition: .go)
+    @Published var message:PopupView.PopupType?
+    @Published var messagePressed:ButtonData? = nil
+    
     var playerPosition:PlayerStepModel {
         get {
             return playersArray[currentPlayerIndex]
@@ -38,9 +41,7 @@ class GameViewModel:ObservableObject {
         if currentPlayerIndex > array.count - 1 {
             currentPlayerIndex = 0
         }
-        //(2..<12).randomElement() ?? 0
         diceDestination = (2..<12).randomElement() ?? 0
-//        (array[currentPlayerIndex].playerPosition.index..<Step.allCases.count).randomElement() ?? 0
         
     }
 }
