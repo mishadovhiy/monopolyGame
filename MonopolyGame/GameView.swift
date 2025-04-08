@@ -7,10 +7,13 @@
 
 import SwiftUI
 
+class GameViewModel:ObservableObject {
+    @Published var diceDestination = Step.allCases.count - 1
+    @Published var playerPosition:PlayerStepModel = .init(playerPosition: .go)
+    @Published var enemyPosition:PlayerStepModel = .init(playerPosition: .go)
+}
 struct GameView: View {
-    @State var diceDestination = Step.allCases.count - 1
-    @State var playerPosition:Int = 0
-    @State var enemyPosition:Int = 0
+    @StateObject var viewModel:GameViewModel = .init()
     
     var body: some View {
         VStack(spacing:0) {
@@ -23,15 +26,15 @@ struct GameView: View {
                             items(2)
                         }
                         .overlay {
-                            if (2 * Step.numberOfItemsInSection..<3 * Step.numberOfItemsInSection).contains(playerPosition) {
+                            if (2 * Step.numberOfItemsInSection..<3 * Step.numberOfItemsInSection).contains(viewModel.playerPosition.playerPosition.index) {
                                 HStack {
                                     RoundedRectangle(cornerRadius: 12)
                                         .fill(.pink)
                                         .aspectRatio(1, contentMode: .fit)
-                                        .offset(x:CGFloat((20 - playerPosition) * -Int(32)))
+                                        .offset(x:CGFloat((20 - viewModel.playerPosition.playerPosition.index) * -Int(32)))
                                     Spacer()
                                 }
-                                .animation(.bouncy, value: playerPosition)
+                                .animation(.bouncy, value: viewModel.playerPosition.playerPosition.index)
 
                                 .opacity(0.5)
                             }
@@ -48,16 +51,16 @@ struct GameView: View {
                             items(0)
                         }
                         .overlay {
-                            if (0 * Step.numberOfItemsInSection..<1 * Step.numberOfItemsInSection).contains(playerPosition) {
+                            if (0 * Step.numberOfItemsInSection..<1 * Step.numberOfItemsInSection).contains(viewModel.playerPosition.playerPosition.index) {
                                 HStack {
                                     Spacer()
                                     RoundedRectangle(cornerRadius: 12)
                                         .fill(.pink)
                                         .aspectRatio(1, contentMode: .fit)
-                                        .offset(x:CGFloat((0 - playerPosition) * Int(32)))
+                                        .offset(x:CGFloat((0 - viewModel.playerPosition.playerPosition.index) * Int(32)))
 
                                 }
-                                .animation(.bouncy, value: playerPosition)
+                                .animation(.bouncy, value: viewModel.playerPosition.playerPosition.index)
 
                                 .opacity(0.5)
                             }
@@ -76,16 +79,16 @@ struct GameView: View {
                                 items(1)
                             }
                             .overlay {
-                                if (1 * Step.numberOfItemsInSection..<2 * Step.numberOfItemsInSection).contains(playerPosition) {
+                                if (1 * Step.numberOfItemsInSection..<2 * Step.numberOfItemsInSection).contains(viewModel.playerPosition.playerPosition.index) {
                                     VStack {
                                         Spacer()
                                         RoundedRectangle(cornerRadius: 12)
                                             .fill(.pink)
                                             .aspectRatio(1, contentMode: .fit)
-                                            .offset(y:CGFloat((10 - playerPosition) * Int(32)))
+                                            .offset(y:CGFloat((10 - viewModel.playerPosition.playerPosition.index) * Int(32)))
 
                                     }
-                                    .animation(.bouncy, value: playerPosition)
+                                    .animation(.bouncy, value: viewModel.playerPosition.playerPosition.index)
 
                                     .opacity(0.5)
                                 }
@@ -101,16 +104,16 @@ struct GameView: View {
                                 items(3)
                             }
                             .overlay {
-                                if (3 * Step.numberOfItemsInSection..<4 * Step.numberOfItemsInSection).contains(playerPosition) {
+                                if (3 * Step.numberOfItemsInSection..<4 * Step.numberOfItemsInSection).contains(viewModel.playerPosition.playerPosition.index) {
                                     VStack {
                                         RoundedRectangle(cornerRadius: 12)
                                             .fill(.pink)
                                             .aspectRatio(1, contentMode: .fit)
-                                            .offset(y:CGFloat((30 - playerPosition) * -Int(32)))
+                                            .offset(y:CGFloat((30 - viewModel.playerPosition.playerPosition.index) * -Int(32)))
                                         Spacer()
 
                                     }
-                                    .animation(.bouncy, value: playerPosition)
+                                    .animation(.bouncy, value: viewModel.playerPosition.playerPosition.index)
                                     .opacity(0.5)
                                 }
                             }
@@ -131,15 +134,18 @@ struct GameView: View {
     
     func move() {
         withAnimation {
-            playerPosition += 1
+            viewModel.playerPosition.playerPosition = Step.allCases.first(where: {
+                (viewModel.playerPosition.playerPosition.index + 1) == $0.index
+            }) ?? .go
         }
-        if playerPosition < diceDestination {
+        if viewModel.playerPosition.playerPosition.index < viewModel.diceDestination {
+            print("movemovemove")
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
                 self.move()
             })
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                self.playerPosition = 0
+                self.viewModel.playerPosition.playerPosition = .go
                 self.move()
             })
         }
@@ -159,10 +165,6 @@ struct GameView: View {
                 
         }
     }
-}
-
-class GameViewModel {
-    
 }
 
 

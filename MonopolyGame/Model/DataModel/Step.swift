@@ -105,6 +105,16 @@ enum Step:String, Codable, CaseIterable {
     case tax2
     case purpure2
     
+    var index:Int {
+        Step.allCases.firstIndex(of: self) ?? 0
+    }
+    
+    static func +=(lh:Step, rh:Int) -> Step {
+        Step.allCases.first(where: {
+            rh == $0.index
+        }) ?? .go
+    }
+    
     static let numberOfItemsInSection:Int = 10
     static func items(_ section:Int) -> [Step] {
         let range = (0..<(numberOfItemsInSection))
