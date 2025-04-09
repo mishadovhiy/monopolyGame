@@ -5,7 +5,7 @@
 //  Created by Mykhailo Dovhyi on 08.04.2025.
 //
 
-import Foundation
+import SwiftUI
 
 class GameViewModel:ObservableObject {
     @Published var diceDestination:Int = 0
@@ -14,11 +14,21 @@ class GameViewModel:ObservableObject {
     @Published var message:PopupView.PopupType?
     @Published var messagePressed:ButtonData? = nil
     @Published var messagePressedSecondary:ButtonData? = nil
+    
     @Published var bet:[(PlayerStepModel, Int)] = []
     var betProperty:Step?
     @Published var betValue:Float = 0
+    
     var currentPlayerIndex:Int = 0
-
+    var canDice:Bool {
+        if playerPosition.id == myPlayerPosition.id {
+            return moveCompleted
+        } else {
+            return false
+        }
+    }
+    
+    @Published var moveCompleted:Bool = true
     var playerPosition:PlayerStepModel {
         get {
             return playersArray[currentPlayerIndex]
@@ -41,18 +51,30 @@ class GameViewModel:ObservableObject {
         }
     }
     
-    func startMove() {
+    func prepareMoving() {
         let array = playersArray
         currentPlayerIndex += 1
         if currentPlayerIndex > array.count - 1 {
             currentPlayerIndex = 0
         }
+        print("preparepleyer:", playerPosition.id == self.myPlayerPosition.id)
+
         diceDestination = (2..<12).randomElement() ?? 0
         
     }
     
     func setBetWone() {
-        print(bet.last?.0.id == myPlayerPosition.id, " rgtefsd ", bet.last?.0)
+        if let property = betProperty {
+            print(bet.last?.0.id == myPlayerPosition.id, " rgtefsd ", bet.last?.0)
+            if bet.last?.0.id == myPlayerPosition.id {
+                myPlayerPosition.buyIfCan(property, price: bet.last?.1)
+            } else {
+                enemyPosition.buyIfCan(property, price: bet.last?.1)
+            }
+            bet.removeAll()
+            betValue = 0
+            betProperty = nil
+        }
     }
     
     func robotBet() {
@@ -69,5 +91,68 @@ class GameViewModel:ObservableObject {
                 self.setBetWone()
             }
         })
+    }
+    
+    func playerCompletedMoving() {
+        self.moveCompleted = true
+        let property = myPlayerPosition.playerPosition
+        if playerPosition.id == myPlayerPosition.id {
+            if property.buyPrice == nil {
+                return
+            }
+            if myPlayerPosition.bought[property] == nil {
+                if self.myPlayerPosition.canBuy(property) {
+                    self.messagePressed = .init(title: "Buy", pressed: {
+                        self.myPlayerPosition.buyIfCan(property)
+                    })
+                }
+                self.messagePressedSecondary = .init(title: "auction", pressed: {
+                    self.betProperty = property
+                })
+                self.message = .property(property)
+            }
+            
+        } else {
+            let property = enemyPosition.playerPosition
+            if property.buyPrice == nil {
+                return
+            }
+            if enemyPosition.canBuy(property) {
+                self.enemyPosition.buyIfCan(property)
+
+            } else {
+                self.betProperty = property
+            }
+        }
+
+    }
+    
+    func resumeNextPlayer(forceMove:Bool = false) {
+        self.prepareMoving()
+        if self.myPlayerPosition.id != self.playerPosition.id || forceMove {
+            self.move()
+
+        }
+    }
+    
+    func move() {
+        moveCompleted = false
+        withAnimation {
+            playerPosition.playerPosition = Step.allCases.first(where: {
+                (playerPosition.playerPosition.index + 1) == $0.index
+            }) ?? .go
+        }
+        print(diceDestination, " newDestination ")
+        print(playerPosition.playerPosition.index, " playerposition ")
+
+        diceDestination -= 1
+        if diceDestination >= 1 {
+            print("movemovemove")
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
+                self.move()
+            })
+        } else {
+            self.playerCompletedMoving()
+        }
     }
 }

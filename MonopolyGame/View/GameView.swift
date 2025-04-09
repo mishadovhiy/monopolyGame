@@ -43,7 +43,7 @@ struct GameView: View {
                     Button("Bet") {
                         viewModel.bet.append((viewModel.myPlayerPosition, Int(viewModel.betValue * 100)))
                         viewModel.robotBet()
-                    }
+                    }.disabled(viewModel.myPlayerPosition.canBuy(viewModel.betProperty ?? .blue1, price: viewModel.bet.last?.1))
                 }
                 .disabled(viewModel.bet.last?.0.id == viewModel.myPlayerPosition.id)
                 .frame(height:40)
@@ -52,6 +52,27 @@ struct GameView: View {
         .background(.white)
         .padding(20)
         .opacity(viewModel.betProperty != nil ? 1 : 0)
+    }
+    
+    var panelView: some View {
+        VStack {
+            HStack {
+                VStack {
+                    Text("Your Balance")
+                    Text("\(viewModel.myPlayerPosition.balance)")
+                }
+                Spacer()
+                Button("dice") {
+                    viewModel.resumeNextPlayer(forceMove: true)
+                }
+                Spacer()
+                VStack {
+                    Text("Enemy balance")
+                    Text("\(viewModel.enemyPosition.balance)")
+                }
+            }
+            Spacer()
+        }
     }
     
     var body: some View {
@@ -74,46 +95,25 @@ struct GameView: View {
                 bettingView
             }
             Spacer()
+            panelView
         }
         .padding()
         .onAppear {
-            viewModel.startMove()
-            self.move()
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                self.viewModel.messagePressed = .init(title: "Buy", pressed: {
-                    
-                })
-                self.viewModel.message = .property(.blue1)
-            })
-            viewModel.betProperty = .blue1
+
+//            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+//                self.viewModel.messagePressed = .init(title: "Buy", pressed: {
+//                    
+//                })
+//                self.viewModel.message = .property(.blue1)
+//            })
+//            viewModel.betProperty = .blue1
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
         }
     }
     
-    func move() {
-        withAnimation {
-            viewModel.playerPosition.playerPosition = Step.allCases.first(where: {
-                (viewModel.playerPosition.playerPosition.index + 1) == $0.index
-            }) ?? .go
-        }
-        print(viewModel.diceDestination, " newDestination ")
-        print(viewModel.playerPosition.playerPosition.index, " playerposition ")
 
-        viewModel.diceDestination -= 1
-        if viewModel.diceDestination >= 1 {
-            print("movemovemove")
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
-                self.move()
-            })
-        } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                viewModel.startMove()
-                self.move()
-            })
-        }
-    }
     
     func vBoard(_ section:Int) -> some View {
         RoundedRectangle(cornerRadius: 12)
@@ -165,6 +165,29 @@ struct GameView: View {
                 Text(" \(((Step.allCases.firstIndex(of: i) ?? 0) + 1) + current)")
                     .font(.system(size: 10))
                 
+            }
+            .overlay {
+                if let upgrade = viewModel.myPlayerPosition.bought[i] {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Text("\(upgrade.index)")
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+                if let upgrade = viewModel.myPlayerPosition.bought[i] {
+                    VStack {
+                        HStack {
+                            Text("\(upgrade.index)")
+                                .foregroundColor(.yellow)
+                            Spacer()
+                        }
+                        Spacer()
+                        
+                    }
+                }
             }
             
         }

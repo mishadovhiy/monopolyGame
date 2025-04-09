@@ -10,7 +10,7 @@ import SwiftUI
 struct PlayerStepModel:Codable {
     var id:UUID = .init()
     var playerPosition:Step
-    private var boughtDictionary:[String:Upgrade] = .testData3
+    private var boughtDictionary:[String:Upgrade] = [:]
     //[brawn1:none] //test brawn1, then:brawn2 (brawn1 should be false)
     //[brawn2:brawn1]
     init(playerPosition: Step) {
@@ -31,7 +31,35 @@ struct PlayerStepModel:Codable {
             self.boughtDictionary = Dictionary(uniqueKeysWithValues: array)
         }
     }
-    func canUpdatePropery(_ property:Step) -> Bool {
+    
+    mutating func buyIfCan(_ step:Step, price:Int? = nil) {
+        if canBuy(step) {
+            balance -= (price ?? (step.buyPrice ?? 0))
+            bought.updateValue(.bought, forKey: step)
+        }
+    }
+    
+    func canBuy(_ step:Step, price:Int? = nil) -> Bool {
+        balance >= (price ?? (step.buyPrice ?? 0)) && bought[step] == nil
+    }
+    
+    func canUpdateProperty(_ property:Step) -> Bool {
+        if canUpdateProperyContains(property) {
+            if let next = self.bought[property]?.nextValue {
+                if property.upgradePrice(next) <= self.balance {
+                    return true
+                }
+                print("not enought balance ", property.rawValue)
+                return false
+            } else {
+                print("maximum reached ", property.rawValue)
+                return false
+            }
+        }
+        return false
+    }
+    
+    private func canUpdateProperyContains(_ property:Step) -> Bool {
         let color = property.color
         let all = Step.allCases.filter({$0.color == color})
         let bought = bought.keys.filter({$0.color == color})

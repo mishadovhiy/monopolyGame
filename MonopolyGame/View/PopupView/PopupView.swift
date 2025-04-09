@@ -162,7 +162,7 @@ struct PopupView: View {
             pressed()
             dismiss()
         } label: {
-            Text((dataType?.message?.button?.title ?? self.buttonData?.title) ?? "OK")
+            Text(title)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(background)
                 .cornerRadius(8)
