@@ -40,7 +40,7 @@ struct GameView: View {
             })
         }
         .overlay {
-            PopupView(dataType: $viewModel.message)
+            PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
         }
     }
     

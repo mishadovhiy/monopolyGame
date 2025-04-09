@@ -13,7 +13,8 @@ class GameViewModel:ObservableObject {
     @Published var enemyPosition:PlayerStepModel = .init(playerPosition: .go)
     @Published var message:PopupView.PopupType?
     @Published var messagePressed:ButtonData? = nil
-    
+    @Published var messagePressedSecondary:ButtonData? = nil
+
     var playerPosition:PlayerStepModel {
         get {
             return playersArray[currentPlayerIndex]

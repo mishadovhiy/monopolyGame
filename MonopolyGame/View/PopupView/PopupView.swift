@@ -9,8 +9,10 @@ import SwiftUI
 
 struct PopupView: View {
     @Binding var dataType:PopupType?
-    var buttonData:ButtonData? = nil
+    @Binding var buttonData:ButtonData?
+    @Binding var secondaryButton:ButtonData?
     @State var isPresenting = false
+
     var canCloseSet:Bool? = nil
     var canClose:Bool {
         true
@@ -58,6 +60,12 @@ struct PopupView: View {
                 .ignoresSafeArea(.all)
                 .animation(.smooth, value: !isPresenting)
                 
+        }
+        .onChange(of: isPresenting) { newValue in
+            if !newValue {
+                buttonData = nil
+                secondaryButton = nil
+            }
         }
         .onChange(of: dataType?.message != nil) { newValue in
             if newValue {
@@ -127,21 +135,40 @@ struct PopupView: View {
                         rightContentView
                     }
                 })
-                Button {
-                    (buttonData?.pressed ?? dataType?.message?.button?.pressed)?()
-                    dismiss()
-                } label: {
-                    Text((dataType?.message?.button?.title ?? self.buttonData?.title) ?? "OK")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(.blue)
-                        .cornerRadius(8)
-
-                }
-                .tint(.white)
+                primaryButtons
                 .frame(maxHeight: 38)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+    }
+    
+    var primaryButtons: some View {
+        HStack {
+            if let secondary = secondaryButton {
+                primaryButton(title: secondary.title, background: .blue) {
+                    secondary.pressed?()
+                }
+            }
+            primaryButton(title: (dataType?.message?.button?.title ?? self.buttonData?.title) ?? "OK", background: .blue) {
+                (buttonData?.pressed ?? dataType?.message?.button?.pressed)?()
+
+            }
+        }
+    }
+    
+    private func primaryButton(title:String, background:Color, pressed:@escaping()->()) -> some View {
+        Button {
+            
+            pressed()
+            dismiss()
+        } label: {
+            Text((dataType?.message?.button?.title ?? self.buttonData?.title) ?? "OK")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(background)
+                .cornerRadius(8)
+
+        }
+        .tint(.white)
     }
     
     var imageView: some View {
