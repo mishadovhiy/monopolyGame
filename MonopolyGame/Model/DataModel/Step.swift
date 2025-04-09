@@ -16,6 +16,7 @@ struct PlayerStepModel:Codable {
     init(playerPosition: Step) {
         self.playerPosition = playerPosition
     }
+    var balance:Int = 1000
     var bought:[Step:Upgrade] {
         get {
             let dict = self.boughtDictionary.map { (key, value) in
@@ -69,6 +70,10 @@ struct PlayerStepModel:Codable {
         
         var nextValue:Upgrade? {
             Upgrade.allCases.first(where: {(index + 1) == $0.index})
+        }
+        
+        var multiplier:CGFloat {
+            0.5 + CGFloat(index)
         }
     }
 }
@@ -160,6 +165,29 @@ enum Step:String, Codable, CaseIterable {
     
     var image:ImageResource? {
         return .propery
+    }
+    
+    var title:String {
+        return rawValue
+    }
+    
+    var rent:Int? {
+        guard let buyPrice else {
+            return nil
+        }
+        return buyPrice / 8
+    }
+    
+    var morgage:Int? {
+        (buyPrice ?? 0) / 2
+    }
+    
+    func rentTotal(_ type:PlayerStepModel.Upgrade) -> Int? {
+        Int((type.multiplier + 0.5) * CGFloat(self.rent ?? 0))
+    }
+    
+    func upgradePrice(_ type:PlayerStepModel.Upgrade) -> Int {
+        Int(type.multiplier * CGFloat(self.buyPrice ?? 0))
     }
     
     enum ColorType:String, CaseIterable {

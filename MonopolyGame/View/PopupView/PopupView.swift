@@ -173,11 +173,17 @@ struct PopupView: View {
     
     var imageView: some View {
         HStack(alignment:.center) {
-            if let image = dataType?.image {
-                Image(image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxHeight: .infinity)
+            switch self.dataType {
+            case .custom(let messageContent):
+                if let image = messageContent.image {
+                    Image(image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxHeight: .infinity)
+                }
+            case .property(let step):
+                PropertyView(step: step)
+            default:Text("").hidden()
             }
             
         }
@@ -191,7 +197,7 @@ struct PopupView: View {
                 Text(messageContent.title)
                 Text(messageContent.description)
             case .property(let step):
-                BuyPropertyView(step: step)
+                BuyPopupContentView(step: step)
             default:Text("")
             }
         }
@@ -209,7 +215,7 @@ extension PopupView {
             case .custom(let messageContent):
                 messageContent.image
             case .property(let step):
-                step.image
+                nil
             }
         }
         
@@ -217,8 +223,8 @@ extension PopupView {
             switch self {
             case .custom(let messageContent):
                 messageContent
-            case .property(let step):
-                    .init(title: step.rawValue)
+            case .property(_):
+                    .init(title: "Buy Property")
             }
         }
         

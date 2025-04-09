@@ -12,10 +12,8 @@ struct MonopolyGameApp: App {
     var body: some Scene {
         WindowGroup {
             GameView()
-                .onAppear {
-                    let model = PlayerStepModel(playerPosition:.blue1)
-                    print(model.canUpdatePropery(.brawn1))
-                }
+//            PropertyListView(list: Step.allCases.filter({$0.buyPrice != nil}))
+
         }
     }
 }

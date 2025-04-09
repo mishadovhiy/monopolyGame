@@ -14,6 +14,10 @@ class GameViewModel:ObservableObject {
     @Published var message:PopupView.PopupType?
     @Published var messagePressed:ButtonData? = nil
     @Published var messagePressedSecondary:ButtonData? = nil
+    @Published var bet:[(PlayerStepModel, Int)] = []
+    var betProperty:Step?
+    @Published var betValue:Float = 0
+    var currentPlayerIndex:Int = 0
 
     var playerPosition:PlayerStepModel {
         get {
@@ -25,7 +29,7 @@ class GameViewModel:ObservableObject {
 
         }
     }
-    var currentPlayerIndex:Int = 0
+    
     var playersArray:[PlayerStepModel] {
         get {
             [myPlayerPosition, enemyPosition]
@@ -36,6 +40,7 @@ class GameViewModel:ObservableObject {
 
         }
     }
+    
     func startMove() {
         let array = playersArray
         currentPlayerIndex += 1
@@ -44,5 +49,25 @@ class GameViewModel:ObservableObject {
         }
         diceDestination = (2..<12).randomElement() ?? 0
         
+    }
+    
+    func setBetWone() {
+        print(bet.last?.0.id == myPlayerPosition.id, " rgtefsd ", bet.last?.0)
+    }
+    
+    func robotBet() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds((250..<3000).randomElement() ?? 0), execute: {
+            let last = self.bet.last
+            if (self.betProperty?.buyPrice ?? 0) >= (last?.1 ?? 0) {
+                if self.enemyPosition.balance >= ((last?.1 ?? 0) + 1) {
+                    self.bet.append((self.enemyPosition, (last?.1 ?? 0) + 1))
+
+                } else {
+                    self.setBetWone()
+                }
+            } else {
+                self.setBetWone()
+            }
+        })
     }
 }
