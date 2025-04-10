@@ -11,37 +11,35 @@ struct GameView: View {
     @StateObject var viewModel:GameViewModel = .init()
     
     var body: some View {
-        GeometryReader(content: { proxy in
-            VStack(spacing:0) {
+        VStack(spacing:0) {
+            ScrollView(.horizontal, showsIndicators: false) {
                 VStack(spacing:0) {
                     vBoard(2)
                     Spacer()
-                    vBoard(0)
-                    
-                }
+                    vBoard(0)                }
+                .padding(.vertical, 35)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .overlay(content: {
                     HStack(spacing:0) {
                         hBoard(1)
                         Spacer()
                         hBoard(3)
                     }
+                    .padding(.horizontal, -15)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 })
-                .aspectRatio(1, contentMode: .fit)
-                .overlay {
-                    bettingView
-                }
-                Spacer()
-                panelView
+                
+                .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
+                .padding(.horizontal, 15)
             }
-            .onAppear(perform: {
-                viewModel.deviceWidth = proxy.frame(in: .global).width
-            })
-            .onChange(of: proxy.frame(in: .global).width) { newValue in
-                viewModel.deviceWidth = newValue
+            .overlay {
+                bettingView
             }
-            .background(.black)
-            .padding()
-        })
+            Spacer()
+            panelView
+                .disabled(!viewModel.canDice)
+        }
+        .padding()
         .onAppear {
 
 //            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
@@ -50,6 +48,7 @@ struct GameView: View {
 //                })
 //                self.viewModel.message = .property(.blue1)
 //            })
+            viewModel.betProperty = .blue1
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
@@ -104,21 +103,30 @@ struct GameView: View {
             }
         }
         .background(.black)
-        .padding(20)
+        .padding(.horizontal, viewModel.itemWidth / 2)
+        .padding(.vertical, viewModel.itemWidth + 30)
         .opacity(viewModel.betProperty != nil ? 1 : 0)
     }
     
     var panelView: some View {
         VStack {
+            Button("dice") {
+                viewModel.resumeNextPlayer(forceMove: true)
+            }
+            Spacer().frame(height: 80)
+            HStack(spacing:40) {
+                ForEach(GameViewModel.BoardActionType.allCases, id:\.rawValue) { type in
+                    Button(type.rawValue.capitalized) {
+                        viewModel.boardActionType = type
+                    }
+                }
+            }
             HStack {
                 VStack {
                     Text("Your Balance")
                     Text("\(viewModel.myPlayerPosition.balance)")
                 }
-                Spacer()
-                Button("dice") {
-                    viewModel.resumeNextPlayer(forceMove: true)
-                }
+                
                 Spacer()
                 VStack {
                     Text("Enemy balance")
@@ -160,7 +168,7 @@ struct GameView: View {
     
     func vBoard(_ section:Int) -> some View {
         RoundedRectangle(cornerRadius: 12)
-            .fill(.black)
+            .fill(.clear)
             .frame(height: viewModel.itemWidth)
             .overlay(content: {
                 HStack(spacing:0) {
@@ -174,12 +182,13 @@ struct GameView: View {
                     
                 }
             })
-            .padding((section != 0 ? .trailing : .leading), viewModel.itemWidth)
+//            .padding((section != 0 ? .trailing : .leading), viewModel.itemWidth + 10)
+
     }
     
     func hBoard(_ section:Int) -> some View {
         RoundedRectangle(cornerRadius: 12)
-            .fill(.black)
+            .fill(.clear)
             .frame(width: viewModel.itemWidth)
             .overlay(content: {
                 VStack(spacing:0) {
@@ -194,7 +203,8 @@ struct GameView: View {
                     
                 }
             })
-            .padding((section == 1 ? .top : .bottom), viewModel.itemWidth)
+//            .padding((section == 1 ? .top : .bottom), viewModel.itemWidth + 10)
+
     }
     
 
@@ -232,7 +242,9 @@ struct GameView: View {
                     }
                 }
             }
-            
+            .onTapGesture {
+                viewModel.propertySelected(i)
+            }
         }
     }
     

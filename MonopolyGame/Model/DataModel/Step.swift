@@ -16,6 +16,7 @@ struct PlayerStepModel:Codable {
     init(playerPosition: Step) {
         self.playerPosition = playerPosition
     }
+    var morgageProperties:[Step] = []
     var balance:Int = 1000
     var bought:[Step:Upgrade] {
         get {

@@ -23,17 +23,44 @@ class GameViewModel:ObservableObject {
     }
     @Published var betValue:Float = 0
     @Published var deviceWidth:CGFloat = 0
+    var itemWidth:CGFloat = 60
+
 //    var itemWidth:CGFloat {
-//        deviceWidth / 10
+//        deviceWidth / Step.numberOfItemsInSection
 //    }
-    var itemWidth:CGFloat = 40
+    
+    @Published var boardActionType:BoardActionType?
+    enum BoardActionType:String, CaseIterable {
+        case build, sell, morgage, reedeem
+    }
+    
+    func propertySelected(_ step: Step) {
+        if boardActionType != nil {
+            boardActionPropertySelected(step)
+        } else {
+            //presentMessage
+            self.message = .property(step)
+        }
+    }
+    
+    func boardActionPropertySelected(_ step: Step) {
+        
+//        switch boardActionType {
+//        case .build:
+//            <#code#>
+//        case .sell:
+//            <#code#>
+//        case .morgage:
+//            <#code#>
+//        case .reedeem:
+//            <#code#>
+//        case nil:
+//            <#code#>
+//        }
+    }
     var currentPlayerIndex:Int = 0
     var canDice:Bool {
-        if playerPosition.id == myPlayerPosition.id {
-            return moveCompleted
-        } else {
-            return false
-        }
+        return moveCompleted && betProperty == nil
     }
     
     @Published var moveCompleted:Bool = true
@@ -75,9 +102,9 @@ class GameViewModel:ObservableObject {
         if let property = betProperty {
             print(bet.last?.0.id == myPlayerPosition.id, " rgtefsd ", bet.last?.0)
             if bet.last?.0.id == myPlayerPosition.id {
-                myPlayerPosition.buyIfCan(property, price: bet.last?.1)
+                myPlayerPosition.buyIfCan(property, price: bet.last?.1 ?? 1)
             } else {
-                enemyPosition.buyIfCan(property, price: bet.last?.1)
+                enemyPosition.buyIfCan(property, price: bet.last?.1 ?? 1)
             }
             bet.removeAll()
             betValue = 0
@@ -109,7 +136,7 @@ class GameViewModel:ObservableObject {
         }) {
             if let upgrade = occupiedBy.bought[property],
                occupiedBy.id != playerPosition.id {
-                let amount = property.rentTotal(upgrade) ?? 0
+                let amount = occupiedBy.morgageProperties.contains(property) ? 0 : (property.rentTotal(upgrade) ?? 0)
                 playerPosition.balance -= amount
                 playersArray.forEach { model in
                     if model.id == occupiedBy.id {
