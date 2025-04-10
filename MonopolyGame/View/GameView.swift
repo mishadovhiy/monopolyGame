@@ -10,6 +10,47 @@ import SwiftUI
 struct GameView: View {
     @StateObject var viewModel:GameViewModel = .init()
     
+    var body: some View {
+        VStack(spacing:0) {
+            VStack(spacing:0) {
+                vBoard(2)
+                Spacer()
+                vBoard(0)
+                
+            }
+            .overlay(content: {
+                HStack(spacing:0) {
+                    hBoard(1)
+                    Spacer()
+                    hBoard(3)
+                }
+            })
+            .aspectRatio(1, contentMode: .fit)
+            .overlay {
+                bettingView
+            }
+            Spacer()
+            panelView
+        }
+        .background(.black)
+        .padding()
+        .onAppear {
+
+//            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+//                self.viewModel.messagePressed = .init(title: "Buy", pressed: {
+//                    
+//                })
+//                self.viewModel.message = .property(.blue1)
+//            })
+        }
+        .overlay {
+            PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
+        }
+        .overlay(content: {
+            testPBoughtPropertiesView
+        })
+    }
+    
     var bettingView: some View {
         VStack {
             HStack {
@@ -21,7 +62,10 @@ struct GameView: View {
                         ForEach(viewModel.bet, id:\.1) { bet in
                             HStack {
                                 Text(viewModel.myPlayerPosition.id == bet.0.id ? "You" : "robot")
+                                    .foregroundColor(.white)
+
                                 Text("\(bet.1)")
+                                    .foregroundColor(.white)
                             }
                         }
                     }
@@ -30,9 +74,10 @@ struct GameView: View {
             }
             VStack {
                 HStack {
-                    Slider(value: $viewModel.betValue, in: (Float(viewModel.bet.last?.1 ?? 0)...Float(viewModel.betProperty?.buyPrice ?? 0)))
+                    Slider(value: $viewModel.betValue, in: viewModel.betSliderRange, step: 0.01)
                         .frame(height: 20)
                     Text("\(Int(viewModel.betValue * 100))")
+                        .foregroundColor(.white)
                 }
                 HStack {
                     Button("Decline") {
@@ -41,15 +86,16 @@ struct GameView: View {
                     }
                     Spacer()
                     Button("Bet") {
+                        print(Int(viewModel.betValue * 100), " tegrfweda ", Int(viewModel.betValue * 100))
                         viewModel.bet.append((viewModel.myPlayerPosition, Int(viewModel.betValue * 100)))
                         viewModel.robotBet()
-                    }.disabled(viewModel.myPlayerPosition.canBuy(viewModel.betProperty ?? .blue1, price: viewModel.bet.last?.1))
+                    }.disabled(!viewModel.myPlayerPosition.canBuy(viewModel.betProperty ?? .blue1, price: viewModel.bet.last?.1 ?? Int(viewModel.betValue * 100)))
                 }
                 .disabled(viewModel.bet.last?.0.id == viewModel.myPlayerPosition.id)
                 .frame(height:40)
             }
         }
-        .background(.white)
+        .background(.black)
         .padding(20)
         .opacity(viewModel.betProperty != nil ? 1 : 0)
     }
@@ -75,44 +121,33 @@ struct GameView: View {
         }
     }
     
-    var body: some View {
-        VStack(spacing:0) {
-            VStack(spacing:0) {
-                vBoard(2)
-                Spacer()
-                vBoard(0)
-                
-            }
-            .overlay(content: {
-                HStack(spacing:0) {
-                    hBoard(1)
-                    Spacer()
-                    hBoard(3)
+    var testPBoughtPropertiesView: some View {
+        VStack(content:  {
+            Spacer().frame(maxHeight: .infinity)
+            HStack {
+                ScrollView(.vertical) {
+                    VStack {
+                        ForEach(viewModel.myPlayerPosition.bought.compactMap({$0.key}), id:\.self) { bought in
+                            Text(bought.title)
+                        }
+                    }
                 }
-            })
-            .aspectRatio(1, contentMode: .fit)
-            .overlay {
-                bettingView
+                .frame(maxWidth: .infinity)
+                ScrollView(.vertical) {
+                    VStack {
+                        ForEach(viewModel.enemyPosition.bought.compactMap({$0.key}), id:\.self) { bought in
+                            Text(bought.title)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
-            Spacer()
-            panelView
-        }
-        .padding()
-        .onAppear {
-
-//            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-//                self.viewModel.messagePressed = .init(title: "Buy", pressed: {
-//                    
-//                })
-//                self.viewModel.message = .property(.blue1)
-//            })
-//            viewModel.betProperty = .blue1
-        }
-        .overlay {
-            PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
-        }
+            .padding(.top, 100)
+            .frame(maxHeight: .infinity)
+            
+        })
+        .disabled(true)
     }
-    
 
     
     func vBoard(_ section:Int) -> some View {
@@ -162,9 +197,9 @@ struct GameView: View {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(i.color?.color ?? .gray)
                     .frame(width: 32, height: 32)
-                Text(" \(((Step.allCases.firstIndex(of: i) ?? 0) + 1) + current)")
+                Text(" \(i.index)")
                     .font(.system(size: 10))
-                
+                    .opacity(i.buyPrice == nil ? 0.5 : 1)
             }
             .overlay {
                 if let upgrade = viewModel.myPlayerPosition.bought[i] {

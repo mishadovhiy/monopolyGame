@@ -16,9 +16,9 @@ class GameViewModel:ObservableObject {
     @Published var messagePressedSecondary:ButtonData? = nil
     
     @Published var bet:[(PlayerStepModel, Int)] = []
-    var betProperty:Step?
+    @Published var betProperty:Step?
     @Published var betValue:Float = 0
-    
+
     var currentPlayerIndex:Int = 0
     var canDice:Bool {
         if playerPosition.id == myPlayerPosition.id {
@@ -115,6 +115,7 @@ class GameViewModel:ObservableObject {
         } else {
             let property = enemyPosition.playerPosition
             if property.buyPrice == nil {
+                print("notbuible")
                 return
             }
             if enemyPosition.canBuy(property) {
@@ -152,7 +153,21 @@ class GameViewModel:ObservableObject {
                 self.move()
             })
         } else {
+            print(playerPosition.playerPosition, " gvhvhgvg ")
             self.playerCompletedMoving()
         }
+    }
+    
+    var betSliderRange:ClosedRange<Float> {
+        var from = (Float(bet.last?.1 ?? 1))
+        if from > 0 {
+            from += 1
+        }
+        var to = (Float(betProperty?.buyPrice ?? 1))
+        if from >= to {
+            to = from + 1
+        }
+        return ((from / 100)...(to / 100))
+//        0...10
     }
 }

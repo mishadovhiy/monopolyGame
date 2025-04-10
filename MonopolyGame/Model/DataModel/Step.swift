@@ -36,7 +36,10 @@ struct PlayerStepModel:Codable {
         if canBuy(step) {
             balance -= (price ?? (step.buyPrice ?? 0))
             bought.updateValue(.bought, forKey: step)
+        } else {
+            print("fatalerrorcannotbuy ")
         }
+        print(bought, " htyrgtefd ")
     }
     
     func canBuy(_ step:Step, price:Int? = nil) -> Bool {
@@ -151,9 +154,10 @@ enum Step:String, Codable, CaseIterable {
     
     static let numberOfItemsInSection:Int = 10
     static func items(_ section:Int) -> [Step] {
-        let range = (0..<(numberOfItemsInSection))
+        let s = section * numberOfItemsInSection
+        let range = (s..<(numberOfItemsInSection + s))
         let array = Array(Step.allCases)
-        if array.count - 1 >= range.upperBound {
+        if array.count  >= range.upperBound {
             if section >= 2 {
                 return Array(array[range])
 

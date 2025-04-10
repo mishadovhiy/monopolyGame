@@ -32,7 +32,7 @@ struct PropertyView: View {
                 Text("Rent is doubled on owning all unimproved sites in the group.")
                 HStack {
                     Text("Morgage:")
-                    Text("$ \(step.buyPrice ?? 0)")
+                    Text("$ \(step.morgage ?? 0)")
                 }
                 VStack {
                     ForEach(PlayerStepModel.Upgrade.allCases, id:\.rawValue) { upgrade in
