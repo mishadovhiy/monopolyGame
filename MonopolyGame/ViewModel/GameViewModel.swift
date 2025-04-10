@@ -22,7 +22,11 @@ class GameViewModel:ObservableObject {
         }
     }
     @Published var betValue:Float = 0
-
+    @Published var deviceWidth:CGFloat = 0
+//    var itemWidth:CGFloat {
+//        deviceWidth / 10
+//    }
+    var itemWidth:CGFloat = 40
     var currentPlayerIndex:Int = 0
     var canDice:Bool {
         if playerPosition.id == myPlayerPosition.id {

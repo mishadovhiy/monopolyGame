@@ -11,29 +11,37 @@ struct GameView: View {
     @StateObject var viewModel:GameViewModel = .init()
     
     var body: some View {
-        VStack(spacing:0) {
+        GeometryReader(content: { proxy in
             VStack(spacing:0) {
-                vBoard(2)
-                Spacer()
-                vBoard(0)
-                
-            }
-            .overlay(content: {
-                HStack(spacing:0) {
-                    hBoard(1)
+                VStack(spacing:0) {
+                    vBoard(2)
                     Spacer()
-                    hBoard(3)
+                    vBoard(0)
+                    
                 }
-            })
-            .aspectRatio(1, contentMode: .fit)
-            .overlay {
-                bettingView
+                .overlay(content: {
+                    HStack(spacing:0) {
+                        hBoard(1)
+                        Spacer()
+                        hBoard(3)
+                    }
+                })
+                .aspectRatio(1, contentMode: .fit)
+                .overlay {
+                    bettingView
+                }
+                Spacer()
+                panelView
             }
-            Spacer()
-            panelView
-        }
-        .background(.black)
-        .padding()
+            .onAppear(perform: {
+                viewModel.deviceWidth = proxy.frame(in: .global).width
+            })
+            .onChange(of: proxy.frame(in: .global).width) { newValue in
+                viewModel.deviceWidth = newValue
+            }
+            .background(.black)
+            .padding()
+        })
         .onAppear {
 
 //            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
@@ -153,7 +161,7 @@ struct GameView: View {
     func vBoard(_ section:Int) -> some View {
         RoundedRectangle(cornerRadius: 12)
             .fill(.black)
-            .frame(height: 40)
+            .frame(height: viewModel.itemWidth)
             .overlay(content: {
                 HStack(spacing:0) {
                     items(section)
@@ -166,13 +174,13 @@ struct GameView: View {
                     
                 }
             })
-            .padding((section != 0 ? .trailing : .leading), 40)
+            .padding((section != 0 ? .trailing : .leading), viewModel.itemWidth)
     }
     
     func hBoard(_ section:Int) -> some View {
         RoundedRectangle(cornerRadius: 12)
             .fill(.black)
-            .frame(width: 40)
+            .frame(width: viewModel.itemWidth)
             .overlay(content: {
                 VStack(spacing:0) {
                     items(section)
@@ -186,7 +194,7 @@ struct GameView: View {
                     
                 }
             })
-            .padding((section == 1 ? .top : .bottom), 40)
+            .padding((section == 1 ? .top : .bottom), viewModel.itemWidth)
     }
     
 
@@ -196,7 +204,7 @@ struct GameView: View {
             ZStack  {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(i.color?.color ?? .gray)
-                    .frame(width: 32, height: 32)
+                    .frame(width: viewModel.itemWidth - 8, height: viewModel.itemWidth - 8)
                 Text(" \(i.index)")
                     .font(.system(size: 10))
                     .opacity(i.buyPrice == nil ? 0.5 : 1)
@@ -238,7 +246,7 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(player == 0 ? .pink : .blue)
                             .aspectRatio(1, contentMode: .fit)
-                            .offset(y:CGFloat((30 - viewModel.playersArray[player].playerPosition.index) * -Int(32)))
+                            .offset(y:CGFloat((30 - viewModel.playersArray[player].playerPosition.index) * -Int(viewModel.itemWidth - 8)))
                         Spacer()
                         
                     }
@@ -252,7 +260,7 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(player == 0 ? .pink : .blue)
                             .aspectRatio(1, contentMode: .fit)
-                            .offset(x:CGFloat((0 - viewModel.playersArray[player].playerPosition.index) * Int(32)))
+                            .offset(x:CGFloat((0 - viewModel.playersArray[player].playerPosition.index) * Int(viewModel.itemWidth - 8)))
                         
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
@@ -266,7 +274,7 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(player == 0 ? .pink : .blue)
                             .aspectRatio(1, contentMode: .fit)
-                            .offset(y:CGFloat((10 - viewModel.playersArray[player].playerPosition.index) * Int(32)))
+                            .offset(y:CGFloat((10 - viewModel.playersArray[player].playerPosition.index) * Int(viewModel.itemWidth - 8)))
                         
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
@@ -279,7 +287,7 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(player == 0 ? .pink : .blue)
                             .aspectRatio(1, contentMode: .fit)
-                            .offset(x:CGFloat((20 - viewModel.playersArray[player].playerPosition.index) * -Int(32)))
+                            .offset(x:CGFloat((20 - viewModel.playersArray[player].playerPosition.index) * -Int(viewModel.itemWidth - 8)))
                         Spacer()
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
