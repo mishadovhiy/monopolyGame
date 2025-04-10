@@ -15,10 +15,16 @@ class GameViewModel:ObservableObject {
     @Published var messagePressed:ButtonData? = nil
     @Published var messagePressedSecondary:ButtonData? = nil
     
-    @Published var bet:[(PlayerStepModel, Int)] = []
+    @Published var bet:[(PlayerStepModel, Int)] = [] {
+        didSet {
+            if (self.betValue * 100) <= Float(bet.last?.1 ?? 0) {
+                self.betValue = Float((bet.last?.1 ?? 0) + 1) / 100
+            }
+        }
+    }
     @Published var betProperty:Step? {
         didSet {
-            betValue = 1
+            betValue = 0.01
         }
     }
     @Published var betValue:Float = 0
@@ -43,24 +49,81 @@ class GameViewModel:ObservableObject {
         }
     }
     
+    func propertyTapDisabled(_ step: Step) -> Bool {
+        guard let boardActionType else {
+            return false
+        }
+        switch boardActionType {
+        case .build:
+            if self.myPlayerPosition.bought[step] != nil {
+                return !myPlayerPosition.canUpdateProperty(step)
+            }
+            return true
+        case .morgage:
+            if let upgrade = self.myPlayerPosition.bought[step],
+               !self.myPlayerPosition.morgageProperties.contains(step)
+            {
+                return upgrade != .bought
+            }
+            return true
+        case .reedeem:
+            return !self.myPlayerPosition.morgageProperties.contains(step)
+        case .sell:
+            if let upgrade = self.myPlayerPosition.bought[step] {
+                return upgrade == .bought || upgrade.previousValue == nil
+            }
+            return true
+        }
+    }
+    
     func boardActionPropertySelected(_ step: Step) {
-        
-//        switch boardActionType {
-//        case .build:
-//            <#code#>
-//        case .sell:
-//            <#code#>
-//        case .morgage:
-//            <#code#>
-//        case .reedeem:
-//            <#code#>
-//        case nil:
-//            <#code#>
-//        }
+        switch boardActionType {
+        case .build:
+            if self.myPlayerPosition.canUpdateProperty(step)
+            {
+                self.myPlayerPosition.upgradePropertyIfCan(step)
+            }
+        case .sell:
+            if let upgrade = self.myPlayerPosition.bought[step],
+               let price = step.rentTotal(upgrade),
+               let newValue = upgrade.previousValue
+            {
+                
+                print(price, " pricepriceprice ")
+                self.myPlayerPosition.balance += price
+                self.myPlayerPosition.bought.updateValue(newValue, forKey: step)
+            }
+            
+        case .morgage:
+            if let upgrade = self.myPlayerPosition.bought[step],
+               let price = step.morgage,
+               !self.myPlayerPosition.morgageProperties.contains(step)
+            {
+                
+                print(price, " pricepriceprice ")
+                self.myPlayerPosition.balance += price
+                self.myPlayerPosition.morgageProperties.append(step)
+            }
+        case .reedeem:
+            if let upgrade = self.myPlayerPosition.bought[step],
+               upgrade == .bought,
+               self.myPlayerPosition.morgageProperties.contains(step),
+               let price = step.rentTotal(upgrade)
+            {
+                
+                print(price, " pricepriceprice ")
+                self.myPlayerPosition.balance -= price
+                self.myPlayerPosition.morgageProperties.removeAll(where: {
+                    $0 == step
+                })
+            }
+        case nil:
+            break
+        }
     }
     var currentPlayerIndex:Int = 0
     var canDice:Bool {
-        return moveCompleted && betProperty == nil
+        return moveCompleted && betProperty == nil && boardActionType == nil
     }
     
     @Published var moveCompleted:Bool = true

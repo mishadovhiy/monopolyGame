@@ -33,7 +33,16 @@ struct GameView: View {
                 .padding(.horizontal, 15)
             }
             .overlay {
-                bettingView
+                
+                ZStack {
+                    bettingView
+                    Button("cancel") {
+                        viewModel.boardActionType = nil
+                    }
+                    .frame(maxHeight: viewModel.boardActionType != nil ? 44 : 0)
+                    .clipped()
+                    .animation(.smooth, value: viewModel.boardActionType != nil)
+                }
             }
             Spacer()
             panelView
@@ -48,7 +57,7 @@ struct GameView: View {
 //                })
 //                self.viewModel.message = .property(.blue1)
 //            })
-            viewModel.betProperty = .blue1
+//            viewModel.betProperty = .blue1
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
@@ -208,17 +217,27 @@ struct GameView: View {
     }
     
 
+    func propertyItem(_ step:Step) -> some View {
+        let disabled = viewModel.propertyTapDisabled(step)
+        return ZStack  {
+            RoundedRectangle(cornerRadius: 5)
+                .fill(step.color?.color ?? .gray)
+                .frame(width: viewModel.itemWidth - 8, height: viewModel.itemWidth - 8)
+            Text(" \(step.index)")
+                .font(.system(size: 10))
+                .opacity(step.buyPrice == nil ? 0.5 : 1)
+        }
+        .onTapGesture {
+            viewModel.propertySelected(step)
+        }
+        .disabled(disabled)
+        .opacity(disabled ? 0.1 : 1)
+    }
+    
     func items(_ section: Int) -> some View {
-        let current = (section) * Step.numberOfItemsInSection
+//        let current = (section) * Step.numberOfItemsInSection
         return ForEach(Step.items(section), id:\.rawValue) { i in
-            ZStack  {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(i.color?.color ?? .gray)
-                    .frame(width: viewModel.itemWidth - 8, height: viewModel.itemWidth - 8)
-                Text(" \(i.index)")
-                    .font(.system(size: 10))
-                    .opacity(i.buyPrice == nil ? 0.5 : 1)
-            }
+            propertyItem(i)
             .overlay {
                 if let upgrade = viewModel.myPlayerPosition.bought[i] {
                     VStack {
@@ -230,7 +249,7 @@ struct GameView: View {
                         }
                     }
                 }
-                if let upgrade = viewModel.myPlayerPosition.bought[i] {
+                if let upgrade = viewModel.enemyPosition.bought[i] {
                     VStack {
                         HStack {
                             Text("\(upgrade.index)")
@@ -242,9 +261,7 @@ struct GameView: View {
                     }
                 }
             }
-            .onTapGesture {
-                viewModel.propertySelected(i)
-            }
+
         }
     }
     

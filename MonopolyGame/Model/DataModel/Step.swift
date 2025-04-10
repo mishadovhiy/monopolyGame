@@ -47,6 +47,17 @@ struct PlayerStepModel:Codable {
         balance >= (price ?? (step.buyPrice ?? 0)) && bought[step] == nil
     }
     
+    mutating func upgradePropertyIfCan(_ property:Step) {
+        if canUpdateProperty(property) {
+            if let next = self.bought[property]?.nextValue {
+                if property.upgradePrice(next) <= self.balance {
+                    self.bought.updateValue(next, forKey: property)
+                    self.balance -= property.upgradePrice(next)
+                }
+            }
+        }
+    }
+    
     func canUpdateProperty(_ property:Step) -> Bool {
         if canUpdateProperyContains(property) {
             if let next = self.bought[property]?.nextValue {
@@ -102,6 +113,10 @@ struct PlayerStepModel:Codable {
         
         var nextValue:Upgrade? {
             Upgrade.allCases.first(where: {(index + 1) == $0.index})
+        }
+        
+        var previousValue:Upgrade? {
+            Upgrade.allCases.first(where: {(index - 1) == $0.index})
         }
         
         var multiplier:CGFloat {
