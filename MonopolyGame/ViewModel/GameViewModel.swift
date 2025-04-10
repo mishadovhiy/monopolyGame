@@ -16,7 +16,11 @@ class GameViewModel:ObservableObject {
     @Published var messagePressedSecondary:ButtonData? = nil
     
     @Published var bet:[(PlayerStepModel, Int)] = []
-    @Published var betProperty:Step?
+    @Published var betProperty:Step? {
+        didSet {
+            betValue = 1
+        }
+    }
     @Published var betValue:Float = 0
 
     var currentPlayerIndex:Int = 0
@@ -95,7 +99,22 @@ class GameViewModel:ObservableObject {
     
     func playerCompletedMoving() {
         self.moveCompleted = true
-        let property = myPlayerPosition.playerPosition
+        let property = playerPosition.playerPosition
+        if let occupiedBy = playersArray.first(where: { player in
+            player.bought[property] != nil
+        }) {
+            if let upgrade = occupiedBy.bought[property],
+               occupiedBy.id != playerPosition.id {
+                let amount = property.rentTotal(upgrade) ?? 0
+                playerPosition.balance -= amount
+                playersArray.forEach { model in
+                    if model.id == occupiedBy.id {
+                        playersArray[playersArray.firstIndex(where: {$0.id == occupiedBy.id}) ?? 0].balance += amount
+                    }
+                }
+            }
+            return
+        }
         if playerPosition.id == myPlayerPosition.id {
             if property.buyPrice == nil {
                 return
@@ -113,7 +132,6 @@ class GameViewModel:ObservableObject {
             }
             
         } else {
-            let property = enemyPosition.playerPosition
             if property.buyPrice == nil {
                 print("notbuible")
                 return
@@ -145,7 +163,9 @@ class GameViewModel:ObservableObject {
         }
         print(diceDestination, " newDestination ")
         print(playerPosition.playerPosition.index, " playerposition ")
-
+        if playerPosition.playerPosition == .go {
+            playerPosition.balance += 200
+        }
         diceDestination -= 1
         if diceDestination >= 1 {
             print("movemovemove")
@@ -163,7 +183,7 @@ class GameViewModel:ObservableObject {
         if from > 0 {
             from += 1
         }
-        var to = (Float(betProperty?.buyPrice ?? 1))
+        var to = (Float(betProperty?.buyPrice ?? 1) * 5)
         if from >= to {
             to = from + 1
         }
