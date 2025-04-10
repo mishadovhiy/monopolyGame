@@ -9,7 +9,9 @@ import SwiftUI
 
 struct GameView: View {
     @StateObject var viewModel:GameViewModel = .init()
-    
+    @EnvironmentObject var db: AppData
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some View {
         VStack(spacing:0) {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -49,7 +51,24 @@ struct GameView: View {
                 .disabled(!viewModel.canDice)
         }
         .padding()
+        .onChange(of: scenePhase) { newValue in
+            print(newValue, " rgefds ")
+            if newValue == .inactive || newValue == .background {
+                if !viewModel.dbUpdated {
+                    viewModel.dbUpdated = true
+                    db.db.player = viewModel.myPlayerPosition
+                    db.db.enemy = viewModel.enemyPosition
+                }
+            } else if newValue == .active {
+                viewModel.dbUpdated = false
+            }
+        }
+        
         .onAppear {
+            print(db.db.player.playerPosition, " yrtgerfwdaw")
+            self.viewModel.myPlayerPosition = db.db.player
+            self.viewModel.enemyPosition = db.db.enemy
+            self.viewModel.viewAppeared = true
 
 //            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
 //                self.viewModel.messagePressed = .init(title: "Buy", pressed: {

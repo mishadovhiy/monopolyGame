@@ -8,16 +8,36 @@
 import SwiftUI
 
 struct PlayerStepModel:Codable {
+    var edited = false
     var id:UUID = .init()
-    var playerPosition:Step
+    var playerPosition:Step {
+        didSet {
+            edited = true
+        }
+    }
     private var boughtDictionary:[String:Upgrade] = [:]
+    {
+        didSet {
+            edited = true
+        }
+    }
     //[brawn1:none] //test brawn1, then:brawn2 (brawn1 should be false)
     //[brawn2:brawn1]
     init(playerPosition: Step) {
         self.playerPosition = playerPosition
     }
     var morgageProperties:[Step] = []
+    {
+        didSet {
+            edited = true
+        }
+    }
     var balance:Int = 1000
+    {
+        didSet {
+            edited = true
+        }
+    }
     var bought:[Step:Upgrade] {
         get {
             let dict = self.boughtDictionary.map { (key, value) in

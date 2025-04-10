@@ -14,7 +14,8 @@ class GameViewModel:ObservableObject {
     @Published var message:PopupView.PopupType?
     @Published var messagePressed:ButtonData? = nil
     @Published var messagePressedSecondary:ButtonData? = nil
-    
+    var viewAppeared = false
+    var dbUpdated = false
     @Published var bet:[(PlayerStepModel, Int)] = [] {
         didSet {
             if (self.betValue * 100) <= Float(bet.last?.1 ?? 0) {

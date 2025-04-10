@@ -9,9 +9,25 @@ import SwiftUI
 
 @main
 struct MonopolyGameApp: App {
+    @StateObject var db:AppData = .init()
+    @State var viewLoaded:Bool = false
     var body: some Scene {
         WindowGroup {
-            GameView()
+            VStack {
+                if !viewLoaded {
+                    Text("...")
+                } else {
+                    GameView()
+                }
+            }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+                    self.viewLoaded = true
+                })
+            }
+            .environmentObject(db)
+
+
 //            PropertyListView(list: Step.allCases.filter({$0.buyPrice != nil}))
 
         }
