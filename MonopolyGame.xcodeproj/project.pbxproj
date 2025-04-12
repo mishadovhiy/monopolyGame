@@ -6,17 +6,45 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		82126EB92DAADA360081983A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82126EB52DAADA360081983A /* Assets.xcassets */; };
+		82126EBA2DAADA360081983A /* Codable+Decodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA02DAADA360081983A /* Codable+Decodable.swift */; };
+		82126EBB2DAADA360081983A /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA12DAADA360081983A /* String.swift */; };
+		82126EBC2DAADA360081983A /* ButtonData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA32DAADA360081983A /* ButtonData.swift */; };
+		82126EBD2DAADA360081983A /* MessageContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA42DAADA360081983A /* MessageContent.swift */; };
+		82126EBE2DAADA360081983A /* Step.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA52DAADA360081983A /* Step.swift */; };
+		82126EBF2DAADA360081983A /* DataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA72DAADA360081983A /* DataBase.swift */; };
+		82126EC02DAADA360081983A /* PropertyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA92DAADA360081983A /* PropertyListView.swift */; };
+		82126EC12DAADA360081983A /* PropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EAA2DAADA360081983A /* PropertyView.swift */; };
+		82126EC22DAADA360081983A /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EAC2DAADA360081983A /* GameView.swift */; };
+		82126EC32DAADA360081983A /* BuyPopupContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EAE2DAADA360081983A /* BuyPopupContentView.swift */; };
+		82126EC42DAADA360081983A /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EAF2DAADA360081983A /* PopupView.swift */; };
+		82126EC52DAADA360081983A /* TradePopupContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EB02DAADA360081983A /* TradePopupContentView.swift */; };
+		82126EC62DAADA360081983A /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EB32DAADA360081983A /* GameViewModel.swift */; };
+		82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EB72DAADA360081983A /* MonopolyGameApp.swift */; };
+		82126EC92DAADA630081983A /* BoardPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EC82DAADA630081983A /* BoardPopoverView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		82126EA02DAADA360081983A /* Codable+Decodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Codable+Decodable.swift"; sourceTree = "<group>"; };
+		82126EA12DAADA360081983A /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		82126EA32DAADA360081983A /* ButtonData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonData.swift; sourceTree = "<group>"; };
+		82126EA42DAADA360081983A /* MessageContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContent.swift; sourceTree = "<group>"; };
+		82126EA52DAADA360081983A /* Step.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Step.swift; sourceTree = "<group>"; };
+		82126EA72DAADA360081983A /* DataBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBase.swift; sourceTree = "<group>"; };
+		82126EA92DAADA360081983A /* PropertyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyListView.swift; sourceTree = "<group>"; };
+		82126EAA2DAADA360081983A /* PropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyView.swift; sourceTree = "<group>"; };
+		82126EAC2DAADA360081983A /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		82126EAE2DAADA360081983A /* BuyPopupContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyPopupContentView.swift; sourceTree = "<group>"; };
+		82126EAF2DAADA360081983A /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
+		82126EB02DAADA360081983A /* TradePopupContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradePopupContentView.swift; sourceTree = "<group>"; };
+		82126EB32DAADA360081983A /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		82126EB52DAADA360081983A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		82126EB62DAADA360081983A /* MonopolyGame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MonopolyGame.entitlements; sourceTree = "<group>"; };
+		82126EB72DAADA360081983A /* MonopolyGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonopolyGameApp.swift; sourceTree = "<group>"; };
+		82126EC82DAADA630081983A /* BoardPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardPopoverView.swift; sourceTree = "<group>"; };
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		82C2900B2D9EEDD100E6EC40 /* MonopolyGame */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MonopolyGame;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		82C290062D9EEDD100E6EC40 /* Frameworks */ = {
@@ -29,10 +57,98 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		82126EA22DAADA360081983A /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				82126EA02DAADA360081983A /* Codable+Decodable.swift */,
+				82126EA12DAADA360081983A /* String.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		82126EA62DAADA360081983A /* DataModel */ = {
+			isa = PBXGroup;
+			children = (
+				82126EA32DAADA360081983A /* ButtonData.swift */,
+				82126EA42DAADA360081983A /* MessageContent.swift */,
+				82126EA52DAADA360081983A /* Step.swift */,
+			);
+			path = DataModel;
+			sourceTree = "<group>";
+		};
+		82126EA82DAADA360081983A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				82126EA62DAADA360081983A /* DataModel */,
+				82126EA72DAADA360081983A /* DataBase.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		82126EAB2DAADA360081983A /* ComponentView */ = {
+			isa = PBXGroup;
+			children = (
+				82126EA92DAADA360081983A /* PropertyListView.swift */,
+				82126EAA2DAADA360081983A /* PropertyView.swift */,
+			);
+			path = ComponentView;
+			sourceTree = "<group>";
+		};
+		82126EAD2DAADA360081983A /* GameView */ = {
+			isa = PBXGroup;
+			children = (
+				82126EAC2DAADA360081983A /* GameView.swift */,
+				82126EC82DAADA630081983A /* BoardPopoverView.swift */,
+			);
+			path = GameView;
+			sourceTree = "<group>";
+		};
+		82126EB12DAADA360081983A /* PopupView */ = {
+			isa = PBXGroup;
+			children = (
+				82126EAE2DAADA360081983A /* BuyPopupContentView.swift */,
+				82126EAF2DAADA360081983A /* PopupView.swift */,
+				82126EB02DAADA360081983A /* TradePopupContentView.swift */,
+			);
+			path = PopupView;
+			sourceTree = "<group>";
+		};
+		82126EB22DAADA360081983A /* View */ = {
+			isa = PBXGroup;
+			children = (
+				82126EAD2DAADA360081983A /* GameView */,
+				82126EAB2DAADA360081983A /* ComponentView */,
+				82126EB12DAADA360081983A /* PopupView */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		82126EB42DAADA360081983A /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				82126EB32DAADA360081983A /* GameViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		82126EB82DAADA360081983A /* MonopolyGame */ = {
+			isa = PBXGroup;
+			children = (
+				82126EA22DAADA360081983A /* Extension */,
+				82126EA82DAADA360081983A /* Model */,
+				82126EB22DAADA360081983A /* View */,
+				82126EB42DAADA360081983A /* ViewModel */,
+				82126EB52DAADA360081983A /* Assets.xcassets */,
+				82126EB62DAADA360081983A /* MonopolyGame.entitlements */,
+				82126EB72DAADA360081983A /* MonopolyGameApp.swift */,
+			);
+			path = MonopolyGame;
+			sourceTree = "<group>";
+		};
 		82C290002D9EEDD100E6EC40 = {
 			isa = PBXGroup;
 			children = (
-				82C2900B2D9EEDD100E6EC40 /* MonopolyGame */,
+				82126EB82DAADA360081983A /* MonopolyGame */,
 				82C2900A2D9EEDD100E6EC40 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,9 +175,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				82C2900B2D9EEDD100E6EC40 /* MonopolyGame */,
 			);
 			name = MonopolyGame;
 			packageProductDependencies = (
@@ -109,6 +222,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82126EB92DAADA360081983A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +233,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82126EBA2DAADA360081983A /* Codable+Decodable.swift in Sources */,
+				82126EBB2DAADA360081983A /* String.swift in Sources */,
+				82126EBC2DAADA360081983A /* ButtonData.swift in Sources */,
+				82126EC92DAADA630081983A /* BoardPopoverView.swift in Sources */,
+				82126EBD2DAADA360081983A /* MessageContent.swift in Sources */,
+				82126EBE2DAADA360081983A /* Step.swift in Sources */,
+				82126EBF2DAADA360081983A /* DataBase.swift in Sources */,
+				82126EC02DAADA360081983A /* PropertyListView.swift in Sources */,
+				82126EC12DAADA360081983A /* PropertyView.swift in Sources */,
+				82126EC22DAADA360081983A /* GameView.swift in Sources */,
+				82126EC32DAADA360081983A /* BuyPopupContentView.swift in Sources */,
+				82126EC42DAADA360081983A /* PopupView.swift in Sources */,
+				82126EC52DAADA360081983A /* TradePopupContentView.swift in Sources */,
+				82126EC62DAADA360081983A /* GameViewModel.swift in Sources */,
+				82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -23,7 +23,7 @@ struct PlayerStepModel:Codable {
     }
     //[brawn1:none] //test brawn1, then:brawn2 (brawn1 should be false)
     //[brawn2:brawn1]
-    init(playerPosition: Step) {
+    init(playerPosition: Step = .go) {
         self.playerPosition = playerPosition
     }
     var morgageProperties:[Step] = []

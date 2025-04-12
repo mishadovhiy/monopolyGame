@@ -36,15 +36,7 @@ struct GameView: View {
             }
             .overlay {
                 
-                ZStack {
-                    bettingView
-                    Button("cancel") {
-                        viewModel.boardActionType = nil
-                    }
-                    .frame(maxHeight: viewModel.boardActionType != nil ? 44 : 0)
-                    .clipped()
-                    .animation(.smooth, value: viewModel.boardActionType != nil)
-                }
+                BoardPopoverView(viewModel: viewModel)
             }
             Spacer()
             panelView
@@ -69,71 +61,10 @@ struct GameView: View {
             self.viewModel.myPlayerPosition = db.db.player
             self.viewModel.enemyPosition = db.db.enemy
             self.viewModel.viewAppeared = true
-
-//            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-//                self.viewModel.messagePressed = .init(title: "Buy", pressed: {
-//                    
-//                })
-//                self.viewModel.message = .property(.blue1)
-//            })
-//            viewModel.betProperty = .blue1
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
         }
-        .overlay(content: {
-            testPBoughtPropertiesView
-        })
-    }
-    
-    var bettingView: some View {
-        VStack {
-            HStack {
-                PropertyView(step: viewModel.betProperty ?? .blue1)
-                    .frame(maxWidth: .infinity,
-                           maxHeight: .infinity)
-                ScrollView(.vertical) {
-                    VStack {
-                        ForEach(viewModel.bet, id:\.1) { bet in
-                            HStack {
-                                Text(viewModel.myPlayerPosition.id == bet.0.id ? "You" : "robot")
-                                    .foregroundColor(.white)
-
-                                Text("\(bet.1)")
-                                    .foregroundColor(.white)
-                            }
-                        }
-                    }
-                }.frame(maxWidth: .infinity,
-                        maxHeight: .infinity)
-            }
-            VStack {
-                HStack {
-                    Slider(value: $viewModel.betValue, in: viewModel.betSliderRange, step: 0.01)
-                        .frame(height: 20)
-                    Text("\(Int(viewModel.betValue * 100))")
-                        .foregroundColor(.white)
-                }
-                HStack {
-                    Button("Decline") {
-                        print(viewModel.bet.last?.1, " robotWin ")
-                        self.viewModel.setBetWone()
-                    }
-                    Spacer()
-                    Button("Bet") {
-                        print(Int(viewModel.betValue * 100), " tegrfweda ", Int(viewModel.betValue * 100))
-                        viewModel.bet.append((viewModel.myPlayerPosition, Int(viewModel.betValue * 100)))
-                        viewModel.robotBet()
-                    }.disabled(!viewModel.myPlayerPosition.canBuy(viewModel.betProperty ?? .blue1, price: viewModel.bet.last?.1 ?? Int(viewModel.betValue * 100)))
-                }
-                .disabled(viewModel.bet.last?.0.id == viewModel.myPlayerPosition.id)
-                .frame(height:40)
-            }
-        }
-        .background(.black)
-        .padding(.horizontal, viewModel.itemWidth / 2)
-        .padding(.vertical, viewModel.itemWidth + 30)
-        .opacity(viewModel.betProperty != nil ? 1 : 0)
     }
     
     var panelView: some View {
@@ -142,10 +73,18 @@ struct GameView: View {
                 viewModel.resumeNextPlayer(forceMove: true)
             }
             Spacer().frame(height: 80)
+            Button("menu") {
+                viewModel.message = .custom(.init(title: "Menu"))
+                viewModel.messagePressed = .init(title: "Delete", pressed: {
+                    db.db = .init()
+                    viewModel.myPlayerPosition = .init()
+                    viewModel.enemyPosition = .init()
+                })
+            }
             HStack(spacing:40) {
-                ForEach(GameViewModel.BoardActionType.allCases, id:\.rawValue) { type in
+                ForEach(GameViewModel.PanelType.allCases, id:\.rawValue) { type in
                     Button(type.rawValue.capitalized) {
-                        viewModel.boardActionType = type
+                        viewModel.activePanelType = type
                     }
                 }
             }
@@ -164,35 +103,6 @@ struct GameView: View {
             Spacer()
         }
     }
-    
-    var testPBoughtPropertiesView: some View {
-        VStack(content:  {
-            Spacer().frame(maxHeight: .infinity)
-            HStack {
-                ScrollView(.vertical) {
-                    VStack {
-                        ForEach(viewModel.myPlayerPosition.bought.compactMap({$0.key}), id:\.self) { bought in
-                            Text(bought.title)
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                ScrollView(.vertical) {
-                    VStack {
-                        ForEach(viewModel.enemyPosition.bought.compactMap({$0.key}), id:\.self) { bought in
-                            Text(bought.title)
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .padding(.top, 100)
-            .frame(maxHeight: .infinity)
-            
-        })
-        .disabled(true)
-    }
-
     
     func vBoard(_ section:Int) -> some View {
         RoundedRectangle(cornerRadius: 12)
@@ -265,6 +175,7 @@ struct GameView: View {
                             Spacer()
                             Text("\(upgrade.index)")
                                 .foregroundColor(.red)
+                                .background(.white)
                         }
                     }
                 }
@@ -273,6 +184,7 @@ struct GameView: View {
                         HStack {
                             Text("\(upgrade.index)")
                                 .foregroundColor(.yellow)
+                                .background(.white)
                             Spacer()
                         }
                         Spacer()

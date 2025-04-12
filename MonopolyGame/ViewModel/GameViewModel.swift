@@ -16,19 +16,10 @@ class GameViewModel:ObservableObject {
     @Published var messagePressedSecondary:ButtonData? = nil
     var viewAppeared = false
     var dbUpdated = false
-    @Published var bet:[(PlayerStepModel, Int)] = [] {
-        didSet {
-            if (self.betValue * 100) <= Float(bet.last?.1 ?? 0) {
-                self.betValue = Float((bet.last?.1 ?? 0) + 1) / 100
-            }
-        }
-    }
-    @Published var betProperty:Step? {
-        didSet {
-            betValue = 0.01
-        }
-    }
-    @Published var betValue:Float = 0
+    @Published var bet:BetModel = .init(betValue: 0)
+    
+    @Published var trade:Trade = .init()
+
     @Published var deviceWidth:CGFloat = 0
     var itemWidth:CGFloat = 60
 
@@ -36,13 +27,13 @@ class GameViewModel:ObservableObject {
 //        deviceWidth / Step.numberOfItemsInSection
 //    }
     
-    @Published var boardActionType:BoardActionType?
-    enum BoardActionType:String, CaseIterable {
-        case build, sell, morgage, reedeem
+    @Published var activePanelType:PanelType?
+    enum PanelType:String, CaseIterable {
+        case build, sell, morgage, reedeem, trade
     }
     
     func propertySelected(_ step: Step) {
-        if boardActionType != nil {
+        if activePanelType != nil {
             boardActionPropertySelected(step)
         } else {
             //presentMessage
@@ -51,10 +42,10 @@ class GameViewModel:ObservableObject {
     }
     
     func propertyTapDisabled(_ step: Step) -> Bool {
-        guard let boardActionType else {
+        guard let activePanelType else {
             return false
         }
-        switch boardActionType {
+        switch activePanelType {
         case .build:
             if self.myPlayerPosition.bought[step] != nil {
                 return !myPlayerPosition.canUpdateProperty(step)
@@ -74,11 +65,15 @@ class GameViewModel:ObservableObject {
                 return upgrade == .bought || upgrade.previousValue == nil
             }
             return true
+        case .trade:
+            return true
         }
     }
     
     func boardActionPropertySelected(_ step: Step) {
-        switch boardActionType {
+        switch activePanelType {
+        case .trade:
+            break
         case .build:
             if self.myPlayerPosition.canUpdateProperty(step)
             {
@@ -124,7 +119,7 @@ class GameViewModel:ObservableObject {
     }
     var currentPlayerIndex:Int = 0
     var canDice:Bool {
-        return moveCompleted && betProperty == nil && boardActionType == nil
+        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting
     }
     
     @Published var moveCompleted:Bool = true
@@ -163,25 +158,23 @@ class GameViewModel:ObservableObject {
     }
     
     func setBetWone() {
-        if let property = betProperty {
-            print(bet.last?.0.id == myPlayerPosition.id, " rgtefsd ", bet.last?.0)
-            if bet.last?.0.id == myPlayerPosition.id {
-                myPlayerPosition.buyIfCan(property, price: bet.last?.1 ?? 1)
+        if let property = bet.betProperty {
+            print(bet.bet.last?.0.id == myPlayerPosition.id, " rgtefsd ", bet.bet.last?.0)
+            if bet.bet.last?.0.id == myPlayerPosition.id {
+                myPlayerPosition.buyIfCan(property, price: bet.bet.last?.1 ?? 1)
             } else {
-                enemyPosition.buyIfCan(property, price: bet.last?.1 ?? 1)
+                enemyPosition.buyIfCan(property, price: bet.bet.last?.1 ?? 1)
             }
-            bet.removeAll()
-            betValue = 0
-            betProperty = nil
+            bet = .init()
         }
     }
     
     func robotBet() {
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds((250..<3000).randomElement() ?? 0), execute: {
-            let last = self.bet.last
-            if (self.betProperty?.buyPrice ?? 0) >= (last?.1 ?? 0) {
+            let last = self.bet.bet.last
+            if (self.bet.betProperty?.buyPrice ?? 0) >= (last?.1 ?? 0) {
                 if self.enemyPosition.balance >= ((last?.1 ?? 0) + 1) {
-                    self.bet.append((self.enemyPosition, (last?.1 ?? 0) + 1))
+                    self.bet.bet.append((self.enemyPosition, (last?.1 ?? 0) + 1))
 
                 } else {
                     self.setBetWone()
@@ -211,17 +204,14 @@ class GameViewModel:ObservableObject {
             return
         }
         if playerPosition.id == myPlayerPosition.id {
-            if property.buyPrice == nil {
-                return
-            }
-            if myPlayerPosition.bought[property] == nil {
+            if property.buyPrice != nil && myPlayerPosition.bought[property] == nil {
                 if self.myPlayerPosition.canBuy(property) {
                     self.messagePressed = .init(title: "Buy", pressed: {
                         self.myPlayerPosition.buyIfCan(property)
                     })
                 }
                 self.messagePressedSecondary = .init(title: "auction", pressed: {
-                    self.betProperty = property
+                    self.bet.betProperty = property
                 })
                 self.message = .property(property)
             }
@@ -229,16 +219,39 @@ class GameViewModel:ObservableObject {
         } else {
             if property.buyPrice == nil {
                 print("notbuible")
+                checkEnemyCanUpgradeProperties()
+
                 return
             }
             if enemyPosition.canBuy(property) {
                 self.enemyPosition.buyIfCan(property)
 
             } else {
-                self.betProperty = property
+                self.bet.betProperty = property
             }
+            checkEnemyCanUpgradeProperties()
         }
 
+    }
+    
+    private func checkEnemyCanUpgradeProperties() {
+        let upgrades = enemyPosition.bought.filter {
+            enemyPosition.canUpdateProperty($0.key)
+        }.sorted(by: {$0.key.upgradePrice($0.value) >= $1.key.upgradePrice($1.value)})
+        let ocupiedPropertiesCount = (self.enemyPosition.bought.compactMap({$0.key}) + self.myPlayerPosition.bought.compactMap({$0.key})).count
+        let occupiedPercent = CGFloat(ocupiedPropertiesCount) / CGFloat(Step.allCases.count)
+        let minEnemyRestBalaance = occupiedPercent >= 0.5 ? 250 : 100
+        var bought = false
+        upgrades.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
+            let balanceHolder = self.enemyPosition.balance
+            if minEnemyRestBalaance < self.enemyPosition.balance {
+                self.enemyPosition.upgradePropertyIfCan(key)
+                if self.enemyPosition.balance < balanceHolder {
+                    bought = true
+                }
+            }
+        }
+        print(bought, " enemyboughtProperties")
     }
     
     func resumeNextPlayer(forceMove:Bool = false) {
@@ -273,16 +286,99 @@ class GameViewModel:ObservableObject {
         }
     }
     
-    var betSliderRange:ClosedRange<Float> {
-        var from = (Float(bet.last?.1 ?? 1))
-        if from > 0 {
-            from += 1
+    func enemyTrade() {
+        let price = trade.myPlayerProperties.reduce(0) { partialResult, step in
+            partialResult + (step.buyPrice ?? 0)
+        } + Int(trade.tradeAmount * 100)
+        let pricePlayer = trade.enemyProperties.reduce(0) { partialResult, step in
+            partialResult + (step.buyPrice ?? 0)
         }
-        var to = (Float(betProperty?.buyPrice ?? 1) * 5)
-        if from >= to {
-            to = from + 1
+        print(price / pricePlayer, " erfwdsaz ")
+        var test = self.enemyPosition
+        test.balance = 9999
+        trade.myPlayerProperties.forEach { step in
+            test.bought.updateValue(.bought, forKey: step)
         }
-        return ((from / 100)...(to / 100))
-//        0...10
+        let colors = Array(Set(trade.myPlayerProperties.map { $0.color }))
+        var canUpdateCount = 0
+        colors.forEach { color in
+            let properties = test.bought.keys.filter({$0.color == color})
+            properties.forEach { step in
+                if test.canUpdateProperty(step) {
+                    canUpdateCount += 1
+                }
+            }
+        }
+        if canUpdateCount >= colors.count {
+            
+        }
+        trade.tradeResponse = canUpdateCount >= colors.count
+        if trade.tradeResponse ?? false {
+            trade.myPlayerProperties.forEach { step in
+                self.enemyPosition.bought.updateValue(self.myPlayerPosition.bought[step] ?? .bought, forKey: step)
+                self.myPlayerPosition.bought.removeValue(forKey: step)
+            }
+            trade.enemyProperties.forEach { step in
+                self.myPlayerPosition.bought.updateValue(self.enemyPosition.bought[step] ?? .bought, forKey: step)
+                self.enemyPosition.bought.removeValue(forKey: step)
+            }
+        }
+        self.message = .custom(.init(title: "Robot \(trade.tradeResponse ?? false ? "Accepted" : "Declined") trade proposal", button: .init(title: "OK", pressed: {
+            self.activePanelType = nil
+        })))
+        
+//        if price >= pricePlayer {
+//            let colors = myPlayerProperties.c
+//        } else {
+//            trade.tradeResponse = false
+//        }
+    }
+    
+}
+
+extension GameViewModel {
+    struct Trade {
+        var myPlayerProperties:[Step] = []
+        var enemyProperties:[Step] = []
+        var tradeAmount:Float = 0
+        var isPresenting:Bool = false {
+            didSet {
+                tradeAmount = 0
+            }
+        }
+        var tradingByEnemy:Bool = false
+        var okEnabled:Bool {
+            (tradeAmount != 0 || !myPlayerProperties.isEmpty) && !enemyProperties.isEmpty
+        }
+        var tradeResponse:Bool? = nil
+    }
+    
+    struct BetModel {
+        var bet:[(PlayerStepModel, Int)] = [] {
+            didSet {
+                if (self.betValue * 100) <= Float(bet.last?.1 ?? 0) {
+                    self.betValue = Float((bet.last?.1 ?? 0) + 1) / 100
+                }
+            }
+        }
+        var betProperty:Step? {
+            didSet {
+                betValue = 0.01
+            }
+        }
+        var betValue:Float = 0
+        
+        var betSliderRange:ClosedRange<Float> {
+            var from = (Float(bet.last?.1 ?? 1))
+            if from > 0 {
+                from += 1
+            }
+            var to = (Float(betProperty?.buyPrice ?? 1) * 5)
+            if from >= to {
+                to = from + 1
+            }
+            return ((from / 100)...(to / 100))
+    //        0...10
+        }
     }
 }
