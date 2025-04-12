@@ -17,27 +17,35 @@ struct GameView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 VStack(spacing:0) {
                     vBoard(2)
+                        .padding(.leading, -110)
                     Spacer()
-                    vBoard(0)                }
-                .padding(.vertical, 35)
+                    vBoard(0)
+                        .padding(.trailing, 10)
+                        .padding(.bottom, -20)
+                }
+                .padding(.vertical, 65)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .overlay(content: {
                     HStack(spacing:0) {
                         hBoard(1)
+                            .padding(.top, 70)
                         Spacer()
                         hBoard(3)
+                            .padding(.top, -30)
+                            .padding(.trailing, 60)
                     }
-                    .padding(.horizontal, -15)
+                    .padding(.horizontal, 25)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 })
                 
                 .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
-                .padding(.horizontal, 15)
+                .padding(.horizontal, 0)
             }
             .overlay {
                 
                 BoardPopoverView(viewModel: viewModel)
             }
+            .padding(.top, -70)
             Spacer()
             panelView
                 .disabled(!viewModel.canDice)
@@ -110,7 +118,7 @@ struct GameView: View {
             .frame(height: viewModel.itemWidth)
             .overlay(content: {
                 HStack(spacing:0) {
-                    items(section)
+                    items(section, isVerticalStack: true)
                 }
                 .overlay {
                     ZStack {
@@ -130,7 +138,7 @@ struct GameView: View {
             .frame(width: viewModel.itemWidth)
             .overlay(content: {
                 VStack(spacing:0) {
-                    items(section)
+                    items(section, isVerticalStack: false)
                 }
                 .overlay {
                     ZStack {
@@ -146,12 +154,12 @@ struct GameView: View {
     }
     
 
-    func propertyItem(_ step:Step) -> some View {
+    func propertyItem(_ step:Step, isFirst:Bool, isVerticalStack:Bool) -> some View {
         let disabled = viewModel.propertyTapDisabled(step)
         return ZStack  {
             RoundedRectangle(cornerRadius: 5)
                 .fill(step.color?.color ?? .gray)
-                .frame(width: viewModel.itemWidth - 8, height: viewModel.itemWidth - 8)
+                .frame(width: (viewModel.itemWidth - 8) - (isVerticalStack ? (isFirst ? 0 : 10) : 0), height: (viewModel.itemWidth - 8) - (!isVerticalStack ? (isFirst ? 0 : 10) : 0))
             Text(" \(step.index)")
                 .font(.system(size: 10))
                 .opacity(step.buyPrice == nil ? 0.5 : 1)
@@ -163,10 +171,11 @@ struct GameView: View {
         .opacity(disabled ? 0.1 : 1)
     }
     
-    func items(_ section: Int) -> some View {
+    func items(_ section: Int, isVerticalStack:Bool) -> some View {
 //        let current = (section) * Step.numberOfItemsInSection
-        return ForEach(Step.items(section), id:\.rawValue) { i in
-            propertyItem(i)
+        let items = Step.items(section)
+        return ForEach(items, id:\.rawValue) { i in
+            propertyItem(i, isFirst: i == (isVerticalStack && section == 0 ? items.last : (!isVerticalStack && section == 1 ? items.last : items.first)), isVerticalStack:isVerticalStack)
             .overlay {
                 if let upgrade = viewModel.myPlayerPosition.bought[i] {
                     VStack {
