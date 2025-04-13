@@ -8,8 +8,53 @@
 import SwiftUI
 
 struct HomeView: View {
+    @State var viewModel:HomeViewModel = .init()
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView(content: {
+            VStack {
+                Spacer()
+                    .frame(maxHeight: .infinity)
+                Button("Play") {
+                    viewModel.isGamePresenting = true
+                }
+                VStack {
+                    Spacer()
+                        .frame(maxHeight: .infinity)
+
+                    HStack {
+                        Spacer()
+                        Button("Leaderboard") {
+                            viewModel.navigationPresenting.leaderBoard = true
+                        }
+                        Spacer()
+                    }
+                    Spacer()
+                        .frame(maxHeight: .infinity)
+
+                }
+                .frame(maxHeight: .infinity)
+                NavigationLink("", destination: GameView(), isActive: $viewModel.isGamePresenting)
+                    .hidden()
+                
+            }
+            
+            .navigationViewStyle(StackNavigationViewStyle())
+            .background {
+                ClearBackgroundView()
+            }
+        })
+        .navigationBarHidden(true)
+        .navigationViewStyle(StackNavigationViewStyle())
+        .background {
+            ClearBackgroundView()
+        }
+        .overlay {
+            VStack {
+                TopNavigationView(viewModel: $viewModel)
+                Spacer()
+                    .frame(maxHeight: .infinity)
+            }
+        }
     }
 }
 

@@ -13,7 +13,7 @@ class AppData:ObservableObject {
     @Published var db:DataBase = .init() {
         didSet {
             print("updatingDB")
-            print(db.player.playerPosition, " rgefsda ")
+            print(db.gameProgress.player.playerPosition, " rgefsda ")
             if dataLoaded {
                 if Thread.isMainThread {
                     DispatchQueue(label: "db", qos: .userInitiated).async {
@@ -55,7 +55,81 @@ class AppData:ObservableObject {
     }
 
     struct DataBase:Codable {
-        var player:PlayerStepModel = .init(playerPosition: .go)
-        var enemy: PlayerStepModel = .init(playerPosition: .go)
+        var gameProgress:GameProgress = .init()
+        var settings:Settings = .init()
+        var profile:Profile = .init()
+        var gameCompletions:GameCompletions = .init()
+        
+        struct Settings:Codable {
+            var sound:Sound = .init()
+            var game:Game = .init()
+            struct Game: Codable {
+                var difficulty:Float = 0.5
+                var balance:Int = 100
+            }
+            struct Sound:Codable {
+                var music:Float = 0.2
+                var menuClick:Float = 0.3
+                var sound: Float = 0.3
+                var dict:[String:Float] {
+                    get {
+                        Dictionary(uniqueKeysWithValues: dictionary?.map({ (key: String, value: Any) in
+                            (key, Float(value as? Double ?? 0))
+                        }) ?? [])
+                    }
+                    set {
+                        newValue.forEach { (key: String, value: Float) in
+                            if let key:CodingKeys = .init(rawValue: key) {
+                                switch key {
+                                case .music:
+                                    self.music = value
+                                case .menuClick:
+                                    self.menuClick = value
+                                case .sound:
+                                    self.sound = value
+
+                                }
+                            }
+                        }
+
+                    }
+                }
+                enum CodingKeys:String, CodingKey, CaseIterable {
+                    case music
+                    case menuClick
+                    case sound
+                    
+                    var description:String {
+                        switch self {
+                        case .music:
+                            "Background music"
+                        case .menuClick:
+                            "Navigation, button clicks"
+                        case .sound:
+                            "Game sound such as, player moves"
+                        }
+                    }
+                }
+            }
+        }
+        
+        struct Profile:Codable {
+            var imageURL:String = ""
+            var username:String = ""
+        }
+        
+        struct GameCompletions: Codable {
+            var completionList:[Completion] = []
+            struct Completion: Codable {
+                var balance:Int = 0
+                var time:Date = .init()
+                var upgrades:PlayerStepModel.BoughtUpgrades = .init()
+            }
+        }
+        
+        struct GameProgress:Codable {
+            var player:PlayerStepModel = .init(playerPosition: .go)
+            var enemy: PlayerStepModel = .init(playerPosition: .go)
+        }
     }
 }

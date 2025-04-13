@@ -38,7 +38,8 @@ struct PlayerStepModel:Codable {
             edited = true
         }
     }
-    var bought:[Step:Upgrade] {
+    typealias BoughtUpgrades = [Step:Upgrade]
+    var bought:BoughtUpgrades {
         get {
             let dict = self.boughtDictionary.map { (key, value) in
                 (Step(rawValue: key) ?? .blue1, value)
@@ -332,5 +333,17 @@ extension [String:PlayerStepModel.Upgrade] {
 //            Step.brawn1.rawValue:.bought,//can buy brawn1
             Step.blue1.rawValue:.bought//cannot upgared brawn2
         ]
+    }
+}
+
+extension PlayerStepModel.BoughtUpgrades {
+    var totalPrice:(propertyCount: Int, price:Int) {
+        let price = self.reduce(0) { partialResult, dict in
+            let upgrades = PlayerStepModel.Upgrade.allCases.filter({dict.value.index >= $0.index}).reduce(0) { partialResult, upg in
+                partialResult + dict.key.upgradePrice(upg)
+            }
+            return partialResult + ((dict.key.buyPrice ?? 0) + upgrades)
+        }
+        return (self.count, price)
     }
 }

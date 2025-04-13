@@ -72,8 +72,8 @@ struct GameView: View {
             if newValue == .inactive || newValue == .background {
                 if !viewModel.dbUpdated {
                     viewModel.dbUpdated = true
-                    db.db.player = viewModel.myPlayerPosition
-                    db.db.enemy = viewModel.enemyPosition
+                    db.db.gameProgress.player = viewModel.myPlayerPosition
+                    db.db.gameProgress.enemy = viewModel.enemyPosition
                 }
             } else if newValue == .active {
                 viewModel.dbUpdated = false
@@ -81,9 +81,9 @@ struct GameView: View {
         }
         
         .onAppear {
-            print(db.db.player.playerPosition, " yrtgerfwdaw")
-            self.viewModel.myPlayerPosition = db.db.player
-            self.viewModel.enemyPosition = db.db.enemy
+            print(db.db.gameProgress.player.playerPosition, " yrtgerfwdaw")
+            self.viewModel.myPlayerPosition = db.db.gameProgress.player
+            self.viewModel.enemyPosition = db.db.gameProgress.enemy
             self.viewModel.viewAppeared = true
         }
         .overlay {

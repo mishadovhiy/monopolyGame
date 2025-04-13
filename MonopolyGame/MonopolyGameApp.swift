@@ -17,7 +17,7 @@ struct MonopolyGameApp: App {
                 if !viewLoaded {
                     Text("...")
                 } else {
-                    GameView()
+                    HomeView()
                 }
             }
             .onAppear {

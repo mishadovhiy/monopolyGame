@@ -27,6 +27,13 @@
 		82126ECF2DAB47A60081983A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126ECE2DAB47A60081983A /* HomeView.swift */; };
 		82126ED12DAB78550081983A /* NetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126ED02DAB78550081983A /* NetworkModel.swift */; };
 		82126ED32DAB78690081983A /* NetworkResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126ED22DAB78690081983A /* NetworkResponse.swift */; };
+		82126EF72DABF5CB0081983A /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EF62DABF5CB0081983A /* HomeViewModel.swift */; };
+		82126EF92DABF8710081983A /* TopNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EF82DABF8710081983A /* TopNavigationView.swift */; };
+		82126EFC2DABF88F0081983A /* GameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EFB2DABF88F0081983A /* GameSettingsView.swift */; };
+		82126EFE2DABF8C60081983A /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EFD2DABF8C60081983A /* AboutView.swift */; };
+		82126F0E2DAC3FCB0081983A /* ClearBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F0D2DAC3FCB0081983A /* ClearBackgroundView.swift */; };
+		82126F112DAC48BC0081983A /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F102DAC48BC0081983A /* MenuView.swift */; };
+		82126F132DAC492D0081983A /* SoundSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F122DAC492D0081983A /* SoundSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +58,13 @@
 		82126ECE2DAB47A60081983A /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		82126ED02DAB78550081983A /* NetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkModel.swift; sourceTree = "<group>"; };
 		82126ED22DAB78690081983A /* NetworkResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponse.swift; sourceTree = "<group>"; };
+		82126EF62DABF5CB0081983A /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		82126EF82DABF8710081983A /* TopNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopNavigationView.swift; sourceTree = "<group>"; };
+		82126EFB2DABF88F0081983A /* GameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSettingsView.swift; sourceTree = "<group>"; };
+		82126EFD2DABF8C60081983A /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		82126F0D2DAC3FCB0081983A /* ClearBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearBackgroundView.swift; sourceTree = "<group>"; };
+		82126F102DAC48BC0081983A /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		82126F122DAC492D0081983A /* SoundSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSettingsView.swift; sourceTree = "<group>"; };
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -99,7 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				82126EA92DAADA360081983A /* PropertyListView.swift */,
-				82126ECA2DAB3C790081983A /* ImageView.swift */,
+				82126F0F2DAC3FED0081983A /* BaseView */,
 				82126EAA2DAADA360081983A /* PropertyView.swift */,
 			);
 			path = ComponentView;
@@ -129,6 +143,7 @@
 			children = (
 				82126ECE2DAB47A60081983A /* HomeView.swift */,
 				82126EAD2DAADA360081983A /* GameView */,
+				82126EFA2DABF87A0081983A /* TopNavigationView */,
 				82126EAB2DAADA360081983A /* ComponentView */,
 				82126EB12DAADA360081983A /* PopupView */,
 			);
@@ -139,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				82126EB32DAADA360081983A /* GameViewModel.swift */,
+				82126EF62DABF5CB0081983A /* HomeViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -155,6 +171,27 @@
 				82126EB72DAADA360081983A /* MonopolyGameApp.swift */,
 			);
 			path = MonopolyGame;
+			sourceTree = "<group>";
+		};
+		82126EFA2DABF87A0081983A /* TopNavigationView */ = {
+			isa = PBXGroup;
+			children = (
+				82126EF82DABF8710081983A /* TopNavigationView.swift */,
+				82126F102DAC48BC0081983A /* MenuView.swift */,
+				82126F122DAC492D0081983A /* SoundSettingsView.swift */,
+				82126EFB2DABF88F0081983A /* GameSettingsView.swift */,
+				82126EFD2DABF8C60081983A /* AboutView.swift */,
+			);
+			path = TopNavigationView;
+			sourceTree = "<group>";
+		};
+		82126F0F2DAC3FED0081983A /* BaseView */ = {
+			isa = PBXGroup;
+			children = (
+				82126ECA2DAB3C790081983A /* ImageView.swift */,
+				82126F0D2DAC3FCB0081983A /* ClearBackgroundView.swift */,
+			);
+			path = BaseView;
 			sourceTree = "<group>";
 		};
 		82C290002D9EEDD100E6EC40 = {
@@ -248,14 +285,20 @@
 				82126EBA2DAADA360081983A /* Codable+Decodable.swift in Sources */,
 				82126EBB2DAADA360081983A /* String.swift in Sources */,
 				82126EBC2DAADA360081983A /* ButtonData.swift in Sources */,
+				82126F132DAC492D0081983A /* SoundSettingsView.swift in Sources */,
+				82126EF72DABF5CB0081983A /* HomeViewModel.swift in Sources */,
 				82126EC92DAADA630081983A /* BoardPopoverView.swift in Sources */,
 				82126EBD2DAADA360081983A /* MessageContent.swift in Sources */,
+				82126F0E2DAC3FCB0081983A /* ClearBackgroundView.swift in Sources */,
 				82126EBE2DAADA360081983A /* Step.swift in Sources */,
 				82126EBF2DAADA360081983A /* DataBase.swift in Sources */,
 				82126EC02DAADA360081983A /* PropertyListView.swift in Sources */,
+				82126F112DAC48BC0081983A /* MenuView.swift in Sources */,
 				82126ECF2DAB47A60081983A /* HomeView.swift in Sources */,
 				82126ECB2DAB3C790081983A /* ImageView.swift in Sources */,
+				82126EF92DABF8710081983A /* TopNavigationView.swift in Sources */,
 				82126EC12DAADA360081983A /* PropertyView.swift in Sources */,
+				82126EFE2DABF8C60081983A /* AboutView.swift in Sources */,
 				82126EC22DAADA360081983A /* GameView.swift in Sources */,
 				82126ED12DAB78550081983A /* NetworkModel.swift in Sources */,
 				82126EC32DAADA360081983A /* BuyPopupContentView.swift in Sources */,
@@ -264,6 +307,7 @@
 				82126EC52DAADA360081983A /* TradePopupContentView.swift in Sources */,
 				82126EC62DAADA360081983A /* GameViewModel.swift in Sources */,
 				82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */,
+				82126EFC2DABF88F0081983A /* GameSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
