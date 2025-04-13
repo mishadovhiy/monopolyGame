@@ -24,6 +24,9 @@
 		82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EB72DAADA360081983A /* MonopolyGameApp.swift */; };
 		82126EC92DAADA630081983A /* BoardPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EC82DAADA630081983A /* BoardPopoverView.swift */; };
 		82126ECB2DAB3C790081983A /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126ECA2DAB3C790081983A /* ImageView.swift */; };
+		82126ECF2DAB47A60081983A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126ECE2DAB47A60081983A /* HomeView.swift */; };
+		82126ED12DAB78550081983A /* NetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126ED02DAB78550081983A /* NetworkModel.swift */; };
+		82126ED32DAB78690081983A /* NetworkResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126ED22DAB78690081983A /* NetworkResponse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +48,9 @@
 		82126EB72DAADA360081983A /* MonopolyGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonopolyGameApp.swift; sourceTree = "<group>"; };
 		82126EC82DAADA630081983A /* BoardPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardPopoverView.swift; sourceTree = "<group>"; };
 		82126ECA2DAB3C790081983A /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
+		82126ECE2DAB47A60081983A /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		82126ED02DAB78550081983A /* NetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkModel.swift; sourceTree = "<group>"; };
+		82126ED22DAB78690081983A /* NetworkResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponse.swift; sourceTree = "<group>"; };
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -74,6 +80,7 @@
 				82126EA32DAADA360081983A /* ButtonData.swift */,
 				82126EA42DAADA360081983A /* MessageContent.swift */,
 				82126EA52DAADA360081983A /* Step.swift */,
+				82126ED22DAB78690081983A /* NetworkResponse.swift */,
 			);
 			path = DataModel;
 			sourceTree = "<group>";
@@ -83,6 +90,7 @@
 			children = (
 				82126EA62DAADA360081983A /* DataModel */,
 				82126EA72DAADA360081983A /* DataBase.swift */,
+				82126ED02DAB78550081983A /* NetworkModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -119,6 +127,7 @@
 		82126EB22DAADA360081983A /* View */ = {
 			isa = PBXGroup;
 			children = (
+				82126ECE2DAB47A60081983A /* HomeView.swift */,
 				82126EAD2DAADA360081983A /* GameView */,
 				82126EAB2DAADA360081983A /* ComponentView */,
 				82126EB12DAADA360081983A /* PopupView */,
@@ -244,11 +253,14 @@
 				82126EBE2DAADA360081983A /* Step.swift in Sources */,
 				82126EBF2DAADA360081983A /* DataBase.swift in Sources */,
 				82126EC02DAADA360081983A /* PropertyListView.swift in Sources */,
+				82126ECF2DAB47A60081983A /* HomeView.swift in Sources */,
 				82126ECB2DAB3C790081983A /* ImageView.swift in Sources */,
 				82126EC12DAADA360081983A /* PropertyView.swift in Sources */,
 				82126EC22DAADA360081983A /* GameView.swift in Sources */,
+				82126ED12DAB78550081983A /* NetworkModel.swift in Sources */,
 				82126EC32DAADA360081983A /* BuyPopupContentView.swift in Sources */,
 				82126EC42DAADA360081983A /* PopupView.swift in Sources */,
+				82126ED32DAB78690081983A /* NetworkResponse.swift in Sources */,
 				82126EC52DAADA360081983A /* TradePopupContentView.swift in Sources */,
 				82126EC62DAADA360081983A /* GameViewModel.swift in Sources */,
 				82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */,
