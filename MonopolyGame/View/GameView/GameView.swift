@@ -23,6 +23,21 @@ struct GameView: View {
                         .padding(.trailing, 10)
                         .padding(.bottom, -20)
                 }
+                .background(content: {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(.clear)
+                        .background {
+                            ImageView()
+                                .scaledToFill()
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                        }
+                        .padding(.leading, 50)
+                        .padding(.top, 20)
+                        .padding(.trailing, 130)
+                        .clipped()
+                    
+                })
                 .padding(.vertical, 65)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .overlay(content: {
@@ -37,12 +52,10 @@ struct GameView: View {
                     .padding(.horizontal, 25)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 })
-                
                 .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
                 .padding(.horizontal, 0)
             }
             .overlay {
-                
                 BoardPopoverView(viewModel: viewModel)
             }
             .padding(.top, -70)
@@ -51,6 +64,9 @@ struct GameView: View {
                 .disabled(!viewModel.canDice)
         }
         .padding()
+        .overlay(content: {
+            menuButtons
+        })
         .onChange(of: scenePhase) { newValue in
             print(newValue, " rgefds ")
             if newValue == .inactive || newValue == .background {
@@ -81,14 +97,6 @@ struct GameView: View {
                 viewModel.resumeNextPlayer(forceMove: true)
             }
             Spacer().frame(height: 80)
-            Button("menu") {
-                viewModel.message = .custom(.init(title: "Menu"))
-                viewModel.messagePressed = .init(title: "Delete", pressed: {
-                    db.db = .init()
-                    viewModel.myPlayerPosition = .init()
-                    viewModel.enemyPosition = .init()
-                })
-            }
             HStack(spacing:40) {
                 ForEach(GameViewModel.PanelType.allCases, id:\.rawValue) { type in
                     Button(type.rawValue.capitalized) {
@@ -268,6 +276,22 @@ struct GameView: View {
         }
     }
     
+    var menuButtons: some View {
+        VStack(content:  {
+            HStack {
+                Button("menu") {
+                    viewModel.message = .custom(.init(title: "Menu"))
+                    viewModel.messagePressed = .init(title: "Delete", pressed: {
+                        db.db = .init()
+                        viewModel.myPlayerPosition = .init()
+                        viewModel.enemyPosition = .init()
+                    })
+                }
+                Spacer()
+            }
+            Spacer()
+        })
+    }
 }
 
 

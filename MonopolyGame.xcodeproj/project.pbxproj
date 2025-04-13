@@ -23,6 +23,7 @@
 		82126EC62DAADA360081983A /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EB32DAADA360081983A /* GameViewModel.swift */; };
 		82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EB72DAADA360081983A /* MonopolyGameApp.swift */; };
 		82126EC92DAADA630081983A /* BoardPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EC82DAADA630081983A /* BoardPopoverView.swift */; };
+		82126ECB2DAB3C790081983A /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126ECA2DAB3C790081983A /* ImageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 		82126EB62DAADA360081983A /* MonopolyGame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MonopolyGame.entitlements; sourceTree = "<group>"; };
 		82126EB72DAADA360081983A /* MonopolyGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonopolyGameApp.swift; sourceTree = "<group>"; };
 		82126EC82DAADA630081983A /* BoardPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardPopoverView.swift; sourceTree = "<group>"; };
+		82126ECA2DAB3C790081983A /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -89,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				82126EA92DAADA360081983A /* PropertyListView.swift */,
+				82126ECA2DAB3C790081983A /* ImageView.swift */,
 				82126EAA2DAADA360081983A /* PropertyView.swift */,
 			);
 			path = ComponentView;
@@ -241,6 +244,7 @@
 				82126EBE2DAADA360081983A /* Step.swift in Sources */,
 				82126EBF2DAADA360081983A /* DataBase.swift in Sources */,
 				82126EC02DAADA360081983A /* PropertyListView.swift in Sources */,
+				82126ECB2DAB3C790081983A /* ImageView.swift in Sources */,
 				82126EC12DAADA360081983A /* PropertyView.swift in Sources */,
 				82126EC22DAADA360081983A /* GameView.swift in Sources */,
 				82126EC32DAADA360081983A /* BuyPopupContentView.swift in Sources */,
