@@ -13,7 +13,6 @@ class AppData:ObservableObject {
     @Published var db:DataBase = .init() {
         didSet {
             print("updatingDB")
-            print(db.gameProgress.player.playerPosition, " rgefsda ")
             if dataLoaded {
                 if Thread.isMainThread {
                     DispatchQueue(label: "db", qos: .userInitiated).async {

@@ -11,18 +11,20 @@ struct TopNavigationView: View {
     @Binding var viewModel:HomeViewModel
     var body: some View {
         HStack {
-            
             NavigationView {
-                HStack {
-                    NavigationLink(destination: ProfileView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.profile) {
-                        Text("Profile")
+//                VStack(content: {
+                    HStack {
+                        NavigationLink(destination: ProfileView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.profile) {
+                            Text("Profile")
+                        }
+                        Spacer()
+                        NavigationLink(destination: MenuView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.menu) {
+                            Text("Menu")
+                        }
+                        NavigationLink("", destination: LeaderboardView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.leaderBoard)
                     }
-                    Spacer()
-                    NavigationLink(destination: MenuView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.menu) {
-                        Text("Menu")
-                    }
-                    NavigationLink("", destination: LeaderboardView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.leaderBoard)
-                }
+
+//                })
                 .padding(.horizontal, 15)
                 .padding(.vertical, 5)
                 .background {
@@ -57,5 +59,6 @@ struct TopNavigationView: View {
         .cornerRadius(12)
         .padding(.top, viewModel.isGamePresenting ? 5 : 0)
         .animation(.smooth, value: viewModel.isGamePresenting)
+        .sheet(isPresented: $viewModel.navigationPresenting.share, content: {ShareSheet(items: [Keys.shareAppURL])})
     }
 }

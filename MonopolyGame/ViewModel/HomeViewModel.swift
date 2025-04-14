@@ -18,6 +18,10 @@ struct HomeViewModel {
             navigationPresenting.gameSettings = false
             return
         }
+        if navigationPresenting.about {
+            navigationPresenting.about = false
+            return
+        }
         navigationPresenting = .init()
     }
     

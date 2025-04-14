@@ -34,6 +34,22 @@ struct MenuView: View {
                     .frame(maxHeight: viewModel.isGamePresenting ? 0 : .infinity)
                     .animation(.bouncy, value: viewModel.isGamePresenting)
                 }
+                HStack {
+                    NavigationLink(destination: AboutView(), isActive: $viewModel.navigationPresenting.about) {
+                        Text("About")
+                    }
+                    Button {
+                        StorekitModel().requestReview()
+                    } label: {
+                        Text("Rate")
+                    }
+                    Button {
+                        viewModel.navigationPresenting.share = true
+                    } label: {
+                        Text("Share App")
+                    }
+
+                }
             }
         }
         .navigationBarHidden(true)
