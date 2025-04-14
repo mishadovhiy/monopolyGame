@@ -32,7 +32,6 @@ struct LeaderboardView: View {
                 .background(.green)
             }
         })
-        .navigationBarHidden(true)
         .background {
             ClearBackgroundView()
         }

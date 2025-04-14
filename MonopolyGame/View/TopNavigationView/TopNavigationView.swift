@@ -30,31 +30,13 @@ struct TopNavigationView: View {
                 .background {
                     ClearBackgroundView()
                 }
-                .navigationBarHidden(true)
             }
-            .navigationBarHidden(true)
             .navigationViewStyle(StackNavigationViewStyle())
             .background {
                 ClearBackgroundView()
             }
         }
         .frame(maxHeight: viewModel.isNavigationPushed ? .infinity : 85)
-        .overlay(content: {
-            VStack {
-                HStack {
-                    Button(viewModel.isGamePresenting ? "Resume game" : "back") {
-                        withAnimation {
-                            viewModel.popToRootView()
-                        }
-                    }
-                    .frame(maxWidth: viewModel.isNavigationPushed ? 30 : 0)
-                    .clipped()
-                    .animation(.bouncy, value: viewModel.isNavigationPushed)
-                    Spacer()
-                }
-                Spacer()
-            }
-        })
         .background(.red)
         .cornerRadius(12)
         .padding(.top, viewModel.isGamePresenting ? 5 : 0)

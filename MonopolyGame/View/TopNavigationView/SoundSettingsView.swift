@@ -24,7 +24,6 @@ struct SoundSettingsView: View {
                 }
             }
         }
-        .navigationBarHidden(true)
         .background {
             ClearBackgroundView()
         }

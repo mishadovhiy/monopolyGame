@@ -28,7 +28,7 @@ struct MenuView: View {
                     NavigationLink(destination: SoundSettingsView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.sound) {
                         Text("Sound")
                     }
-                    NavigationLink(destination: GameSettingsView(), isActive: $viewModel.navigationPresenting.gameSettings) {
+                    NavigationLink(destination: GameSettingsView( viewModel: $viewModel), isActive: $viewModel.navigationPresenting.gameSettings) {
                         Text("Game Settings")
                     }
                     .frame(maxHeight: viewModel.isGamePresenting ? 0 : .infinity)
@@ -52,7 +52,6 @@ struct MenuView: View {
                 }
             }
         }
-        .navigationBarHidden(true)
         .background {
             ClearBackgroundView()
         }

@@ -67,7 +67,7 @@ class AppData:ObservableObject {
             var game:Game = .init()
             struct Game: Codable {
                 var difficulty:Float = 0.5
-                var balance:Int = 100
+                var balance:Int = 1000
             }
             struct Sound:Codable {
                 var music:Float = 0.2
