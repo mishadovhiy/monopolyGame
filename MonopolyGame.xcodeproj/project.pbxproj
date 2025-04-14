@@ -34,6 +34,7 @@
 		82126F0E2DAC3FCB0081983A /* ClearBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F0D2DAC3FCB0081983A /* ClearBackgroundView.swift */; };
 		82126F112DAC48BC0081983A /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F102DAC48BC0081983A /* MenuView.swift */; };
 		82126F132DAC492D0081983A /* SoundSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F122DAC492D0081983A /* SoundSettingsView.swift */; };
+		82126F152DAC5B060081983A /* LeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F142DAC5B060081983A /* LeaderboardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +66,7 @@
 		82126F0D2DAC3FCB0081983A /* ClearBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearBackgroundView.swift; sourceTree = "<group>"; };
 		82126F102DAC48BC0081983A /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		82126F122DAC492D0081983A /* SoundSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSettingsView.swift; sourceTree = "<group>"; };
+		82126F142DAC5B060081983A /* LeaderboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardView.swift; sourceTree = "<group>"; };
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -177,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				82126EF82DABF8710081983A /* TopNavigationView.swift */,
+				82126F142DAC5B060081983A /* LeaderboardView.swift */,
 				82126F102DAC48BC0081983A /* MenuView.swift */,
 				82126F122DAC492D0081983A /* SoundSettingsView.swift */,
 				82126EFB2DABF88F0081983A /* GameSettingsView.swift */,
@@ -304,6 +307,7 @@
 				82126EC32DAADA360081983A /* BuyPopupContentView.swift in Sources */,
 				82126EC42DAADA360081983A /* PopupView.swift in Sources */,
 				82126ED32DAB78690081983A /* NetworkResponse.swift in Sources */,
+				82126F152DAC5B060081983A /* LeaderboardView.swift in Sources */,
 				82126EC52DAADA360081983A /* TradePopupContentView.swift in Sources */,
 				82126EC62DAADA360081983A /* GameViewModel.swift in Sources */,
 				82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */,

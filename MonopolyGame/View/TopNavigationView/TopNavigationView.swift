@@ -11,20 +11,25 @@ struct TopNavigationView: View {
     @Binding var viewModel:HomeViewModel
     var body: some View {
         HStack {
-            Button(viewModel.isGamePresenting ? "Resume game" : "back") {
-                viewModel.popToRootView()
+            VStack {
+                Button(viewModel.isGamePresenting ? "Resume game" : "back") {
+                    withAnimation {
+                        viewModel.popToRootView()
+                    }
+                }
+                .frame(maxWidth: viewModel.isNavigationPushed ? 30 : 0)
+                .clipped()
+                .animation(.bouncy, value: viewModel.isNavigationPushed)
+                Spacer()
             }
-            .frame(maxWidth: viewModel.isNavigationPushed ? 50 : 0)
-            .clipped()
-            .animation(.bouncy, value: viewModel.isNavigationPushed)
             
             NavigationView {
                 HStack {
                     Spacer()
                     NavigationLink(destination: MenuView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.menu) {
-                        Text("Settings")
+                        Text("Menu")
                     }
-
+                    NavigationLink("", destination: LeaderboardView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.leaderBoard)
                 }
                 .padding(.horizontal, 15)
                 .padding(.vertical, 5)

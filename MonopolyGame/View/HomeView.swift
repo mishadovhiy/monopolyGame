@@ -24,7 +24,9 @@ struct HomeView: View {
                     HStack {
                         Spacer()
                         Button("Leaderboard") {
-                            viewModel.navigationPresenting.leaderBoard = true
+                            withAnimation {
+                                viewModel.navigationPresenting.leaderBoard = true
+                            }
                         }
                         Spacer()
                     }

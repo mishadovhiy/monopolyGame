@@ -119,7 +119,24 @@ class AppData:ObservableObject {
         }
         
         struct GameCompletions: Codable {
-            var completionList:[Completion] = []
+            let completionList:[Completion] = [
+                .init(balance: 130, upgrades: [
+                    .blue1:.higherMiddle,
+                    .chance1:.largest
+                ]),
+                .init(balance: 400, upgrades: [
+                    .blue1:.higherMiddle,
+                    .chance1:.largest
+                ]),
+                .init(balance: 500, upgrades: [
+                    .blue1:.higherMiddle,
+                    .chance1:.largest
+                ]),
+                .init(balance: 200, upgrades: [
+                    .blue1:.higherMiddle,
+                    .chance1:.largest
+                ])
+            ]
             struct Completion: Codable {
                 var balance:Int = 0
                 var time:Date = .init()

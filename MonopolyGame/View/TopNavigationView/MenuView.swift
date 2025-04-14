@@ -13,8 +13,10 @@ struct MenuView: View {
         VStack {
             HStack {
                 Button("close game") {
-                    viewModel.isGamePresenting = false
-                    viewModel.popToRootView()
+                    withAnimation {
+                        viewModel.isGamePresenting = false
+                        viewModel.popToRootView()
+                    }
                 }
                 Spacer()
             }
