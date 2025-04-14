@@ -14,6 +14,10 @@ struct HomeViewModel {
             navigationPresenting.sound = false
             return
         }
+        if navigationPresenting.gameSettings {
+            navigationPresenting.gameSettings = false
+            return
+        }
         navigationPresenting = .init()
     }
     
@@ -42,6 +46,7 @@ struct HomeViewModel {
         var leaderBoard = false
         var gameCenter = false
         var profileProtoPicker = false
+        var profile = false
         
         var clearGameConfirmation = false
         

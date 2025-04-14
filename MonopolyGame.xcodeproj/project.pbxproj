@@ -35,6 +35,10 @@
 		82126F112DAC48BC0081983A /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F102DAC48BC0081983A /* MenuView.swift */; };
 		82126F132DAC492D0081983A /* SoundSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F122DAC492D0081983A /* SoundSettingsView.swift */; };
 		82126F152DAC5B060081983A /* LeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F142DAC5B060081983A /* LeaderboardView.swift */; };
+		82126F172DACC1F80081983A /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F162DACC1F80081983A /* ProfileView.swift */; };
+		82126F272DACC35F0081983A /* PhotoLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F262DACC35F0081983A /* PhotoLibraryView.swift */; };
+		82126F292DACD5EE0081983A /* FileManagerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F282DACD5EE0081983A /* FileManagerModel.swift */; };
+		82126F2B2DACD7FA0081983A /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F2A2DACD7FA0081983A /* UIImage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +71,10 @@
 		82126F102DAC48BC0081983A /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		82126F122DAC492D0081983A /* SoundSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSettingsView.swift; sourceTree = "<group>"; };
 		82126F142DAC5B060081983A /* LeaderboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardView.swift; sourceTree = "<group>"; };
+		82126F162DACC1F80081983A /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		82126F262DACC35F0081983A /* PhotoLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryView.swift; sourceTree = "<group>"; };
+		82126F282DACD5EE0081983A /* FileManagerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerModel.swift; sourceTree = "<group>"; };
+		82126F2A2DACD7FA0081983A /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -85,6 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				82126EA02DAADA360081983A /* Codable+Decodable.swift */,
+				82126F2A2DACD7FA0081983A /* UIImage.swift */,
 				82126EA12DAADA360081983A /* String.swift */,
 			);
 			path = Extension;
@@ -107,6 +116,7 @@
 				82126EA62DAADA360081983A /* DataModel */,
 				82126EA72DAADA360081983A /* DataBase.swift */,
 				82126ED02DAB78550081983A /* NetworkModel.swift */,
+				82126F282DACD5EE0081983A /* FileManagerModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -115,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				82126EA92DAADA360081983A /* PropertyListView.swift */,
+				82126F262DACC35F0081983A /* PhotoLibraryView.swift */,
 				82126F0F2DAC3FED0081983A /* BaseView */,
 				82126EAA2DAADA360081983A /* PropertyView.swift */,
 			);
@@ -179,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				82126EF82DABF8710081983A /* TopNavigationView.swift */,
+				82126F162DACC1F80081983A /* ProfileView.swift */,
 				82126F142DAC5B060081983A /* LeaderboardView.swift */,
 				82126F102DAC48BC0081983A /* MenuView.swift */,
 				82126F122DAC492D0081983A /* SoundSettingsView.swift */,
@@ -297,6 +309,8 @@
 				82126EBF2DAADA360081983A /* DataBase.swift in Sources */,
 				82126EC02DAADA360081983A /* PropertyListView.swift in Sources */,
 				82126F112DAC48BC0081983A /* MenuView.swift in Sources */,
+				82126F172DACC1F80081983A /* ProfileView.swift in Sources */,
+				82126F2B2DACD7FA0081983A /* UIImage.swift in Sources */,
 				82126ECF2DAB47A60081983A /* HomeView.swift in Sources */,
 				82126ECB2DAB3C790081983A /* ImageView.swift in Sources */,
 				82126EF92DABF8710081983A /* TopNavigationView.swift in Sources */,
@@ -305,6 +319,8 @@
 				82126EC22DAADA360081983A /* GameView.swift in Sources */,
 				82126ED12DAB78550081983A /* NetworkModel.swift in Sources */,
 				82126EC32DAADA360081983A /* BuyPopupContentView.swift in Sources */,
+				82126F292DACD5EE0081983A /* FileManagerModel.swift in Sources */,
+				82126F272DACC35F0081983A /* PhotoLibraryView.swift in Sources */,
 				82126EC42DAADA360081983A /* PopupView.swift in Sources */,
 				82126ED32DAB78690081983A /* NetworkResponse.swift in Sources */,
 				82126F152DAC5B060081983A /* LeaderboardView.swift in Sources */,
@@ -447,6 +463,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
+				INFOPLIST_KEY_NSCameraUsageDescription = "To set profile image, we need access to your camera";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -488,6 +505,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
+				INFOPLIST_KEY_NSCameraUsageDescription = "To set profile image, we need access to your camera";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

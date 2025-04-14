@@ -23,8 +23,17 @@ struct MenuView: View {
             .frame(maxHeight: viewModel.isGamePresenting ? 40 : 0)
             .clipped()
             .animation(.bouncy, value: viewModel.isGamePresenting)
-            NavigationLink(destination: SoundSettingsView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.sound) {
-                Text("Sound")
+            VStack {
+                HStack {
+                    NavigationLink(destination: SoundSettingsView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.sound) {
+                        Text("Sound")
+                    }
+                    NavigationLink(destination: GameSettingsView(), isActive: $viewModel.navigationPresenting.gameSettings) {
+                        Text("Game Settings")
+                    }
+                    .frame(maxHeight: viewModel.isGamePresenting ? 0 : .infinity)
+                    .animation(.bouncy, value: viewModel.isGamePresenting)
+                }
             }
         }
         .navigationBarHidden(true)
