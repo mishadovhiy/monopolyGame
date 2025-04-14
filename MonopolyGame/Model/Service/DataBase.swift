@@ -8,6 +8,7 @@
 import Foundation
 
 class AppData:ObservableObject {
+    let gameCenter:GameCenterModel
     private let dbkey = "db4"
     @Published var deviceSize:CGSize = .zero
     @Published var db:DataBase = .init() {
@@ -28,7 +29,9 @@ class AppData:ObservableObject {
     }
     
     init() {
+        self.gameCenter = .init()
         self.fetch()
+        self.gameCenter.configureGameCenterPlayer()
     }
     
     private var dataLoaded = false

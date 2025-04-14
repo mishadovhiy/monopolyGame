@@ -10,6 +10,7 @@ import SwiftUI
 struct LeaderboardView: View {
     @Binding var viewModel:HomeViewModel
     @EnvironmentObject var db: AppData
+    
     var body: some View {
         VStack(content: {
             self.itemView(nil)
@@ -24,7 +25,7 @@ struct LeaderboardView: View {
             })
             HStack {
                 Button {
-                    viewModel.gameCenterPressed()
+                    db.gameCenter.presentAchievements()
                 } label: {
                     Text("Game center")
                 }

@@ -30,14 +30,6 @@ struct HomeViewModel {
         return dict?.values.contains(true) ?? false
     }
     
-    func gameCenterPressed() {
-        
-    }
-    
-    func chooseProfileImagePressed() {
-        
-    }
-    
     var isGamePresenting:Bool = false
     var navigationPresenting:NavigationPresenting = .init()
     struct NavigationPresenting:Codable {

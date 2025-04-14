@@ -42,6 +42,7 @@
 		82126F2D2DACDBBC0081983A /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F2C2DACDBBC0081983A /* Keys.swift */; };
 		82C51E2C2DAD6B7000EC71F4 /* StorekitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */; };
 		82C51E2E2DAD6C7400EC71F4 /* ShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */; };
+		82C51E302DAD7C1700EC71F4 /* GameCenterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2F2DAD7C1700EC71F4 /* GameCenterModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +83,7 @@
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorekitModel.swift; sourceTree = "<group>"; };
 		82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
+		82C51E2F2DAD7C1700EC71F4 /* GameCenterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -237,6 +239,7 @@
 				82126EA72DAADA360081983A /* DataBase.swift */,
 				82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */,
 				82126ED02DAB78550081983A /* NetworkModel.swift */,
+				82C51E2F2DAD7C1700EC71F4 /* GameCenterModel.swift */,
 				82126F282DACD5EE0081983A /* FileManagerModel.swift */,
 			);
 			path = Service;
@@ -336,6 +339,7 @@
 				82126EC12DAADA360081983A /* PropertyView.swift in Sources */,
 				82126EFE2DABF8C60081983A /* AboutView.swift in Sources */,
 				82126EC22DAADA360081983A /* GameView.swift in Sources */,
+				82C51E302DAD7C1700EC71F4 /* GameCenterModel.swift in Sources */,
 				82126ED12DAB78550081983A /* NetworkModel.swift in Sources */,
 				82126EC32DAADA360081983A /* BuyPopupContentView.swift in Sources */,
 				82126F292DACD5EE0081983A /* FileManagerModel.swift in Sources */,
