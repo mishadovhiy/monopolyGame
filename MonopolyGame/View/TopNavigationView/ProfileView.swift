@@ -23,7 +23,6 @@ struct ProfileView: View {
                             db.db.profile.imageURL = "profile"
                         }
                     } error: {
-                        fatalError()
                     }
 
                 }, isPreseting: $viewModel.navigationPresenting.profileProtoPicker), isActive: $viewModel.navigationPresenting.profileProtoPicker) {

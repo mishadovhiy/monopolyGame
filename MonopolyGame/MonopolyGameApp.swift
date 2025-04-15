@@ -13,13 +13,14 @@ struct MonopolyGameApp: App {
     @State var viewLoaded:Bool = false
     var body: some Scene {
         WindowGroup {
-            VStack {
-                if !viewLoaded {
-                    Text("...")
-                } else {
-                    HomeView()
-                }
-            }
+//            VStack {
+//                if !viewLoaded {
+//                    Text("...")
+//                } else {
+//                    HomeView()
+//                }
+//            }
+            GameView()
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
                     self.viewLoaded = true

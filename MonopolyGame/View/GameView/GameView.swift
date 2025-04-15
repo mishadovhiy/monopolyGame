@@ -24,18 +24,23 @@ struct GameView: View {
                         .padding(.bottom, -20)
                 }
                 .background(content: {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(.clear)
-                        .background {
-                            ImageView()
-                                .scaledToFill()
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-
-                        }
+                    Color.lightGreen
                         .padding(.leading, 50)
                         .padding(.top, 20)
                         .padding(.trailing, 130)
                         .clipped()
+//                    RoundedRectangle(cornerRadius: 12)
+//                        .fill(.clear)
+//                        .background {
+//                            ImageView()
+//                                .scaledToFill()
+//                                .clipShape(RoundedRectangle(cornerRadius: 12))
+//
+//                        }
+//                        .padding(.leading, 50)
+//                        .padding(.top, 20)
+//                        .padding(.trailing, 130)
+//                        .clipped()
                     
                 })
                 .padding(.vertical, 65)
@@ -64,9 +69,6 @@ struct GameView: View {
                 .disabled(!viewModel.canDice)
         }
         .padding()
-        .overlay(content: {
-            menuButtons
-        })
         .onChange(of: scenePhase) { newValue in
             print(newValue, " rgefds ")
             if newValue == .inactive || newValue == .background {
@@ -162,14 +164,55 @@ struct GameView: View {
     }
     
 
-    func propertyItem(_ step:Step, isFirst:Bool, isVerticalStack:Bool) -> some View {
+    func propertyItem(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
         let disabled = viewModel.propertyTapDisabled(step)
         return ZStack  {
             RoundedRectangle(cornerRadius: 5)
-                .fill(step.color?.color ?? .gray)
+                .fill(.lightGreen)
+                .overlay(content: {
+                    RoundedRectangle(cornerRadius: 5)
+                    .stroke(Color.red, lineWidth: 2)
+                })
+                .overlay(content: {
+                    if isVerticalStack {
+                        VStack {
+                            if section == 0 {
+                                Spacer()
+                            }
+                            RoundedRectangle(cornerRadius: 5)
+                                .fill(step.color?.color ?? .gray)
+                                .frame(height: viewModel.itemWidth / 3)
+                            if section != 0 {
+                                Spacer()
+                            }
+                            
+                        }
+                    } else {
+                        HStack {
+                            if section == 3 {
+                                Spacer()
+                            }
+                            RoundedRectangle(cornerRadius: 5)
+                                .fill(step.color?.color ?? .gray)
+                                .frame(width: viewModel.itemWidth / 3)
+                            if section != 3 {
+                                Spacer()
+                            }
+                            
+                        }
+                    }
+                })
                 .frame(width: (viewModel.itemWidth - 8) - (isVerticalStack ? (isFirst ? 0 : 10) : 0), height: (viewModel.itemWidth - 8) - (!isVerticalStack ? (isFirst ? 0 : 10) : 0))
-            Text(" \(step.index)")
-                .font(.system(size: 10))
+            VStack(content: {
+                Text(" \(step.index)")
+                    .font(.system(size: 10))
+                    .foregroundColor(.black)
+                    
+                Text(step.title)
+                    .font(.system(size: 5))
+                    .foregroundColor(.black)
+
+            })
                 .opacity(step.buyPrice == nil ? 0.5 : 1)
         }
         .onTapGesture {
@@ -183,7 +226,7 @@ struct GameView: View {
 //        let current = (section) * Step.numberOfItemsInSection
         let items = Step.items(section)
         return ForEach(items, id:\.rawValue) { i in
-            propertyItem(i, isFirst: i == (isVerticalStack && section == 0 ? items.last : (!isVerticalStack && section == 1 ? items.last : items.first)), isVerticalStack:isVerticalStack)
+            propertyItem(i, isFirst: i == (isVerticalStack && section == 0 ? items.last : (!isVerticalStack && section == 1 ? items.last : items.first)), isVerticalStack:isVerticalStack, section: section)
             .overlay {
                 if let upgrade = viewModel.myPlayerPosition.bought[i] {
                     VStack {
@@ -274,23 +317,6 @@ struct GameView: View {
             default:Text("?")
             }
         }
-    }
-    
-    var menuButtons: some View {
-        VStack(content:  {
-            HStack {
-                Button("menu") {
-                    viewModel.message = .custom(.init(title: "Menu"))
-                    viewModel.messagePressed = .init(title: "Delete", pressed: {
-                        db.db = .init()
-                        viewModel.myPlayerPosition = .init()
-                        viewModel.enemyPosition = .init()
-                    })
-                }
-                Spacer()
-            }
-            Spacer()
-        })
     }
 }
 

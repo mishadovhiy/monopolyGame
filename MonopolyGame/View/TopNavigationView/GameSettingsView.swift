@@ -45,7 +45,6 @@ struct GameSettingsView: View {
                 Button("Clear progress") {
                     viewModel.navigationPresenting.clearGameConfirmation = true
                 }
-                .tint(.red)
             }
         }
         .background {
