@@ -29,7 +29,7 @@ class GameViewModel:ObservableObject {
     
     @Published var activePanelType:PanelType?
     enum PanelType:String, CaseIterable {
-        case build, sell, morgage, reedeem, trade
+        case build, sell, morgage, redeem, trade
     }
     
     func propertySelected(_ step: Step) {
@@ -58,7 +58,7 @@ class GameViewModel:ObservableObject {
                 return upgrade != .bought
             }
             return true
-        case .reedeem:
+        case .redeem:
             return !self.myPlayerPosition.morgageProperties.contains(step)
         case .sell:
             if let upgrade = self.myPlayerPosition.bought[step] {
@@ -100,7 +100,7 @@ class GameViewModel:ObservableObject {
                 self.myPlayerPosition.balance += price
                 self.myPlayerPosition.morgageProperties.append(step)
             }
-        case .reedeem:
+        case .redeem:
             if let upgrade = self.myPlayerPosition.bought[step],
                upgrade == .bought,
                self.myPlayerPosition.morgageProperties.contains(step),

@@ -14,61 +14,54 @@ struct GameView: View {
 
     var body: some View {
         VStack(spacing:0) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                VStack(spacing:0) {
-                    vBoard(2)
-                        .padding(.leading, -110)
-                    Spacer()
-                    vBoard(0)
-                        .padding(.trailing, 10)
-                        .padding(.bottom, -20)
-                }
-                .background(content: {
-                    Color.lightGreen
-                        .padding(.leading, 50)
-                        .padding(.top, 20)
-                        .padding(.trailing, 130)
-                        .clipped()
-//                    RoundedRectangle(cornerRadius: 12)
-//                        .fill(.clear)
-//                        .background {
-//                            ImageView()
-//                                .scaledToFill()
-//                                .clipShape(RoundedRectangle(cornerRadius: 12))
-//
-//                        }
-//                        .padding(.leading, 50)
-//                        .padding(.top, 20)
-//                        .padding(.trailing, 130)
-//                        .clipped()
-                    
-                })
-                .padding(.vertical, 65)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .overlay(content: {
-                    HStack(spacing:0) {
-                        hBoard(1)
-                            .padding(.top, 70)
+            VStack( spacing: 0) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    VStack(spacing:0) {
+                        vBoard(2)
+                            .padding(.leading, -110)
                         Spacer()
-                        hBoard(3)
-                            .padding(.top, -30)
-                            .padding(.trailing, 60)
+                        vBoard(0)
+                            .padding(.trailing, 10)
+                            .padding(.bottom, -20)
                     }
-                    .padding(.horizontal, 25)
+                    .background(content: {
+                        Color.lightGreen
+                            .padding(.leading, 50)
+                            .padding(.top, 20)
+                            .padding(.trailing, 130)
+                            .clipped()
+                        
+                    })
+                    .padding(.vertical, 65)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                })
-                .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
-                .padding(.horizontal, 0)
+                    .overlay(content: {
+                        HStack(spacing:0) {
+                            hBoard(1)
+                                .padding(.top, 70)
+                            Spacer()
+                            hBoard(3)
+                                .padding(.top, -30)
+                                .padding(.trailing, 60)
+                        }
+                        .padding(.horizontal, 25)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    })
+                    .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
+                    .padding(.horizontal, 0)
+                }
+                .overlay {
+                    BoardPopoverView(viewModel: viewModel)
+                }
+                .padding(.top, -70)
+                Spacer()
             }
-            .overlay {
-                BoardPopoverView(viewModel: viewModel)
-            }
-            .padding(.top, -70)
-            Spacer()
+            .background(.primaryBackground)
             panelView
                 .disabled(!viewModel.canDice)
         }
-        .padding()
+
+        .background(.secondaryBackground)
+        
         .onChange(of: scenePhase) { newValue in
             print(newValue, " rgefds ")
             if newValue == .inactive || newValue == .background {
@@ -94,31 +87,63 @@ struct GameView: View {
     }
     
     var panelView: some View {
-        VStack {
-            Button("dice") {
-                viewModel.resumeNextPlayer(forceMove: true)
+        VStack(spacing:-27) {
+            VStack {
+                Button("dice") {
+                    viewModel.resumeNextPlayer(forceMove: true)
+                }
+                Spacer().frame(height: 80)
+                HStack {
+                    VStack {
+                        Text("Your Balance")
+                        Text("\(viewModel.myPlayerPosition.balance)")
+                    }
+                    
+                    Spacer()
+                    VStack {
+                        Text("Enemy balance")
+                        Text("\(viewModel.enemyPosition.balance)")
+                    }
+                }
+                Spacer()
             }
-            Spacer().frame(height: 80)
-            HStack(spacing:40) {
+            .background(.primaryBackground)
+            HStack() {
                 ForEach(GameViewModel.PanelType.allCases, id:\.rawValue) { type in
-                    Button(type.rawValue.capitalized) {
+                    Button {
                         viewModel.activePanelType = type
+                    } label: {
+                        VStack {
+                            Image(type.rawValue.lowercased())
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height:37)
+                            Text(type.rawValue.capitalized)
+                                .font(.system(size: 11, weight:.semibold))
+                        }
+                        .padding(.vertical, 4)
+                        .frame(width:56)
+                        .background(.lightsecondaryBackground)
+                        .cornerRadius(9)
+                    }
+                    if GameViewModel.PanelType.allCases.last != type {
+                        Spacer()
                     }
                 }
             }
-            HStack {
-                VStack {
-                    Text("Your Balance")
-                    Text("\(viewModel.myPlayerPosition.balance)")
-                }
-                
-                Spacer()
-                VStack {
-                    Text("Enemy balance")
-                    Text("\(viewModel.enemyPosition.balance)")
-                }
+            .padding(12)
+            .frame(maxWidth: .infinity)
+            
+            .background {
+                RoundedRectangle(cornerRadius: .zero)
+                    .fill(.clear)
+                    .background {
+                        Color(.secondaryBackground)
+                            .cornerRadius(27)
+                            .padding(.bottom, -27)
+                    }
+                    .clipped()
             }
-            Spacer()
         }
     }
     
@@ -164,45 +189,49 @@ struct GameView: View {
     }
     
 
+    func propertyBackgroundView(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
+        RoundedRectangle(cornerRadius: 5)
+            .fill(.lightGreen)
+            .overlay(content: {
+                RoundedRectangle(cornerRadius: 5)
+                .stroke(Color.red, lineWidth: 2)
+            })
+            .overlay(content: {
+                if isVerticalStack {
+                    VStack {
+                        if section == 0 {
+                            Spacer()
+                        }
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(step.color?.color ?? .gray)
+                            .frame(height: viewModel.itemWidth / 3)
+                        if section != 0 {
+                            Spacer()
+                        }
+                        
+                    }
+                } else {
+                    HStack {
+                        if section == 3 {
+                            Spacer()
+                        }
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(step.color?.color ?? .gray)
+                            .frame(width: viewModel.itemWidth / 3)
+                        if section != 3 {
+                            Spacer()
+                        }
+                        
+                    }
+                }
+            })
+            .frame(width: (viewModel.itemWidth - 8) - (isVerticalStack ? (isFirst ? 0 : 10) : 0), height: (viewModel.itemWidth - 8) - (!isVerticalStack ? (isFirst ? 0 : 10) : 0))
+    }
+    
     func propertyItem(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
         let disabled = viewModel.propertyTapDisabled(step)
         return ZStack  {
-            RoundedRectangle(cornerRadius: 5)
-                .fill(.lightGreen)
-                .overlay(content: {
-                    RoundedRectangle(cornerRadius: 5)
-                    .stroke(Color.red, lineWidth: 2)
-                })
-                .overlay(content: {
-                    if isVerticalStack {
-                        VStack {
-                            if section == 0 {
-                                Spacer()
-                            }
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(step.color?.color ?? .gray)
-                                .frame(height: viewModel.itemWidth / 3)
-                            if section != 0 {
-                                Spacer()
-                            }
-                            
-                        }
-                    } else {
-                        HStack {
-                            if section == 3 {
-                                Spacer()
-                            }
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(step.color?.color ?? .gray)
-                                .frame(width: viewModel.itemWidth / 3)
-                            if section != 3 {
-                                Spacer()
-                            }
-                            
-                        }
-                    }
-                })
-                .frame(width: (viewModel.itemWidth - 8) - (isVerticalStack ? (isFirst ? 0 : 10) : 0), height: (viewModel.itemWidth - 8) - (!isVerticalStack ? (isFirst ? 0 : 10) : 0))
+            propertyBackgroundView(step, isFirst: isFirst, isVerticalStack: isVerticalStack, section: section)
             VStack(content: {
                 Text(" \(step.index)")
                     .font(.system(size: 10))
@@ -213,7 +242,7 @@ struct GameView: View {
                     .foregroundColor(.black)
 
             })
-                .opacity(step.buyPrice == nil ? 0.5 : 1)
+            .opacity(step.buyPrice == nil ? 0.5 : 1)
         }
         .onTapGesture {
             viewModel.propertySelected(step)
