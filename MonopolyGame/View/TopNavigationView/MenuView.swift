@@ -11,20 +11,9 @@ struct MenuView: View {
     @Binding var viewModel:HomeViewModel
     var body: some View {
         VStack {
-            HStack {
-                Button("close game") {
-                    withAnimation {
-                        viewModel.isGamePresenting = false
-                        viewModel.popToRootView()
-                    }
-                }
-                Spacer()
-            }
-            .frame(maxHeight: viewModel.isGamePresenting ? 40 : 0)
-            .clipped()
-            .animation(.bouncy, value: viewModel.isGamePresenting)
             VStack {
                 HStack {
+                    
                     NavigationLink(destination: SoundSettingsView(viewModel: $viewModel), isActive: .init(get: {
                         viewModel.navigationPresenting.sound
                     }, set: { new in
@@ -33,6 +22,11 @@ struct MenuView: View {
                         }
                     })) {
                         Text("Sound")
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 5)
+                            .background(.lightsecondaryBackground)
+                            .cornerRadius(4)
+
                     }
                     NavigationLink(destination: GameSettingsView( viewModel: $viewModel), isActive: .init(get: {
                         viewModel.navigationPresenting.gameSettings
@@ -42,27 +36,62 @@ struct MenuView: View {
                         }
                     })) {
                         Text("Game Settings")
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 5)
+                            .background(.lightsecondaryBackground)
+                            .cornerRadius(4)
+
                     }
                     .frame(maxHeight: viewModel.isGamePresenting ? 0 : .infinity)
                     .animation(.bouncy, value: viewModel.isGamePresenting)
+                    .clipped()
+                    Button("close game") {
+                        withAnimation {
+                            viewModel.isGamePresenting = false
+                            viewModel.popToRootView()
+                        }
+                    }
+                    .padding(.horizontal, 15)
+                    .padding(.vertical, 5)
+                    .background(.lightsecondaryBackground)
+                    .cornerRadius(4)
+                    .frame(maxWidth: viewModel.isGamePresenting ? 80 : 0)
+                    .clipped()
+                    .animation(.smooth, value: viewModel.isGamePresenting)
+                    Spacer()
                 }
                 HStack {
                     NavigationLink(destination: AboutView(), isActive: $viewModel.navigationPresenting.about) {
                         Text("About")
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 5)
+                            .background(.lightsecondaryBackground)
+                            .cornerRadius(4)
+
                     }
                     Button {
                         StorekitModel().requestReview()
                     } label: {
                         Text("Rate")
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 5)
+                            .background(.lightsecondaryBackground)
+                            .cornerRadius(4)
                     }
                     Button {
                         viewModel.navigationPresenting.share = true
                     } label: {
                         Text("Share App")
-                    }
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 5)
+                            .background(.lightsecondaryBackground)
+                            .cornerRadius(4)
 
+                    }
+Spacer()
                 }
             }
+            Spacer()
         }
         .background {
             ClearBackgroundView()

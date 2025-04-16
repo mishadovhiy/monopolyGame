@@ -21,7 +21,6 @@ struct AboutView: View {
             }
             .frame(alignment: .leading)
             .padding(.bottom, 10)
-            .padding(.horizontal, 10)
             
         })
         .background {
