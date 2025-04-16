@@ -47,6 +47,7 @@ struct HomeView: View {
         })
         .navigationBarHidden(true)
         .navigationViewStyle(StackNavigationViewStyle())
+        .background(.primaryBackground)
         .background {
             ClearBackgroundView()
         }

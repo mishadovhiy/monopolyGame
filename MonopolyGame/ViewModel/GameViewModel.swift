@@ -32,6 +32,16 @@ class GameViewModel:ObservableObject {
         case build, sell, morgage, redeem, trade
     }
     
+    func saveProgress(db:inout AppData.DataBase) {
+        db.gameProgress.player = myPlayerPosition
+        db.gameProgress.enemy = enemyPosition
+    }
+    
+    func fetchGame(db: AppData.DataBase) {
+        self.myPlayerPosition = db.gameProgress.player
+        self.enemyPosition = db.gameProgress.enemy
+    }
+    
     func propertySelected(_ step: Step) {
         if activePanelType != nil {
             boardActionPropertySelected(step)

@@ -67,23 +67,23 @@ struct GameView: View {
             if newValue == .inactive || newValue == .background {
                 if !viewModel.dbUpdated {
                     viewModel.dbUpdated = true
-                    db.db.gameProgress.player = viewModel.myPlayerPosition
-                    db.db.gameProgress.enemy = viewModel.enemyPosition
+                    viewModel.saveProgress(db: &db.db)
                 }
             } else if newValue == .active {
                 viewModel.dbUpdated = false
             }
         }
-        
+        .onDisappear(perform: {
+            viewModel.saveProgress(db: &db.db)
+        })
         .onAppear {
-            print(db.db.gameProgress.player.playerPosition, " yrtgerfwdaw")
-            self.viewModel.myPlayerPosition = db.db.gameProgress.player
-            self.viewModel.enemyPosition = db.db.gameProgress.enemy
+            viewModel.fetchGame(db: db.db)
             self.viewModel.viewAppeared = true
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
         }
+        .navigationBarHidden(true)
     }
     
     var panelView: some View {
