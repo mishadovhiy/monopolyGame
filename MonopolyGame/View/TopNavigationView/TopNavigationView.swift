@@ -39,7 +39,7 @@ struct TopNavigationView: View {
             .background {
                 ClearBackgroundView()
             }
-            .background(.red)
+            .background(.secondaryBackground)
             .cornerRadius(12)
             .animation(.bouncy, value: viewModel.isGamePresenting && !viewModel.isNavigationPushed)
 
@@ -48,7 +48,7 @@ struct TopNavigationView: View {
                 .animation(.bouncy, value: viewModel.isGamePresenting)
                 
         }
-        .frame(maxHeight: viewModel.isNavigationPushed ? (viewModel.navigationPresenting.profile ? 200 : .infinity) : 85)
+        .frame(maxHeight: viewModel.isNavigationPushed ? (viewModel.navigationPresenting.profile ? 160 : (viewModel.navigationPresenting.leaderBoard ? .infinity : (viewModel.navigationPresenting.dict?.values.filter({$0}).count ?? 0) <= 1 ? 120 : .infinity)) : 85)
         .padding(.top, viewModel.isGamePresenting ? 5 : 0)
         .overlay(content: {
             HStack {
@@ -59,7 +59,11 @@ struct TopNavigationView: View {
                     if viewModel.navigationPresenting.profile {
                         viewModel.navigationPresenting.profileProtoPicker = true
                     } else {
-                        viewModel.navigationPresenting.profile = true
+
+                        withAnimation {
+                            viewModel.navigationPresenting.profile = true
+
+                        }
                     }
                     
                 }, label: {
@@ -68,38 +72,18 @@ struct TopNavigationView: View {
                         .cornerRadius(56 / 2)
                 })
                 
-                .frame(width: viewModel.isNavigationPushed && viewModel.isGamePresenting ? 0 : (viewModel.navigationPresenting.profile ? (viewModel.navigationPresenting.profileProtoPicker ? 0 : 56) : (viewModel.isNavigationPushed ? 0 : 56)))
+                .frame(width: viewModel.profileWidth)
                 .padding(viewModel.navigationPresenting.profile ? 10 : 0)
-                .background(content:{
-                    VStack {
-                        Spacer().frame(maxHeight: .infinity)
-                        Color.lightsecondaryBackground
-                    }
-                    .background {
-                        VStack {
-                            RoundedRectangle(cornerRadius: 0)
-                                .fill(.clear)
-                                .background(content: {
-                                    Color(.lightsecondaryBackground)
-                                        .frame(height:56)
-                                        .padding(.bottom, -40)
-
-                                        .cornerRadius(56)
-                                })
-                            .frame(maxHeight: .infinity)
-                            Spacer().frame(maxHeight: .infinity)
-                        }
-                    }
-                })
                 .aspectRatio(1, contentMode: .fit)
                 .animation(.bouncy, value: viewModel.isNavigationPushed)
                 .clipped()
+                .disabled(viewModel.profileWidth == 0)
                 Spacer()
             }
             .animation(.bouncy, value: viewModel.isGamePresenting)
 
         })
-        .animation(.smooth, value: viewModel.isGamePresenting)
+        .animation(.smooth, value: (viewModel.isGamePresenting || viewModel.isNavigationPushed))
         .sheet(isPresented: $viewModel.navigationPresenting.share, content: {ShareSheet(items: [Keys.shareAppURL])})
         .onAppear {
             setProfileImage()

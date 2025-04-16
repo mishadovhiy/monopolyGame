@@ -10,6 +10,10 @@ import UIKit
 struct HomeViewModel {
     var profileImage:UIImage? = nil
 
+    var profileWidth:CGFloat {
+        isNavigationPushed && isGamePresenting ? 0 : (navigationPresenting.profile ? (navigationPresenting.profileProtoPicker ? 0 : 56) : (isNavigationPushed ? 0 : 56))
+    }
+    
     mutating func popToRootView() {
         if navigationPresenting.sound {
             navigationPresenting.sound = false

@@ -25,10 +25,22 @@ struct MenuView: View {
             .animation(.bouncy, value: viewModel.isGamePresenting)
             VStack {
                 HStack {
-                    NavigationLink(destination: SoundSettingsView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.sound) {
+                    NavigationLink(destination: SoundSettingsView(viewModel: $viewModel), isActive: .init(get: {
+                        viewModel.navigationPresenting.sound
+                    }, set: { new in
+                        withAnimation(.bouncy) {
+                            viewModel.navigationPresenting.sound = new
+                        }
+                    })) {
                         Text("Sound")
                     }
-                    NavigationLink(destination: GameSettingsView( viewModel: $viewModel), isActive: $viewModel.navigationPresenting.gameSettings) {
+                    NavigationLink(destination: GameSettingsView( viewModel: $viewModel), isActive: .init(get: {
+                        viewModel.navigationPresenting.gameSettings
+                    }, set: { new in
+                        withAnimation {
+                            viewModel.navigationPresenting.gameSettings = new
+                        }
+                    })) {
                         Text("Game Settings")
                     }
                     .frame(maxHeight: viewModel.isGamePresenting ? 0 : .infinity)

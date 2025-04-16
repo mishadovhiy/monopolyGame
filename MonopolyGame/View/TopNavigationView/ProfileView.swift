@@ -14,8 +14,8 @@ struct ProfileView: View {
     var body: some View {
         HStack {
             Spacer().frame(width: 90)
-            VStack {
-                HStack {
+            VStack() {
+                HStack(spacing:8) {
                     NavigationLink(destination: PhotoLibraryView(imageSelected: { newImage in
                         self.imageSelected(image: newImage)
 
@@ -24,6 +24,7 @@ struct ProfileView: View {
                     }
                     .hidden()
                     TextField("Profile name", text: $db.db.profile.username)
+                        .offset(y:-10)
                 }
                 ScrollView(.horizontal) {
                     HStack {
@@ -48,6 +49,8 @@ struct ProfileView: View {
 
                     }
                 }
+                .cornerRadius(100)
+
                 .padding(.leading, -75)
                 .background {
                     HStack {
@@ -57,8 +60,32 @@ struct ProfileView: View {
                     }
                     .padding(.leading, -75)
                 }
+                .background {
+                    HStack(content: {
+                        VStack(content: {
+                            RoundedRectangle(cornerRadius: 0)
+                                .fill(.clear)
+                                .background(content: {
+                                    Color(.lightsecondaryBackground)
+                                        .frame(width:75, height:75)
+                                        .cornerRadius(50)
+                                        .offset(y:20)
+                                })
+                            .frame(maxHeight:.infinity)
+                            Color.lightsecondaryBackground
+                                .frame(maxHeight:.infinity)
+                        })
+                            .frame(width:75)
+                        Spacer().frame(maxWidth:.infinity)
+                    })
+                        .offset(y: -33)
+                        .padding(.leading, -75)
 
+                }
             }
+        }
+        .background {
+            ClearBackgroundView()
         }
 
     }
