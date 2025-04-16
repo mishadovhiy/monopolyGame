@@ -80,13 +80,13 @@ struct TopNavigationView: View {
                         .animation(.bouncy, value: self.viewModel.isGamePresenting)
 
                 })
-                .offset(y:viewModel.navigationPresenting.profile ? -5 : 0)
+                .offset(y:viewModel.navigationPresenting.profile ? -5 : (viewModel.isGamePresenting ? 3 : 0))
                 .frame(width: viewModel.profileWidth)
                 .padding(viewModel.navigationPresenting.profile ? 10 : 0)
                 .aspectRatio(1, contentMode: .fit)
                 .animation(.bouncy, value: viewModel.isNavigationPushed)
                 .clipped()
-                .disabled(viewModel.profileWidth == 0)
+                .disabled(viewModel.profileWidth == 0 || viewModel.isGamePresenting)
                 Spacer()
             }
             .animation(.bouncy, value: viewModel.isGamePresenting)
