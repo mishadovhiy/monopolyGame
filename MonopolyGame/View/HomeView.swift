@@ -11,39 +11,45 @@ struct HomeView: View {
     @State var viewModel:HomeViewModel = .init()
     var body: some View {
         NavigationView(content: {
-            VStack {
-                Spacer()
-                    .frame(maxHeight: .infinity)
-                Button("Play") {
-                    viewModel.isGamePresenting = true
-                }
+            GeometryReader(content: { proxy in
                 VStack {
                     Spacer()
                         .frame(maxHeight: .infinity)
-
-                    HStack {
+                    Button("Play") {
+                        viewModel.isGamePresenting = true
+                    }
+                    VStack {
                         Spacer()
-                        Button("Leaderboard") {
-                            withAnimation {
-                                viewModel.navigationPresenting.leaderBoard = true
+                            .frame(maxHeight: .infinity)
+
+                        HStack {
+                            Spacer()
+                            Button("Leaderboard") {
+                                withAnimation {
+                                    viewModel.navigationPresenting.leaderBoard = true
+                                }
                             }
+                            Spacer()
                         }
                         Spacer()
-                    }
-                    Spacer()
-                        .frame(maxHeight: .infinity)
+                            .frame(maxHeight: .infinity)
 
+                    }
+                    .frame(maxHeight: .infinity)
+                    NavigationLink("", destination: GameView(), isActive: $viewModel.isGamePresenting)
+                        .hidden()
+                    
                 }
-                .frame(maxHeight: .infinity)
-                NavigationLink("", destination: GameView(), isActive: $viewModel.isGamePresenting)
-                    .hidden()
                 
-            }
-            
-            .navigationViewStyle(StackNavigationViewStyle())
+                .navigationViewStyle(StackNavigationViewStyle())
+                .background {
+                    SuccessSceneView(viewSize: proxy.size)
+                }
+            })
             .background {
                 ClearBackgroundView()
             }
+            
         })
         .navigationBarHidden(true)
         .navigationViewStyle(StackNavigationViewStyle())

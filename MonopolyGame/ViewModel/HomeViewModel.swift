@@ -5,10 +5,11 @@
 //  Created by Mykhailo Dovhyi on 13.04.2025.
 //
 
-import Foundation
+import UIKit
 
 struct HomeViewModel {
-    
+    var profileImage:UIImage? = nil
+
     mutating func popToRootView() {
         if navigationPresenting.sound {
             navigationPresenting.sound = false

@@ -10,45 +10,68 @@ import SwiftUI
 struct ProfileView: View {
     @Binding var viewModel:HomeViewModel
     @EnvironmentObject var db:AppData
-    @State var image:UIImage? = nil
+    @Binding var image:UIImage?
     var body: some View {
-        VStack {
-            HStack {
-                NavigationLink(destination: PhotoLibraryView(imageSelected: { newImage in
-                    FileManagerModel().upload(ImageQuality.allCases, newImage ?? .init(), name: "profile") {
-                        self.image = newImage
-                        if newImage == nil {
-                            db.db.profile.imageURL = "profile1"
-                        } else {
-                            db.db.profile.imageURL = "profile"
-                        }
-                    } error: {
-                    }
-
-                }, isPreseting: $viewModel.navigationPresenting.profileProtoPicker), isActive: $viewModel.navigationPresenting.profileProtoPicker) {
-                    Image(uiImage: self.image ?? .init(named: "profile1")!)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 70, height: 70)
-                }
-                TextField("Profile name", text: $db.db.profile.username)
-            }
-            ScrollView(.horizontal) {
+        HStack {
+            Spacer().frame(width: 90)
+            VStack {
                 HStack {
-                    ForEach((1..<5), id:\.self) { i in
-                        Image("profile\(i)")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width:30, height: 30)
+                    NavigationLink(destination: PhotoLibraryView(imageSelected: { newImage in
+                        self.imageSelected(image: newImage)
+
+                    }, isPreseting: $viewModel.navigationPresenting.profileProtoPicker), isActive: $viewModel.navigationPresenting.profileProtoPicker) {
+                        
+                    }
+                    .hidden()
+                    TextField("Profile name", text: $db.db.profile.username)
+                }
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach((1..<5), id:\.self) { i in
+                            Button {
+                                self.imageSelected(image: .init(named: "profile\(i)"))
+                            } label: {
+                                Image("profile\(i)")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width:30, height: 30)
+                            }
+
+                        }
+                    }
+                    .padding(.leading, 75)
+                    .padding(.vertical, 20)
+                    .padding(.trailing, 20)
+                    .background {
+                        Color.lightsecondaryBackground
+                            .cornerRadius(100)
+
                     }
                 }
+                .padding(.leading, -75)
+                .background {
+                    HStack {
+                        Color.lightsecondaryBackground
+                            .cornerRadius(100)
+                        Spacer().frame(maxWidth: .infinity)
+                    }
+                    .padding(.leading, -75)
+                }
+
             }
-            
         }
-        .onAppear {
-            FileManagerModel().load(imageName: "profile", quality: .middle) { image in
-                self.image = image ?? .init(named: "profile1")
+
+    }
+    
+    func imageSelected(image:UIImage?) {
+        FileManagerModel().upload(ImageQuality.allCases, image ?? .init(named: "profile1")!, name: "profile") {
+            self.image = image
+            if image == nil {
+                db.db.profile.imageURL = "profile1"
+            } else {
+                db.db.profile.imageURL = "profile"
             }
+        } error: {
         }
     }
 }

@@ -44,6 +44,9 @@
 		82C51E2E2DAD6C7400EC71F4 /* ShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */; };
 		82C51E302DAD7C1700EC71F4 /* GameCenterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2F2DAD7C1700EC71F4 /* GameCenterModel.swift */; };
 		82C51E322DAD803C00EC71F4 /* BlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E312DAD803C00EC71F4 /* BlurView.swift */; };
+		82C51E622DAF885100EC71F4 /* SuccessNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E5D2DAF885100EC71F4 /* SuccessNode.swift */; };
+		82C51E632DAF885100EC71F4 /* SuccessSKScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E602DAF885100EC71F4 /* SuccessSKScene.swift */; };
+		82C51E642DAF885100EC71F4 /* SuccessSKScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 82C51E5F2DAF885100EC71F4 /* SuccessSKScene.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -86,6 +89,9 @@
 		82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
 		82C51E2F2DAD7C1700EC71F4 /* GameCenterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterModel.swift; sourceTree = "<group>"; };
 		82C51E312DAD803C00EC71F4 /* BlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurView.swift; sourceTree = "<group>"; };
+		82C51E5D2DAF885100EC71F4 /* SuccessNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessNode.swift; sourceTree = "<group>"; };
+		82C51E5F2DAF885100EC71F4 /* SuccessSKScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SuccessSKScene.sks; sourceTree = "<group>"; };
+		82C51E602DAF885100EC71F4 /* SuccessSKScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessSKScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +138,7 @@
 		82126EAB2DAADA360081983A /* ComponentView */ = {
 			isa = PBXGroup;
 			children = (
+				82C51E612DAF885100EC71F4 /* SuccessSKScene */,
 				82126EA92DAADA360081983A /* PropertyListView.swift */,
 				82126F262DACC35F0081983A /* PhotoLibraryView.swift */,
 				82126F0F2DAC3FED0081983A /* BaseView */,
@@ -248,6 +255,24 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
+		82C51E5E2DAF885100EC71F4 /* CustomNodes */ = {
+			isa = PBXGroup;
+			children = (
+				82C51E5D2DAF885100EC71F4 /* SuccessNode.swift */,
+			);
+			path = CustomNodes;
+			sourceTree = "<group>";
+		};
+		82C51E612DAF885100EC71F4 /* SuccessSKScene */ = {
+			isa = PBXGroup;
+			children = (
+				82C51E5E2DAF885100EC71F4 /* CustomNodes */,
+				82C51E5F2DAF885100EC71F4 /* SuccessSKScene.sks */,
+				82C51E602DAF885100EC71F4 /* SuccessSKScene.swift */,
+			);
+			path = SuccessSKScene;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -309,6 +334,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82C51E642DAF885100EC71F4 /* SuccessSKScene.sks in Resources */,
 				82126EB92DAADA360081983A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -330,6 +356,8 @@
 				82C51E2E2DAD6C7400EC71F4 /* ShareView.swift in Sources */,
 				82126EC92DAADA630081983A /* BoardPopoverView.swift in Sources */,
 				82126EBD2DAADA360081983A /* MessageContent.swift in Sources */,
+				82C51E622DAF885100EC71F4 /* SuccessNode.swift in Sources */,
+				82C51E632DAF885100EC71F4 /* SuccessSKScene.swift in Sources */,
 				82126F0E2DAC3FCB0081983A /* ClearBackgroundView.swift in Sources */,
 				82126EBE2DAADA360081983A /* Step.swift in Sources */,
 				82126EBF2DAADA360081983A /* DataBase.swift in Sources */,
