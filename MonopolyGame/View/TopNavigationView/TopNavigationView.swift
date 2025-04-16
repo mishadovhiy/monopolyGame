@@ -60,7 +60,7 @@ struct TopNavigationView: View {
         .overlay(content: {
             HStack {
                 Spacer()
-                    .frame(maxWidth: viewModel.isGamePresenting ? 80 : (viewModel.navigationPresenting.profile ? 35 : 15))
+                    .frame(maxWidth: viewModel.isGamePresenting ? 70 : (viewModel.navigationPresenting.profile ? 35 : 15))
                     .animation(.bouncy, value: viewModel.isGamePresenting)
                 Button(action: {
                     if viewModel.navigationPresenting.profile {
@@ -75,8 +75,10 @@ struct TopNavigationView: View {
                     
                 }, label: {
                     Image(uiImage: self.viewModel.profileImage ?? .init(named: "profile1")!)
-                        .frame(width: 56, height: 56)
+                        .frame(width: self.viewModel.isGamePresenting ? 45 : 56, height: self.viewModel.isGamePresenting ? 45 : 56)
                         .cornerRadius(56 / 2)
+                        .animation(.bouncy, value: self.viewModel.isGamePresenting)
+
                 })
                 .offset(y:viewModel.navigationPresenting.profile ? -5 : 0)
                 .frame(width: viewModel.profileWidth)

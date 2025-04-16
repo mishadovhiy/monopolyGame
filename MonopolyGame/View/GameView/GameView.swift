@@ -11,48 +11,16 @@ struct GameView: View {
     @StateObject var viewModel:GameViewModel = .init()
     @EnvironmentObject var db: AppData
     @Environment(\.scenePhase) private var scenePhase
-
+    
     var body: some View {
         VStack(spacing:0) {
             VStack( spacing: 0) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    VStack(spacing:0) {
-                        vBoard(2)
-                            .padding(.leading, -110)
-                        Spacer()
-                        vBoard(0)
-                            .padding(.trailing, 10)
-                            .padding(.bottom, -20)
-                    }
-                    .background(content: {
-                        Color.lightGreen
-                            .padding(.leading, 50)
-                            .padding(.top, 20)
-                            .padding(.trailing, 130)
-                            .clipped()
-                        
-                    })
-                    .padding(.vertical, 65)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .overlay(content: {
-                        HStack(spacing:0) {
-                            hBoard(1)
-                                .padding(.top, 70)
-                            Spacer()
-                            hBoard(3)
-                                .padding(.top, -30)
-                                .padding(.trailing, 60)
-                        }
-                        .padding(.horizontal, 25)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    })
-                    .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
-                    .padding(.horizontal, 0)
-                }
+                balancesView
+                boardView
                 .overlay {
                     BoardPopoverView(viewModel: viewModel)
                 }
-                .padding(.top, -70)
+                .padding(.top, -60)
                 Spacer()
             }
             .background(.primaryBackground)
@@ -63,7 +31,6 @@ struct GameView: View {
         .background(.secondaryBackground)
         
         .onChange(of: scenePhase) { newValue in
-            print(newValue, " rgefds ")
             if newValue == .inactive || newValue == .background {
                 if !viewModel.dbUpdated {
                     viewModel.dbUpdated = true
@@ -86,27 +53,106 @@ struct GameView: View {
         .navigationBarHidden(true)
     }
     
+    var boardView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            VStack(spacing:0) {
+                vBoard(2)
+                    .padding(.leading, -110)
+                Spacer()
+                vBoard(0)
+                    .padding(.trailing, 10)
+                    .padding(.bottom, -20)
+            }
+            .background(content: {
+                Color.lightGreen
+                    .padding(.leading, 50)
+                    .padding(.top, 20)
+                    .padding(.trailing, 130)
+                    .clipped()
+                
+            })
+            .padding(.vertical, 65)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay(content: {
+                HStack(spacing:0) {
+                    hBoard(1)
+                        .padding(.top, 70)
+                    Spacer()
+                    hBoard(3)
+                        .padding(.top, -30)
+                        .padding(.trailing, 60)
+                }
+                .padding(.horizontal, 25)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            })
+            .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
+            .padding(.horizontal, 0)
+        }
+    }
+    
+    var balancesView: some View {
+        HStack {
+            Spacer().frame(width: 60)
+            HStack {
+                HStack {
+                    Spacer().frame(width:65)
+                    VStack(alignment:.leading) {
+                        Text("Your Balance")
+                            .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(60))
+                            .frame(alignment: .leading)
+                        Text("\(viewModel.myPlayerPosition.balance)")
+                            .font(.system(size: 18, weight:.bold))
+                            .foregroundColor(.white)
+                            .frame(alignment: .leading)
+
+                    }
+                    .padding(.top, 13)
+                    .padding(.bottom, 15)
+                }
+                .padding(.trailing, 13)
+                .background(.secondaryBackground)
+                .cornerRadius(13)
+                .padding(.leading, 5)
+                Spacer()
+                HStack {
+                    Image(.robot)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 45, height: 45)
+                        .cornerRadius(40)
+                    VStack(alignment:.leading) {
+                        Text("Enemy balance")
+                            .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(60))
+                            .frame(alignment: .leading)
+                        Text("\(viewModel.enemyPosition.balance)")
+                            .font(.system(size: 18, weight:.bold))
+                            .foregroundColor(.white)
+                            .frame(alignment: .leading)
+                    }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 10)
+                .background(.secondaryBackground)
+                .cornerRadius(13)
+
+                Spacer()
+            }
+            .padding(.top, 15)
+        }
+    }
+
+    
     var panelView: some View {
         VStack(spacing:-27) {
             VStack {
                 Button("dice") {
                     viewModel.resumeNextPlayer(forceMove: true)
                 }
-                Spacer().frame(height: 80)
-                HStack {
-                    VStack {
-                        Text("Your Balance")
-                        Text("\(viewModel.myPlayerPosition.balance)")
-                    }
-                    
-                    Spacer()
-                    VStack {
-                        Text("Enemy balance")
-                        Text("\(viewModel.enemyPosition.balance)")
-                    }
-                }
                 Spacer()
             }
+            .frame(maxWidth: .infinity)
             .background(.primaryBackground)
             HStack() {
                 ForEach(GameViewModel.PanelType.allCases, id:\.rawValue) { type in

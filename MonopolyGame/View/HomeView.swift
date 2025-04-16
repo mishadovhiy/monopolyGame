@@ -18,6 +18,7 @@ struct HomeView: View {
                     Button("Play") {
                         viewModel.isGamePresenting = true
                     }
+                    .padding(10)
                     VStack {
                         Spacer()
                             .frame(maxHeight: .infinity)
@@ -29,6 +30,7 @@ struct HomeView: View {
                                     viewModel.navigationPresenting.leaderBoard = true
                                 }
                             }
+                            .padding(10)
                             Spacer()
                         }
                         Spacer()
