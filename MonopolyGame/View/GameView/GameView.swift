@@ -11,6 +11,7 @@ struct GameView: View {
     @StateObject var viewModel:GameViewModel = .init()
     @EnvironmentObject var db: AppData
     @Environment(\.scenePhase) private var scenePhase
+    @Binding var isPresenting:Bool
     
     var body: some View {
         VStack(spacing:0) {
@@ -18,7 +19,7 @@ struct GameView: View {
                 balancesView
                 boardView
                 .overlay {
-                    BoardPopoverView(viewModel: viewModel)
+                    BoardPopoverView(viewModel: viewModel, isGamePresenting: $isPresenting)
                 }
                 .padding(.top, -60)
                 Spacer()
@@ -44,6 +45,9 @@ struct GameView: View {
             viewModel.saveProgress(db: &db.db)
         })
         .onAppear {
+            viewModel.enemyLostAction = {
+                db.db.gameCompletions.completionList.append(.init(balance: viewModel.myPlayerPosition.balance, time: .init(), upgrades: viewModel.myPlayerPosition.bought))
+            }
             viewModel.fetchGame(db: db.db)
             self.viewModel.viewAppeared = true
         }
@@ -333,15 +337,16 @@ struct GameView: View {
     
     
     func playerOverlay(at:Int, player:Int) -> some View {
-        VStack {
+        return VStack {
             switch at {
             case 3:
+
                 if (3 * Step.numberOfItemsInSection..<4 * Step.numberOfItemsInSection).contains(viewModel.playersArray[player].playerPosition.index) {
                     VStack {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(player == 0 ? .pink : .blue)
                             .aspectRatio(1, contentMode: .fit)
-                            .offset(y:CGFloat((30 - viewModel.playersArray[player].playerPosition.index) * -Int(viewModel.itemWidth - 8)))
+                            .offset(y:CGFloat((30 - viewModel.playersArray[player].playerPosition.index) * -Int((viewModel.itemWidth - 8) - 10)))
                         Spacer()
                         
                     }
@@ -355,7 +360,7 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(player == 0 ? .pink : .blue)
                             .aspectRatio(1, contentMode: .fit)
-                            .offset(x:CGFloat((0 - viewModel.playersArray[player].playerPosition.index) * Int(viewModel.itemWidth - 8)))
+                            .offset(x:CGFloat((0 - viewModel.playersArray[player].playerPosition.index) * Int((viewModel.itemWidth - 8) - 10)))
                         
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
@@ -369,7 +374,7 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(player == 0 ? .pink : .blue)
                             .aspectRatio(1, contentMode: .fit)
-                            .offset(y:CGFloat((10 - viewModel.playersArray[player].playerPosition.index) * Int(viewModel.itemWidth - 8)))
+                            .offset(y:CGFloat((10 - viewModel.playersArray[player].playerPosition.index) * Int((viewModel.itemWidth - 8) - 10)))
                         
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
@@ -382,7 +387,7 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(player == 0 ? .pink : .blue)
                             .aspectRatio(1, contentMode: .fit)
-                            .offset(x:CGFloat((20 - viewModel.playersArray[player].playerPosition.index) * -Int(viewModel.itemWidth - 8)))
+                            .offset(x:CGFloat((20 - viewModel.playersArray[player].playerPosition.index) * -Int((viewModel.itemWidth - 8) - 10)))
                         Spacer()
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
@@ -397,6 +402,6 @@ struct GameView: View {
 
 
 #Preview {
-    GameView()
+    GameView(isPresenting: .constant(true))
 }
 

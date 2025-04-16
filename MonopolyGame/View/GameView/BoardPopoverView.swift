@@ -9,13 +9,42 @@ import SwiftUI
 
 struct BoardPopoverView: View {
     @StateObject var viewModel:GameViewModel
+    @Binding var isGamePresenting:Bool
     
     var body: some View {
         ZStack {
+            sellToPlayView
             bettingView
             boardActionCancelView
             tradeView
+            gameCompleted
         }
+    }
+    
+    var gameCompleted: some View {
+        VStack {
+            if viewModel.gameCompleted {
+                VStack {
+                    Text("Game Completed!")
+                    Button("OK") {
+                        isGamePresenting = false
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    var sellToPlayView: some View {
+        Button("cancel sell") {
+            if viewModel.myPlayerPosition.balance > 0 {
+                viewModel.updateBalancePresenting = false
+            }
+        }
+        .disabled(!(viewModel.myPlayerPosition.balance > 0))
+        .frame(maxHeight: viewModel.updateBalancePresenting ? 44 : 0)
+        .clipped()
+        .animation(.smooth, value: viewModel.updateBalancePresenting)
     }
     
     var boardActionCancelView: some View {

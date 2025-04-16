@@ -38,7 +38,7 @@ struct HomeView: View {
 
                     }
                     .frame(maxHeight: .infinity)
-                    NavigationLink("", destination: GameView(), isActive: $viewModel.isGamePresenting)
+                    NavigationLink("", destination: GameView(isPresenting: $viewModel.isGamePresenting), isActive: $viewModel.isGamePresenting)
                         .hidden()
                     
                 }

@@ -19,7 +19,7 @@ class GameViewModel:ObservableObject {
     @Published var bet:BetModel = .init(betValue: 0)
     
     @Published var trade:Trade = .init()
-
+    @Published var gameCompleted:Bool = false
     @Published var deviceWidth:CGFloat = 0
     var itemWidth:CGFloat = 60
 
@@ -129,7 +129,7 @@ class GameViewModel:ObservableObject {
     }
     var currentPlayerIndex:Int = 0
     var canDice:Bool {
-        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting
+        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting && !updateBalancePresenting
     }
     
     @Published var moveCompleted:Bool = true
@@ -154,16 +154,70 @@ class GameViewModel:ObservableObject {
 
         }
     }
+    var enemyLostAction:(()->())?
+    func enemyLost() {
+        gameCompleted = true
+        enemyLostAction?()
+        
+    }
     
+    @Published var updateBalancePresenting:Bool = false
     func prepareMoving() {
-        let array = playersArray
-        currentPlayerIndex += 1
-        if currentPlayerIndex > array.count - 1 {
-            currentPlayerIndex = 0
-        }
-        print("preparepleyer:", playerPosition.id == self.myPlayerPosition.id)
+        if playerPosition.balance < 0 {
+            if playerPosition.id == self.enemyPosition.id {
+                self.enemySellAll()
+            } else {
+                self.updateBalancePresenting = true
+            }
+        } else {
+            let array = playersArray
+            currentPlayerIndex += 1
+            if currentPlayerIndex > array.count - 1 {
+                currentPlayerIndex = 0
+            }
+            print("preparepleyer:", playerPosition.id == self.myPlayerPosition.id)
 
-        diceDestination = (2..<12).randomElement() ?? 0
+            diceDestination = (2..<12).randomElement() ?? 0
+        }
+        
+        
+    }
+    
+    func enemySellAll() {
+        if enemyPosition.balance >= 0 {
+            prepareMoving()
+            return
+        }
+        enemyPosition.bought.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
+            if enemyPosition.balance < 0 {
+                if let price = key.morgage,
+                   value == .bought,
+                   !enemyPosition.morgageProperties.contains(key) {
+                    enemyPosition.morgageProperties.append(key)
+                    enemyPosition.balance += price
+                }
+            }
+        }
+        if enemyPosition.balance < 0 {
+            enemyPosition.bought.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
+                if enemyPosition.balance < 0 {
+                    if let price = key.buyPrice,
+                        let prev = value.previousValue,
+                        value != .bought {
+                        enemyPosition.balance += (price / 2)
+                        enemyPosition.bought.updateValue(prev, forKey: key)
+                    }
+                }
+            }
+        }
+        DispatchQueue.main.async {
+            if self.enemyPosition.balance >= 0 {
+                self.prepareMoving()
+            } else {
+                self.enemyLost()
+            }
+        }
+        
         
     }
     

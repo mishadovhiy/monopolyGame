@@ -121,7 +121,7 @@ class AppData:ObservableObject {
         }
         
         struct GameCompletions: Codable {
-            let completionList:[Completion] = [
+            var completionList:[Completion] = [
                 .init(balance: 130, upgrades: [
                     .blue1:.higherMiddle,
                     .chance1:.largest
