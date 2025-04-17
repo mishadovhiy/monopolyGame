@@ -30,6 +30,10 @@ struct BoardPopoverView: View {
                         isGamePresenting = false
                     }
                 }
+                .background {
+                    Color(.secondaryBackground)
+                        .cornerRadius(12)
+                }
             }
         }
         

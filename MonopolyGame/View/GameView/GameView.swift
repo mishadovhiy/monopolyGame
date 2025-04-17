@@ -46,6 +46,8 @@ struct GameView: View {
         })
         .onAppear {
             viewModel.enemyLostAction = {
+                db.db.gameProgress = .init()
+                db.gameCenter.addGameCompletionScore(viewModel.myPlayerPosition)
                 db.db.gameCompletions.completionList.append(.init(balance: viewModel.myPlayerPosition.balance, time: .init(), upgrades: viewModel.myPlayerPosition.bought))
             }
             viewModel.fetchGame(db: db.db)

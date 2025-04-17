@@ -8,7 +8,7 @@
 import Foundation
 
 enum Keys:String {
-    case appStoreID = "6743935250"
-    
-    static var shareAppURL:String = "https://apps.apple.com/ua/app/meal-calendar/\(Keys.appStoreID.rawValue)"
+    case appStoreID = "6744718214"
+    case gameCenterLeaderboardID = "levelCompletionFusion"
+    static var shareAppURL:String = "https://apps.apple.com/app/id\(Keys.appStoreID.rawValue)"
 }

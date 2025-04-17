@@ -35,6 +35,24 @@ class GameCenterModel:NSObject {
         }
         return nil
     }
+    
+    func addGameCompletionScore(_ progress:PlayerStepModel) {
+        let loeaderboard = GKLeaderboard()
+        loeaderboard.identifier = Keys.gameCenterLeaderboardID.rawValue
+        loeaderboard.loadScores { scores, error in
+            var score = scores?.first(where: {
+                $0.playerID == GKLocalPlayer.local.playerID
+            })?.value ?? 0
+
+            score += Int64(progress.balance + progress.bought.totalPrice.price)
+            let newScore = GKScore(leaderboardIdentifier: Keys.gameCenterLeaderboardID.rawValue)
+            newScore.value = score
+            GKScore.report([newScore]) { error in
+                print("reporterror: ", error?.localizedDescription)
+            }
+        }
+
+    }
 }
 
 extension GameCenterModel: GKGameCenterControllerDelegate {
