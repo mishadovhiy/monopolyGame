@@ -21,7 +21,13 @@ struct TopNavigationView: View {
                     Spacer()
                         .frame(maxWidth: !viewModel.isGamePresenting ? .infinity : 0)
                         .animation(.bouncy, value: viewModel.isGamePresenting)
-                    NavigationLink(destination: MenuView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.menu) {
+                    NavigationLink(destination: MenuView(viewModel: $viewModel), isActive: .init(get: {
+                        viewModel.navigationPresenting.menu
+                    }, set: { newValue in
+                        withAnimation {
+                            viewModel.navigationPresenting.menu = newValue
+                        }
+                    })) {
                         Text("Menu")
                             .frame(maxHeight:.infinity)
                             .frame(width:45)
@@ -30,7 +36,13 @@ struct TopNavigationView: View {
                     }
                     .padding(viewModel.isGamePresenting ? -20 : 0)
                     .offset(x:viewModel.isGamePresenting ? -15 : 0)
-                    NavigationLink("", destination: LeaderboardView(viewModel: $viewModel), isActive: $viewModel.navigationPresenting.leaderBoard)
+                    NavigationLink("", destination: LeaderboardView(viewModel: $viewModel), isActive: .init(get: {
+                        viewModel.navigationPresenting.leaderBoard
+                    }, set: { newValue in
+                        withAnimation {
+                            viewModel.navigationPresenting.leaderBoard = newValue
+                        }
+                    }))
                 }
                 .padding(.horizontal, viewModel.isGamePresenting ? 5 : 15)
                 .padding(.vertical, viewModel.isGamePresenting ? 0 : 5)
@@ -39,6 +51,8 @@ struct TopNavigationView: View {
                 }
                 .animation(.bouncy, value: viewModel.isGamePresenting && !viewModel.isNavigationPushed)
             }
+            .tint(.white)
+            .foregroundColor(.white)
             .frame(maxWidth: viewModel.isGamePresenting && !viewModel.isNavigationPushed ? 45 : .infinity)
             .navigationViewStyle(StackNavigationViewStyle())
             .background {

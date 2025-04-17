@@ -38,8 +38,14 @@ class GameViewModel:ObservableObject {
     }
     
     func fetchGame(db: AppData.DataBase) {
-        self.myPlayerPosition = db.gameProgress.player
-        self.enemyPosition = db.gameProgress.enemy
+        if db.gameProgress.player.playerPosition == .go && db.gameProgress.enemy.playerPosition == .go {
+            self.myPlayerPosition.balance = db.settings.game.balance
+            self.enemyPosition.balance = db.settings.game.balance
+        } else {
+            self.myPlayerPosition = db.gameProgress.player
+            self.enemyPosition = db.gameProgress.enemy
+        }
+        
     }
     
     func propertySelected(_ step: Step) {

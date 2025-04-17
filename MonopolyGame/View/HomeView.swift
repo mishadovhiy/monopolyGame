@@ -47,6 +47,7 @@ struct HomeView: View {
                 .background {
                     if !viewModel.isGamePresenting {
                         SuccessSceneView(viewSize: proxy.size)
+                            .ignoresSafeArea(.all)
                     }
                 }
             })

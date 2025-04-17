@@ -35,6 +35,8 @@ struct LeaderboardView: View {
         .background {
             ClearBackgroundView()
         }
+        .background(.secondaryBackground)
+
     }
     
     func itemView(_ item:AppData.DataBase.GameCompletions.Completion?) -> some View {

@@ -12,7 +12,7 @@ struct MenuView: View {
     var body: some View {
         VStack {
             VStack {
-                HStack {
+                HStack() {
                     
                     NavigationLink(destination: SoundSettingsView(viewModel: $viewModel), isActive: .init(get: {
                         viewModel.navigationPresenting.sound
@@ -26,7 +26,7 @@ struct MenuView: View {
                             .padding(.vertical, 5)
                             .background(.lightsecondaryBackground)
                             .cornerRadius(4)
-
+                        
                     }
                     NavigationLink(destination: GameSettingsView( viewModel: $viewModel), isActive: .init(get: {
                         viewModel.navigationPresenting.gameSettings
@@ -40,34 +40,43 @@ struct MenuView: View {
                             .padding(.vertical, 5)
                             .background(.lightsecondaryBackground)
                             .cornerRadius(4)
-
+                        
                     }
-                    .frame(maxHeight: viewModel.isGamePresenting ? 0 : .infinity)
+                    .frame(maxWidth: viewModel.isGamePresenting ? 0 : .infinity, alignment: .leading)
+                    
                     .animation(.bouncy, value: viewModel.isGamePresenting)
                     .clipped()
-                    Button("close game") {
+                    Button("Close game") {
                         withAnimation {
                             viewModel.isGamePresenting = false
                             viewModel.popToRootView()
                         }
                     }
+                    .tint(.red)
                     .padding(.horizontal, 15)
                     .padding(.vertical, 5)
                     .background(.lightsecondaryBackground)
                     .cornerRadius(4)
-                    .frame(maxWidth: viewModel.isGamePresenting ? 80 : 0)
+                    .frame(maxWidth: !viewModel.isGamePresenting ? 0 : .infinity, alignment: .leading)
                     .clipped()
                     .animation(.smooth, value: viewModel.isGamePresenting)
                     Spacer()
                 }
+                .frame(alignment: .leading)
                 HStack {
-                    NavigationLink(destination: AboutView(), isActive: $viewModel.navigationPresenting.about) {
+                    NavigationLink(destination: AboutView(), isActive: .init(get: {
+                        viewModel.navigationPresenting.about
+                    }, set: { newValue in
+                        withAnimation(.bouncy) {
+                            viewModel.navigationPresenting.about = newValue
+                        }
+                    })) {
                         Text("About")
                             .padding(.horizontal, 15)
                             .padding(.vertical, 5)
                             .background(.lightsecondaryBackground)
                             .cornerRadius(4)
-
+                        
                     }
                     Button {
                         StorekitModel().requestReview()
@@ -86,9 +95,9 @@ struct MenuView: View {
                             .padding(.vertical, 5)
                             .background(.lightsecondaryBackground)
                             .cornerRadius(4)
-
+                        
                     }
-Spacer()
+                    Spacer()
                 }
             }
             Spacer()
@@ -96,6 +105,7 @@ Spacer()
         .background {
             ClearBackgroundView()
         }
+        .background(.secondaryBackground)
     }
 }
 

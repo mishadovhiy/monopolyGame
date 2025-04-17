@@ -26,10 +26,14 @@ struct MonopolyGameApp: App {
                 })
             }
             .environmentObject(db)
-
-
-//            PropertyListView(list: Step.allCases.filter({$0.buyPrice != nil}))
-
+            .onAppear {
+                UINavigationBar.appearance().backgroundColor = .clear
+                UINavigationBar.appearance().isTranslucent = true
+                UINavigationBar.appearance().shadowImage = .init()
+            }
+            
+            //            PropertyListView(list: Step.allCases.filter({$0.buyPrice != nil}))
+            
         }
     }
 }

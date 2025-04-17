@@ -9,23 +9,30 @@ import SwiftUI
 
 struct AboutView: View {
     var body: some View {
-        ScrollView(.vertical, content: {
-            VStack( alignment:.leading, spacing:0) {
-                Text("About Monopoly")
-                    .font(.system(size: 24, weight: .black))
-                    .foregroundColor(.white)
-                ForEach(data, id:\.id) { data in
-                    Spacer().frame(height: data.boldDescription.isEmpty ? 10 : 2)
-                    section(data)
+        VStack(alignment:.leading, content: {
+            Text("About Monopoly")
+                .multilineTextAlignment(.leading)
+                .font(.system(size: 24, weight: .black))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            ScrollView(.vertical, showsIndicators: false, content: {
+                VStack( alignment:.leading, spacing:0) {
+                    
+                    ForEach(data, id:\.id) { data in
+                        Spacer().frame(height: data.boldDescription.isEmpty ? 10 : 2)
+                        section(data)
+                    }
                 }
-            }
-            .frame(alignment: .leading)
-            .padding(.bottom, 10)
-            
+                .frame(alignment: .leading)
+                .padding(.bottom, 10)
+                
+            })
         })
         .background {
             ClearBackgroundView()
         }
+        .background(.secondaryBackground)
+
     }
     
     func section(_ data:MessageContent) -> some View {

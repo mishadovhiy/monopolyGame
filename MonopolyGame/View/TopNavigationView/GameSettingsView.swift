@@ -59,5 +59,7 @@ struct GameSettingsView: View {
                 Text("Are you sure, you want to clear progress of your current game? \nThe history of your completed levels will not be cleared")
             }
         })
+        .background(.secondaryBackground)
+
     }
 }

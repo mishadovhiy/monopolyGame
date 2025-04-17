@@ -27,6 +27,8 @@ struct SoundSettingsView: View {
         .background {
             ClearBackgroundView()
         }
+        .background(.secondaryBackground)
+
     }
 }
 
