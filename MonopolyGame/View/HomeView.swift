@@ -45,7 +45,9 @@ struct HomeView: View {
                 
                 .navigationViewStyle(StackNavigationViewStyle())
                 .background {
-                    SuccessSceneView(viewSize: proxy.size)
+                    if !viewModel.isGamePresenting {
+                        SuccessSceneView(viewSize: proxy.size)
+                    }
                 }
             })
             .background {

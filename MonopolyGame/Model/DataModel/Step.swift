@@ -55,7 +55,7 @@ struct PlayerStepModel:Codable {
     }
     
     mutating func buyIfCan(_ step:Step, price:Int? = nil) {
-        if canBuy(step) {
+        if canBuy(step, price: price) {
             balance -= (price ?? (step.buyPrice ?? 0))
             bought.updateValue(.bought, forKey: step)
         } else {
@@ -79,10 +79,10 @@ struct PlayerStepModel:Codable {
         }
     }
     
-    func canUpdateProperty(_ property:Step) -> Bool {
+    func canUpdateProperty(_ property:Step, balance:Int? = nil) -> Bool {
         if canUpdateProperyContains(property) {
             if let next = self.bought[property]?.nextValue {
-                if property.upgradePrice(next) <= self.balance {
+                if property.upgradePrice(next) <= (balance ?? self.balance) {
                     return true
                 }
                 print("not enought balance ", property.rawValue)

@@ -160,16 +160,12 @@ class GameViewModel:ObservableObject {
         enemyLostAction?()
         
     }
-    
+    var enemyMorgagedBalance = false
     @Published var updateBalancePresenting:Bool = false
     func prepareMoving() {
-        if playerPosition.balance < 0 {
-            if playerPosition.id == self.enemyPosition.id {
-                self.enemySellAll()
-            } else {
-                self.updateBalancePresenting = true
-            }
-        } else {
+//        if playerPosition.balance < 0 {
+
+//        } else {
             let array = playersArray
             currentPlayerIndex += 1
             if currentPlayerIndex > array.count - 1 {
@@ -178,43 +174,57 @@ class GameViewModel:ObservableObject {
             print("preparepleyer:", playerPosition.id == self.myPlayerPosition.id)
 
             diceDestination = (2..<12).randomElement() ?? 0
-        }
+//        }
         
         
     }
     
-    func enemySellAll() {
-        if enemyPosition.balance >= 0 {
-            prepareMoving()
+    func enemySellAll(minMorgage:Int = 0) {
+        print("enemySellAllenemySellAll")
+        if enemyPosition.balance >= 0 && minMorgage == 0 {
+//            prepareMoving()
             return
         }
         enemyPosition.bought.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
-            if enemyPosition.balance < 0 {
+            if enemyPosition.balance < minMorgage {
                 if let price = key.morgage,
                    value == .bought,
                    !enemyPosition.morgageProperties.contains(key) {
-                    enemyPosition.morgageProperties.append(key)
-                    enemyPosition.balance += price
+                    if minMorgage == 0 {
+                        enemyPosition.morgageProperties.append(key)
+                        enemyPosition.balance += price
+                    } else if self.enemyPosition.canUpdateProperty(key, balance: minMorgage != 0 ? minMorgage : nil) {
+                        enemyPosition.morgageProperties.append(key)
+                        enemyPosition.balance += price
+                    }
+                   
                 }
             }
         }
+        var canRepeat = false
         if enemyPosition.balance < 0 {
             enemyPosition.bought.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
-                if enemyPosition.balance < 0 {
+                if enemyPosition.balance < 0 && !enemyPosition.morgageProperties.contains(key) {
                     if let price = key.buyPrice,
                         let prev = value.previousValue,
                         value != .bought {
                         enemyPosition.balance += (price / 2)
                         enemyPosition.bought.updateValue(prev, forKey: key)
+                        canRepeat = true
+                    }
+                    if value == .bought {
+                        canRepeat = true
                     }
                 }
             }
         }
-        DispatchQueue.main.async {
-            if self.enemyPosition.balance >= 0 {
-                self.prepareMoving()
-            } else {
-                self.enemyLost()
+        if minMorgage == 0 {
+            DispatchQueue.main.async {
+                if self.enemyPosition.balance < 0 && !canRepeat {
+                    self.enemyLost()
+                } else if self.enemyPosition.balance <= 0 && canRepeat {
+                    self.enemySellAll()
+                }
             }
         }
         
@@ -298,6 +308,40 @@ class GameViewModel:ObservableObject {
 
     }
     
+    func checkPlayersBalance() {
+        if myPlayerPosition.id == self.playerPosition.id {
+            if myPlayerPosition.balance <= 0 {
+                updateBalancePresenting = true
+            }
+        } else {
+//            if !enemyMorgagedBalance {
+//                if enemyPosition.balance >= 260 {
+//                    self.enemyPosition.morgageProperties.forEach { step in
+//                        if let price = step.morgage {
+//                            if (price + 100) <= self.enemyPosition.balance {
+//                                self.enemyPosition.balance += price
+//                                self.enemyPosition.morgageProperties.removeAll(where: {
+//                                    $0 == step
+//                                })
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+            //check balance
+            if enemyPosition.balance <= 250 && !enemyMorgagedBalance {
+                enemyMorgagedBalance = true
+                enemySellAll(minMorgage: 250)
+            } else {
+                enemyMorgagedBalance = false
+            }
+            if enemyPosition.balance <= 0 {
+                print("checking enemy balance")
+                self.enemySellAll()
+            }
+        }
+    }
+    
     private func checkEnemyCanUpgradeProperties() {
         let upgrades = enemyPosition.bought.filter {
             enemyPosition.canUpdateProperty($0.key)
@@ -347,6 +391,7 @@ class GameViewModel:ObservableObject {
         } else {
             print(playerPosition.playerPosition, " gvhvhgvg ")
             self.playerCompletedMoving()
+            self.checkPlayersBalance()
         }
     }
     
