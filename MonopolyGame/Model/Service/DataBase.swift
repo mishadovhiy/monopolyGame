@@ -175,9 +175,10 @@ class AppData:ObservableObject {
 //                        .red3:.largest
 //                    ]
 //                    value.balance = 2000
-                                        var value = PlayerStepModel.init(playerPosition: .blue1)
-                    value.balance = 502
-                    return value
+//                                        var value = PlayerStepModel.init(playerPosition: .blue1)
+//                    value.balance = 50
+//                    return value
+                    _player
                 }
                 set {
                     _player = newValue
@@ -185,15 +186,15 @@ class AppData:ObservableObject {
             }
             var enemy: PlayerStepModel {
                 get {
-                    var value = PlayerStepModel.init(playerPosition: .blue1)
-                    value.bought = [
-                        .blue1:.smallest,
-                        .blue2:.bought,
-                        .blue3:.smallest
-                    ]
-                    value.balance = -200
-                    return value
-//                    return _enemy
+//                    var value = PlayerStepModel.init(playerPosition: .blue1)
+//                    value.bought = [
+//                        .blue1:.smallest,
+//                        .blue2:.bought,
+//                        .blue3:.smallest
+//                    ]
+//                    value.balance = -200
+//                    return value
+                    return _enemy
                 }
                 set {
                     _enemy = newValue

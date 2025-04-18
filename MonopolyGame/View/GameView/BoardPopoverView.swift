@@ -102,7 +102,7 @@ struct BoardPopoverView: View {
                 .cornerRadius(5)
                 Spacer()
             } else {
-                Slider(value: $viewModel.trade.tradeAmount, in: 0...Float(viewModel.myPlayerPosition.balance / 100), step: 0.01)
+                Slider(value: $viewModel.trade.tradeAmount, in: 0...Float((viewModel.myPlayerPosition.balance >= 101 ? viewModel.myPlayerPosition.balance : 100) / 100), step: 0.01)
             }
             
             Button("OK") {

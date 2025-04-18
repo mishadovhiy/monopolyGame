@@ -13,18 +13,12 @@ struct MonopolyGameApp: App {
     @State var viewLoaded:Bool = false
     var body: some Scene {
         WindowGroup {
-            VStack {
-                if !viewLoaded {
-                    Text("...")
-                } else {
-                    HomeView()
-                }
-            }
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
-                    self.viewLoaded = true
-                })
-            }
+            HomeView()
+//            .onAppear {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+//                    self.viewLoaded = true
+//                })
+//            }
             .environmentObject(db)
             .onAppear {
                 UINavigationBar.appearance().backgroundColor = .clear

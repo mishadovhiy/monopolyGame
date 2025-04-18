@@ -243,6 +243,16 @@ struct GameView: View {
 
     }
     
+    func propertyName(_ step:Step) -> some View {
+        VStack(content: {
+
+                
+            Text(step.attributedTitle(.small))
+                .font(.system(size: 10))
+                .foregroundColor(.black)
+
+        })
+    }
 
     func propertyBackgroundView(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
         RoundedRectangle(cornerRadius: 5)
@@ -260,6 +270,11 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .fill(step.color?.color ?? .gray)
                             .frame(height: viewModel.itemWidth / 3)
+                            .overlay {
+                                propertyName(step)
+                                .opacity(step.buyPrice == nil ? 0.5 : 1)
+                            }
+                            .clipped()
                         if section != 0 {
                             Spacer()
                         }
@@ -273,6 +288,13 @@ struct GameView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .fill(step.color?.color ?? .gray)
                             .frame(width: viewModel.itemWidth / 3)
+                            .overlay {
+                                propertyName(step)
+                                .rotationEffect(.degrees(-90))
+                                .frame(width: viewModel.itemWidth)
+                                .opacity(step.buyPrice == nil ? 0.5 : 1)
+                            }
+                            .clipped()
                         if section != 3 {
                             Spacer()
                         }
@@ -283,6 +305,46 @@ struct GameView: View {
             .frame(width: (viewModel.itemWidth - 8) - (isVerticalStack ? (isFirst ? 0 : 10) : 0), height: (viewModel.itemWidth - 8) - (!isVerticalStack ? (isFirst ? 0 : 10) : 0))
     }
     
+    func propertyText(_ step:Step, _ isVerticalStack:Bool, _ section:Int) -> some View {
+        HStack(content: {
+            if !isVerticalStack {
+                if section == 1 {
+                    Spacer()
+                }
+            }
+            VStack {
+                if isVerticalStack {
+                    if section != 0 {
+                        Spacer()
+                    }
+                }
+                Text("\(step.index)")
+                    .font(.system(size: 10, weight:.semibold))
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.black)
+                if let price = step.buyPrice {
+                    Text("$\(price)")
+                        .font(.system(size: 9))
+
+                        .multilineTextAlignment(.leading)
+                        .foregroundColor(.black.opacity(0.3))
+                }
+                if isVerticalStack {
+                    if section == 0 {
+                        Spacer()
+                    }
+                }
+                
+            }
+            if !isVerticalStack {
+                if section != 1 {
+                    Spacer()
+                }
+            }
+        })
+        .padding(5)
+    }
+    
     func propertyItem(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
         let disabled = viewModel.propertyTapDisabled(step)
         return Button(action: {
@@ -290,16 +352,8 @@ struct GameView: View {
         }, label: {
             ZStack  {
                 propertyBackgroundView(step, isFirst: isFirst, isVerticalStack: isVerticalStack, section: section)
-                VStack(content: {
-                    Text(" \(step.index)")
-                        .font(.system(size: 10))
-                        .foregroundColor(.black)
-                        
-                    Text(step.attributedTitle(.small))
-                        .foregroundColor(.black)
-
-                })
-                .opacity(step.buyPrice == nil ? 0.5 : 1)
+                propertyText(step, isVerticalStack, section)
+//                .frame(maxWidth: viewModel.itemWidth - 20, maxHeight: viewModel.itemWidth - 20)
             }
         })
         .disabled(disabled)

@@ -28,14 +28,17 @@ struct TopNavigationView: View {
                             viewModel.navigationPresenting.menu = newValue
                         }
                     })) {
-                        Text("Menu")
+                        Image(viewModel.isGamePresenting ? .pause : .menu)
+                            .resizable()
+                            .scaledToFit()
                             .frame(maxHeight:.infinity)
-                            .frame(width:45)
-
+                            .frame(width:viewModel.isGamePresenting ? 20 : 35)
+                            .animation(.bouncy, value: viewModel.isGamePresenting)
 
                     }
                     .padding(viewModel.isGamePresenting ? -20 : 0)
-                    .offset(x:viewModel.isGamePresenting ? -15 : 0)
+                    .offset(x:viewModel.isGamePresenting ? -5 : 0)
+                    .animation(.bouncy, value: viewModel.isGamePresenting)
                     NavigationLink("", destination: LeaderboardView(viewModel: $viewModel), isActive: .init(get: {
                         viewModel.navigationPresenting.leaderBoard
                     }, set: { newValue in

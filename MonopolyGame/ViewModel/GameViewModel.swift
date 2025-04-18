@@ -308,6 +308,7 @@ class GameViewModel:ObservableObject {
                     })
                 }
                 self.messagePressedSecondary = .init(title: "auction", pressed: {
+                    self.bet.playerPalance = self.myPlayerPosition.balance
                     self.bet.betProperty = property
                 })
                 self.message = .property(.init(property: property))
@@ -324,6 +325,7 @@ class GameViewModel:ObservableObject {
                 self.enemyPosition.buyIfCan(property)
 
             } else {
+                self.bet.playerPalance = self.myPlayerPosition.balance
                 self.bet.betProperty = property
             }
             checkEnemyCanUpgradeProperties()
@@ -486,6 +488,7 @@ extension GameViewModel {
     }
     
     struct BetModel {
+        var playerPalance:Int = 0
         var bet:[(PlayerStepModel, Int)] = [] {
             didSet {
                 if (self.betValue * 100) <= Float(bet.last?.1 ?? 0) {
@@ -514,7 +517,13 @@ extension GameViewModel {
             if from > 0 {
                 from += 1
             }
-            var to = (Float(betProperty?.buyPrice ?? 1) * 5)
+            let toValue:Int
+            if betProperty?.buyPrice ?? 1 >= playerPalance {
+                toValue = betProperty?.buyPrice ?? 1
+            } else {
+                toValue = playerPalance
+            }
+            var to = (Float(toValue))
             if from >= to {
                 to = from + 1
             }
