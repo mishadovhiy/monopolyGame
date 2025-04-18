@@ -64,26 +64,77 @@ struct BoardPopoverView: View {
     var tradeView: some View {
         VStack {
             Text("Trade")
+                .font(.system(size: 18, weight:.semibold))
+                .foregroundColor(.light)
+                .padding(.top, 10)
+                .padding(.bottom, 5)
             HStack {
                 PropertyListView(list: Array(viewModel.myPlayerPosition.bought.keys).sorted(by: {$0.rawValue >= $1.rawValue}), selectedProperties: $viewModel.trade.myPlayerProperties)
                 PropertyListView(list: Array(viewModel.enemyPosition.bought.keys.sorted(by: {$0.rawValue >= $1.rawValue})), selectedProperties: $viewModel.trade.enemyProperties)
 
             }
             HStack {
+                Button("-100") {
+                    viewModel.trade.tradeAmount -= 1
+                }
+                .padding(.vertical, 2)
+                .padding(.horizontal, 7)
+                .background(.lightsecondaryBackground)
+                .cornerRadius(4)
+                Button("-10") {
+                    viewModel.trade.tradeAmount -= 0.1
+                }
+                .padding(.vertical, 2)
+                .padding(.horizontal, 7)
+                .background(.lightsecondaryBackground)
+                .cornerRadius(4)
+                Text("\(Int(viewModel.trade.tradeAmount * 100))")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundColor(.light)
+                    .padding(.horizontal, 20)
+                Button("+10") {
+                    viewModel.trade.tradeAmount += 0.1
+                }
+                .padding(.vertical, 2)
+                .padding(.horizontal, 7)
+                .background(.lightsecondaryBackground)
+                .cornerRadius(4)
+                Button("+100") {
+                    viewModel.trade.tradeAmount += 1
+                }
+                .padding(.vertical, 2)
+                .padding(.horizontal, 7)
+                .background(.lightsecondaryBackground)
+                .cornerRadius(4)
+            }
+            .padding(.top, 10)
+            HStack(spacing:20) {
                 if viewModel.trade.tradingByEnemy {
                     Button("Decline") {
                         viewModel.trade = .init(isPresenting: false)
                     }
+                    .padding(.vertical, 3)
+                    .padding(.horizontal, 5)
+                    .background(.red)
+                    .cornerRadius(5)
                     Spacer()
                 } else {
+                    #warning("todo: set min/max")
                     Slider(value: $viewModel.trade.tradeAmount)
                 }
-                Text("\(Int(viewModel.trade.tradeAmount * 100))")
+                
                 Button("OK") {
                     viewModel.enemyTrade()
                 }
+                .tint(.black)
+                .padding(.vertical, 3)
+                .padding(.horizontal, 5)
+                .background(.light)
+                .cornerRadius(5)
                 .disabled(!viewModel.trade.okEnabled)
             }
+            .padding(.bottom, 5)
+            .padding(.horizontal, 5)
         }
         .overlay(content: {
             VStack(content:  {
@@ -92,13 +143,24 @@ struct BoardPopoverView: View {
                     Button("close") {
                         viewModel.activePanelType = nil
                     }
+                    .tint(.light)
+                    .padding(5)
+                    .background(.lightsecondaryBackground)
+                    .cornerRadius(4)
                 })
                 Spacer()
                 
             })
         })
-        .opacity(viewModel.activePanelType == .trade ? 1 : 0)
         .animation(.bouncy, value: viewModel.activePanelType == .trade)
+        .background(.secondaryBackground)
+        .cornerRadius(6)
+        .shadow(radius: 10)
+        .padding(.top, 80)
+        .padding(.bottom, 20)
+        .padding(.horizontal, 10)
+        .opacity(viewModel.activePanelType == .trade ? 1 : 0)
+
     }
     
     var bettingView: some View {

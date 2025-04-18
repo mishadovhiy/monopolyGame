@@ -28,7 +28,7 @@ struct GameView: View {
             panelView
                 .disabled(!viewModel.canDice)
         }
-
+        .tint(.light)
         .background(.secondaryBackground)
         
         .onChange(of: scenePhase) { newValue in
