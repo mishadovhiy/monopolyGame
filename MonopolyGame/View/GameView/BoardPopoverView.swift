@@ -10,9 +10,10 @@ import SwiftUI
 struct BoardPopoverView: View {
     @StateObject var viewModel:GameViewModel
     @Binding var isGamePresenting:Bool
-    
+    let gameLost:()->()
     var body: some View {
         ZStack {
+            #warning("test")
             sellToPlayView
             bettingView
             boardActionCancelView
@@ -40,15 +41,41 @@ struct BoardPopoverView: View {
     }
     
     var sellToPlayView: some View {
-        Button("cancel sell") {
-            if viewModel.myPlayerPosition.balance > 0 {
-                viewModel.updateBalancePresenting = false
+        VStack(spacing: 25) {
+            VStack {
+                Text("Negative Balance")
+                    .font(.system(size: 24, weight: .black))
+                    .foregroundColor(.red)
+                Text("To continue playing, please, select properties to sell or morgage")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.light)
+            }
+            HStack {
+                Button("Declare bancropcy") {
+                    gameLost()
+                }
+                .padding(.vertical, 2)
+                .padding(.horizontal, 10)
+                .background(.red)
+                Button("Cancel") {
+                    if viewModel.myPlayerPosition.balance > 0 {
+                        viewModel.updateBalancePresenting = false
+                    }
+                }
+                .padding(.vertical, 2)
+                .padding(.horizontal, 10)
+                .background(.lightsecondaryBackground)
+                .disabled(!(viewModel.myPlayerPosition.balance > 0))
+                .clipped()
+                .animation(.smooth, value: viewModel.updateBalancePresenting)
             }
         }
-        .disabled(!(viewModel.myPlayerPosition.balance > 0))
-        .frame(maxHeight: viewModel.updateBalancePresenting ? 44 : 0)
-        .clipped()
-        .animation(.smooth, value: viewModel.updateBalancePresenting)
+        .padding(15)
+        .background(.secondaryBackground)
+        .cornerRadius(4)
+        .shadow(radius: 10)
+        .opacity(viewModel.updateBalancePresenting ? 1 : 0)
+        .animation(.bouncy, value: viewModel.updateBalancePresenting)
     }
     
     var boardActionCancelView: some View {

@@ -19,7 +19,10 @@ struct GameView: View {
                 balancesView
                 boardView
                 .overlay {
-                    BoardPopoverView(viewModel: viewModel, isGamePresenting: $isPresenting)
+                    BoardPopoverView(viewModel: viewModel, isGamePresenting: $isPresenting) {
+                        db.db.gameProgress = .init()
+                        isPresenting = false
+                    }
                 }
                 .padding(.top, -60)
                 Spacer()
