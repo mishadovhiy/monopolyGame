@@ -30,6 +30,9 @@ class GameViewModel:ObservableObject {
     @Published var activePanelType:PanelType?
     enum PanelType:String, CaseIterable {
         case build, sell, morgage, redeem, trade
+        var description: String {
+            "Select properties to \(rawValue)"
+        }
     }
     
     func saveProgress(db:inout AppData.DataBase) {

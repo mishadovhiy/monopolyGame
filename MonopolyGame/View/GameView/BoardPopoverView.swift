@@ -22,6 +22,7 @@ struct BoardPopoverView: View {
         }
     }
     
+    #warning("not tested")
     var gameCompleted: some View {
         VStack {
             if viewModel.gameCompleted {
@@ -40,54 +41,134 @@ struct BoardPopoverView: View {
         
     }
     
-    var sellToPlayView: some View {
+    func messageOverlayView(_ message:MessageContent, titleColor:ColorResource = .light,
+                            buttons:[(button: ButtonData, disabled:Bool)]) -> some View {
         VStack(spacing: 25) {
             VStack {
-                Text("Negative Balance")
+                Text(message.title.capitalized)
                     .font(.system(size: 24, weight: .black))
-                    .foregroundColor(.red)
-                Text("To continue playing, please, select properties to sell or morgage")
+                    .foregroundColor(Color(titleColor))
+                Text(message.description)
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(.light)
             }
             HStack {
-                Button("Declare bancropcy") {
-                    gameLost()
-                }
-                .padding(.vertical, 2)
-                .padding(.horizontal, 10)
-                .background(.red)
-                Button("Cancel") {
-                    if viewModel.myPlayerPosition.balance > 0 {
-                        viewModel.updateBalancePresenting = false
+                ForEach(buttons, id:\.0.title) { buttonData in
+                    Button(buttonData.0.title) {
+                        if let action = buttonData.button.pressed {
+                            action()
+                        } else {
+                            viewModel.activePanelType = nil
+                        }
                     }
+                    .padding(.vertical, 2)
+                    .padding(.horizontal, 10)
+                    .background(Color(buttonData.0.backgroundColor ?? .lightsecondaryBackground))
+                    .cornerRadius(4)
+                    .disabled(buttonData.1)
+                    .clipped()
                 }
-                .padding(.vertical, 2)
-                .padding(.horizontal, 10)
-                .background(.lightsecondaryBackground)
-                .disabled(!(viewModel.myPlayerPosition.balance > 0))
-                .clipped()
-                .animation(.smooth, value: viewModel.updateBalancePresenting)
             }
         }
         .padding(15)
         .background(.secondaryBackground)
         .cornerRadius(4)
         .shadow(radius: 10)
+    }
+    
+    var sellToPlayView: some View {
+        messageOverlayView(.init(title: "Negative Balance", description: "To continue playing, please, select properties to sell or morgage"), titleColor: .red, buttons: [
+            (.init(title: "Declare bancropcy", backgroundColor: .red, pressed: {
+                gameLost()
+            }), false),
+            (.init(title: "Close", backgroundColor: .lightsecondaryBackground, pressed: {
+                
+                if viewModel.myPlayerPosition.balance > 0 {
+                    viewModel.updateBalancePresenting = false
+                }
+            }), !(viewModel.myPlayerPosition.balance > 0))
+        ])
         .opacity(viewModel.updateBalancePresenting ? 1 : 0)
         .animation(.bouncy, value: viewModel.updateBalancePresenting)
     }
     
     var boardActionCancelView: some View {
-        Button("cancel") {
-            viewModel.activePanelType = nil
-        }
-        .frame(maxHeight: viewModel.activePanelType != nil ? 44 : 0)
-        .clipped()
+        messageOverlayView(.init(title: viewModel.activePanelType?.rawValue ?? "-", description:viewModel.activePanelType?.description ?? ""), buttons: [
+            (.init(title: "Cancel"),false)
+        ])
+        .opacity(viewModel.activePanelType != nil ? 1 : 0)
         .animation(.smooth, value: viewModel.activePanelType != nil)
     }
     
+    var tradeSliderValueView: some View {
+        HStack {
+            Button("-100") {
+                viewModel.trade.tradeAmount -= 1
+            }
+            .padding(.vertical, 2)
+            .padding(.horizontal, 7)
+            .background(.lightsecondaryBackground)
+            .cornerRadius(4)
+            Button("-10") {
+                viewModel.trade.tradeAmount -= 0.1
+            }
+            .padding(.vertical, 2)
+            .padding(.horizontal, 7)
+            .background(.lightsecondaryBackground)
+            .cornerRadius(4)
+            Text("\(Int(viewModel.trade.tradeAmount * 100))")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundColor(.light)
+                .padding(.horizontal, 20)
+            Button("+10") {
+                viewModel.trade.tradeAmount += 0.1
+            }
+            .padding(.vertical, 2)
+            .padding(.horizontal, 7)
+            .background(.lightsecondaryBackground)
+            .cornerRadius(4)
+            Button("+100") {
+                viewModel.trade.tradeAmount += 1
+            }
+            .padding(.vertical, 2)
+            .padding(.horizontal, 7)
+            .background(.lightsecondaryBackground)
+            .cornerRadius(4)
+        }
+        .padding(.top, 10)
+    }
 
+    
+    var tradeActionButtons: some View {
+        HStack(spacing:20) {
+            if viewModel.trade.tradingByEnemy {
+                Button("Decline") {
+                    viewModel.trade = .init(isPresenting: false)
+                }
+                .padding(.vertical, 3)
+                .padding(.horizontal, 5)
+                .background(.red)
+                .cornerRadius(5)
+                Spacer()
+            } else {
+                #warning("todo: set min/max")
+                Slider(value: $viewModel.trade.tradeAmount)
+            }
+            
+            Button("OK") {
+                viewModel.enemyTrade()
+            }
+            .tint(.black)
+            .padding(.vertical, 3)
+            .padding(.horizontal, 5)
+            .background(.light)
+            .cornerRadius(5)
+            .disabled(!viewModel.trade.okEnabled)
+        }
+        .padding(.bottom, 5)
+        .padding(.horizontal, 5)
+    }
+    
     var tradeView: some View {
         VStack {
             Text("Trade")
@@ -100,73 +181,14 @@ struct BoardPopoverView: View {
                 PropertyListView(list: Array(viewModel.enemyPosition.bought.keys.sorted(by: {$0.rawValue >= $1.rawValue})), selectedProperties: $viewModel.trade.enemyProperties)
 
             }
-            HStack {
-                Button("-100") {
-                    viewModel.trade.tradeAmount -= 1
-                }
-                .padding(.vertical, 2)
-                .padding(.horizontal, 7)
-                .background(.lightsecondaryBackground)
-                .cornerRadius(4)
-                Button("-10") {
-                    viewModel.trade.tradeAmount -= 0.1
-                }
-                .padding(.vertical, 2)
-                .padding(.horizontal, 7)
-                .background(.lightsecondaryBackground)
-                .cornerRadius(4)
-                Text("\(Int(viewModel.trade.tradeAmount * 100))")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(.light)
-                    .padding(.horizontal, 20)
-                Button("+10") {
-                    viewModel.trade.tradeAmount += 0.1
-                }
-                .padding(.vertical, 2)
-                .padding(.horizontal, 7)
-                .background(.lightsecondaryBackground)
-                .cornerRadius(4)
-                Button("+100") {
-                    viewModel.trade.tradeAmount += 1
-                }
-                .padding(.vertical, 2)
-                .padding(.horizontal, 7)
-                .background(.lightsecondaryBackground)
-                .cornerRadius(4)
-            }
-            .padding(.top, 10)
-            HStack(spacing:20) {
-                if viewModel.trade.tradingByEnemy {
-                    Button("Decline") {
-                        viewModel.trade = .init(isPresenting: false)
-                    }
-                    .padding(.vertical, 3)
-                    .padding(.horizontal, 5)
-                    .background(.red)
-                    .cornerRadius(5)
-                    Spacer()
-                } else {
-                    #warning("todo: set min/max")
-                    Slider(value: $viewModel.trade.tradeAmount)
-                }
-                
-                Button("OK") {
-                    viewModel.enemyTrade()
-                }
-                .tint(.black)
-                .padding(.vertical, 3)
-                .padding(.horizontal, 5)
-                .background(.light)
-                .cornerRadius(5)
-                .disabled(!viewModel.trade.okEnabled)
-            }
-            .padding(.bottom, 5)
-            .padding(.horizontal, 5)
+            tradeSliderValueView
+            tradeActionButtons
         }
         .overlay(content: {
             VStack(content:  {
                 HStack(content:  {
                     Spacer()
+                    #warning("close button reusable")
                     Button("close") {
                         viewModel.activePanelType = nil
                     }
@@ -234,9 +256,11 @@ struct BoardPopoverView: View {
                 .frame(height:40)
             }
         }
-        .background(.black)
+        .background(.secondaryBackground)
         .padding(.horizontal, viewModel.itemWidth / 2)
         .padding(.vertical, viewModel.itemWidth + 30)
+        .cornerRadius(5)
+        .shadow(radius: 10)
         .opacity(viewModel.bet.betProperty != nil ? 1 : 0)
     }
 }
