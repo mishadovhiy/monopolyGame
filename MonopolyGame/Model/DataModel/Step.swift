@@ -7,145 +7,6 @@
 
 import SwiftUI
 
-struct PlayerStepModel:Codable {
-    var edited = false
-    var id:UUID = .init()
-    var playerPosition:Step {
-        didSet {
-            edited = true
-        }
-    }
-    private var boughtDictionary:[String:Upgrade] = [:]
-    {
-        didSet {
-            edited = true
-        }
-    }
-    //[brawn1:none] //test brawn1, then:brawn2 (brawn1 should be false)
-    //[brawn2:brawn1]
-    init(playerPosition: Step = .go) {
-        self.playerPosition = playerPosition
-    }
-    var morgageProperties:[Step] = []
-    {
-        didSet {
-            edited = true
-        }
-    }
-    var balance:Int = 1000
-    {
-        didSet {
-            edited = true
-        }
-    }
-    typealias BoughtUpgrades = [Step:Upgrade]
-    var bought:BoughtUpgrades {
-        get {
-            let dict = self.boughtDictionary.map { (key, value) in
-                (Step(rawValue: key) ?? .blue1, value)
-            }
-            return Dictionary(uniqueKeysWithValues: dict)
-        }
-        set {
-            let array = newValue.map { (key, value) in
-                (key.rawValue, value)
-            }
-            self.boughtDictionary = Dictionary(uniqueKeysWithValues: array)
-        }
-    }
-    
-    mutating func buyIfCan(_ step:Step, price:Int? = nil) {
-        if canBuy(step, price: price) {
-            balance -= (price ?? (step.buyPrice ?? 0))
-            bought.updateValue(.bought, forKey: step)
-        } else {
-            print("fatalerrorcannotbuy ")
-        }
-        print(bought, " htyrgtefd ")
-    }
-    
-    func canBuy(_ step:Step, price:Int? = nil) -> Bool {
-        balance >= (price ?? (step.buyPrice ?? 0)) && bought[step] == nil
-    }
-    
-    mutating func upgradePropertyIfCan(_ property:Step) {
-        if canUpdateProperty(property) {
-            if let next = self.bought[property]?.nextValue {
-                if property.upgradePrice(next) <= self.balance {
-                    self.bought.updateValue(next, forKey: property)
-                    self.balance -= property.upgradePrice(next)
-                }
-            }
-        }
-    }
-    
-    func canUpdateProperty(_ property:Step, balance:Int? = nil) -> Bool {
-        if canUpdateProperyContains(property) {
-            if let next = self.bought[property]?.nextValue {
-                if property.upgradePrice(next) <= (balance ?? self.balance) {
-                    return true
-                }
-                print("not enought balance ", property.rawValue)
-                return false
-            } else {
-                print("maximum reached ", property.rawValue)
-                return false
-            }
-        }
-        return false
-    }
-    
-    private func canUpdateProperyContains(_ property:Step) -> Bool {
-        let color = property.color
-        let all = Step.allCases.filter({$0.color == color})
-        let bought = bought.keys.filter({$0.color == color})
-        if bought.isEmpty {
-            print("canbuy1")
-
-            return true
-        }
-        var canBuy:[Bool] = []
-        bought.forEach { key in
-            let i = self.bought[key]?.index ?? 0
-            print(i)
-            if i >= (self.bought[property]?.index ?? 0) {
-                print("canbuy")
-                canBuy.append(true)
-            } else {
-                canBuy.append(false)
-            }
-        }
-        print("bought: ", bought.count, " / ", all.count)
-        if !bought.contains(property) {
-            return true
-        }
-        if all.count == bought.count {
-            return !canBuy.contains(false)
-        }
-        return false
-    }
-    
-    enum Upgrade:String, Codable, CaseIterable {
-        case bought, smallest, small, bellowMiddle, middle, higherMiddle, bellowLarge, large, largest
-        
-        var index:Int {
-            Upgrade.allCases.firstIndex(of: self) ?? 0
-        }
-        
-        var nextValue:Upgrade? {
-            Upgrade.allCases.first(where: {(index + 1) == $0.index})
-        }
-        
-        var previousValue:Upgrade? {
-            Upgrade.allCases.first(where: {(index - 1) == $0.index})
-        }
-        
-        var multiplier:CGFloat {
-            0.5 + CGFloat(index)
-        }
-    }
-}
-
 enum Step:String, Codable, CaseIterable {
     case go
     case chest1
@@ -237,7 +98,121 @@ enum Step:String, Codable, CaseIterable {
     }
     
     var title:String {
-        return rawValue
+        switch self {
+        case .go:
+            "GO"
+        case .chest1:
+            rawValue
+        case .tax1:
+            rawValue
+        case .brawn1:
+            "Mediterranean Ave"
+        case .brawn2:
+            "Baltic Ave"
+        case .transport1:
+            "Reading Railroad"
+        case .blue1:
+            "Oriental Ave"
+        case .blue2:
+            "Vermont Ave"
+        case .chance1:
+            rawValue
+        case .blue3:
+            "Connecticut Ave"
+        case .jail1:
+            rawValue
+        case .pink1:
+            "St. Charles Pal"
+        case .singlePoperty1:
+            "Electric Company"
+        case .pink2:
+            "States Ave"
+        case .pink3:
+            "Virginia Ave"
+        case .transport2:
+            "Pennsylvania Railroad"
+        case .orange1:
+            "St. James Ave"
+        case .chest2:
+            rawValue
+        case .orange2:
+            "Tennessee Ave"
+        case .orange3:
+            "New York Ave"
+        case .parking:
+            rawValue
+        case .chance2:
+            rawValue
+        case .red1:
+            "Kentucky Ave"
+        case .red2:
+            "Indiana Ave"
+        case .red3:
+            "Illinois Ave"
+        case .transport3:
+            "B&O Railroad"
+        case .yellow1:
+            "Atlantic Ave"
+        case .yellow2:
+            "Ventnor Ave"
+        case .win1:
+            rawValue
+        case .yellow3:
+            "Marvin Gardens"
+        case .jail2:
+            rawValue
+        case .green1:
+            "Pacific Ave"
+        case .green2:
+            "North Carolina Avenue"
+        case .chest3:
+            rawValue
+        case .green3:
+            "Pennsylvania Ave"
+        case .transport4:
+            "Short Line Railroad"
+        case .chance3:
+            rawValue
+        case .purpure1:
+            "Park Pal"
+        case .tax2:
+            rawValue
+        case .purpure2:
+            "Boardwalk"
+        }
+    }
+    
+    enum FontSize {
+        case small, medium, large
+        var fontSize:CGFloat {
+            switch self {
+            case .small:
+                5
+            case .medium:
+                15
+            case .large:
+                24
+            }
+        }
+    }
+    
+    func attributedTitle(_ size:FontSize) -> AttributedString {
+        let suffs = ["Ave", "Pal"]
+        var title = self.title
+        var suffix:String = ""
+        suffs.forEach({
+            if title.contains($0) {
+                suffix = $0
+                title = title.replacingOccurrences(of: $0, with: "")
+            }
+        })
+        var result = AttributedString(title, attributes: .init([
+            .font:UIFont.systemFont(ofSize: size.fontSize)
+        ]))
+        result.append(AttributedString(suffix, attributes: .init([
+            .font:UIFont.systemFont(ofSize: size.fontSize, weight:.bold)
+        ])))
+        return result
     }
     
     var rent:Int? {

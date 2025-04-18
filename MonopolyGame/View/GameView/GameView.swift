@@ -282,23 +282,23 @@ struct GameView: View {
     
     func propertyItem(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
         let disabled = viewModel.propertyTapDisabled(step)
-        return ZStack  {
-            propertyBackgroundView(step, isFirst: isFirst, isVerticalStack: isVerticalStack, section: section)
-            VStack(content: {
-                Text(" \(step.index)")
-                    .font(.system(size: 10))
-                    .foregroundColor(.black)
-                    
-                Text(step.title)
-                    .font(.system(size: 5))
-                    .foregroundColor(.black)
-
-            })
-            .opacity(step.buyPrice == nil ? 0.5 : 1)
-        }
-        .onTapGesture {
+        return Button(action: {
             viewModel.propertySelected(step)
-        }
+        }, label: {
+            ZStack  {
+                propertyBackgroundView(step, isFirst: isFirst, isVerticalStack: isVerticalStack, section: section)
+                VStack(content: {
+                    Text(" \(step.index)")
+                        .font(.system(size: 10))
+                        .foregroundColor(.black)
+                        
+                    Text(step.attributedTitle(.small))
+                        .foregroundColor(.black)
+
+                })
+                .opacity(step.buyPrice == nil ? 0.5 : 1)
+            }
+        })
         .disabled(disabled)
         .opacity(disabled ? 0.1 : 1)
     }

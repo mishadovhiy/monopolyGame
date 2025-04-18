@@ -53,7 +53,12 @@ class GameViewModel:ObservableObject {
             boardActionPropertySelected(step)
         } else {
             //presentMessage
-            self.message = .property(step)
+            let owner = playersArray.first(where: {
+                $0.bought.first { (key: Step, value: PlayerStepModel.Upgrade) in
+                    key == step
+                } != nil
+            })
+            self.message = .property(.init(owner: owner?.id == myPlayerPosition.id ? "You" : "Robot", ownerUpgrade: owner?.bought[step], property: step))
         }
     }
     
@@ -293,7 +298,7 @@ class GameViewModel:ObservableObject {
                 self.messagePressedSecondary = .init(title: "auction", pressed: {
                     self.bet.betProperty = property
                 })
-                self.message = .property(property)
+                self.message = .property(.init(property: property))
             }
             
         } else {

@@ -14,13 +14,7 @@ struct PopupView: View {
     @State var isPresenting = false
 
     var canCloseSet:Bool? = nil
-    var canClose:Bool {
-        true
-//        if let canCloseSet {
-//            return canCloseSet
-//        }
-//        return dataType?.canClose ?? true
-    }
+
     var body: some View {
         VStack {
             Spacer()
@@ -33,13 +27,14 @@ struct PopupView: View {
                         ZStack {
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(.red, lineWidth: 1)
-                            Color(.white)
+                            Color(.secondaryBackground)
+                                .cornerRadius(6)
                                 .shadow(radius: 10)
                         }
                             
                     }
                     .cornerRadius(12)
-                    
+                    .shadow(radius: 10)
                 Spacer()
                     .frame(maxWidth: 20)
             }
@@ -73,11 +68,19 @@ struct PopupView: View {
                     isPresenting = true
                 }
             } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                withAnimation {
                     isPresenting = false
-                })
+                }
             }
         }
+    }
+    
+    var canClose:Bool {
+        true
+//        if let canCloseSet {
+//            return canCloseSet
+//        }
+//        return dataType?.canClose ?? true
     }
     
     var closeButton: some View {
@@ -91,14 +94,14 @@ struct PopupView: View {
                         .padding(10)
 
                 }
-                .tint(.white)
+                .tint(.light)
                 .background {
-                    Color(.blue)
+                    Color(.lightsecondaryBackground)
                     
                 }
                 .cornerRadius(6)
                 .shadow(radius: 4)
-                .padding(.top, -5)
+                .padding(.top, -8)
                 .padding(.trailing, 5)
                 
                 Spacer()
@@ -125,16 +128,16 @@ struct PopupView: View {
                 HStack {
                     Spacer()
                     Text(dataType?.message?.title ?? "")
-                        .foregroundColor(.white)
+                        .foregroundColor(.light)
                     Spacer()
                 }
                 .padding(.vertical, 5)
-                .background(dataType?.color ?? .black)
                 ScrollView(.vertical, content: {
                     VStack {
                         rightContentView
                     }
                 })
+                .frame(maxHeight: .infinity)
                 primaryButtons
                 .frame(maxHeight: 38)
             }
@@ -145,11 +148,11 @@ struct PopupView: View {
     var primaryButtons: some View {
         HStack {
             if let secondary = secondaryButton {
-                primaryButton(title: secondary.title, background: .blue) {
+                primaryButton(title: secondary.title, background: .lightsecondaryBackground) {
                     secondary.pressed?()
                 }
             }
-            primaryButton(title: (dataType?.message?.button?.title ?? self.buttonData?.title) ?? "OK", background: .blue) {
+            primaryButton(title: (dataType?.message?.button?.title ?? self.buttonData?.title) ?? "OK", background: .light) {
                 (buttonData?.pressed ?? dataType?.message?.button?.pressed)?()
 
             }
@@ -163,6 +166,7 @@ struct PopupView: View {
             dismiss()
         } label: {
             Text(title)
+                .foregroundColor(.black)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(background)
                 .cornerRadius(8)
@@ -182,12 +186,13 @@ struct PopupView: View {
                         .frame(maxHeight: .infinity)
                 }
             case .property(let step):
-                PropertyView(step: step)
+                PropertyView(step: step.property, higlightUpgrade: step.ownerUpgrade, needPrice: false)
+                    
             default:Text("").hidden()
             }
             
         }
-        .background(.orange)
+//        .background(dataType?.color ?? .secondaryBackground)
     }
     
     var rightContentView: some View {
@@ -195,9 +200,13 @@ struct PopupView: View {
             switch dataType {
             case .custom(let messageContent):
                 Text(messageContent.title)
+                    .foregroundColor(.light)
+
                 Text(messageContent.description)
+                    .foregroundColor(.light)
+
             case .property(let step):
-                BuyPopupContentView(step: step)
+                BuyPopupContentView(step: step.property, owner: step.owner)
             default:Text("")
             }
         }
@@ -208,13 +217,19 @@ struct PopupView: View {
 extension PopupView {
     enum PopupType {
         case custom(MessageContent)
-        case property(Step)
+        case property(Property)
+        
+        struct Property {
+            var owner:String?
+            var ownerUpgrade:PlayerStepModel.Upgrade?
+            var property:Step
+        }
         
         var image:ImageResource? {
             switch self {
             case .custom(let messageContent):
                 messageContent.image
-            case .property(let step):
+            case .property(_):
                 nil
             }
         }
@@ -231,7 +246,7 @@ extension PopupView {
         var color:Color? {
             switch self {
             case .property(let step):
-                step.color?.color
+                step.property.color?.color
             default:nil
             }
         }
