@@ -18,7 +18,16 @@ class GameViewModel:ObservableObject {
     var dbUpdated = false
     @Published var bet:BetModel = .init(betValue: 0)
     
-    @Published var trade:Trade = .init()
+    @Published var trade:Trade = .init() {
+        didSet {
+            if (trade.tradeAmount * 100) < 0 {
+                trade.tradeAmount = 0
+            }
+            if Int(trade.tradeAmount * 100) > myPlayerPosition.balance {
+                trade.tradeAmount = Float(myPlayerPosition.balance / 100)
+            }
+        }
+    }
     @Published var gameCompleted:Bool = false
     @Published var deviceWidth:CGFloat = 0
     var itemWidth:CGFloat = 60
@@ -489,7 +498,16 @@ extension GameViewModel {
                 betValue = 0.01
             }
         }
-        var betValue:Float = 0
+        var betValue:Float = 0 {
+            didSet {
+                if betValue < betSliderRange.lowerBound {
+                    betValue = betSliderRange.lowerBound
+                }
+                if betValue > betSliderRange.upperBound {
+                    betValue = betSliderRange.upperBound
+                }
+            }
+        }
         
         var betSliderRange:ClosedRange<Float> {
             var from = (Float(bet.last?.1 ?? 1))

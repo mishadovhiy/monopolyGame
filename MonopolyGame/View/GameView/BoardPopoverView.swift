@@ -15,14 +15,13 @@ struct BoardPopoverView: View {
         ZStack {
             #warning("test")
             sellToPlayView
-            bettingView
+            auctionView
             boardActionCancelView
             tradeView
             gameCompleted
         }
     }
     
-    #warning("not tested")
     var gameCompleted: some View {
         messageOverlayView(.init(title: "Game Completed!"), buttons: [
             (.init(title: "OK", pressed: {
@@ -91,45 +90,6 @@ struct BoardPopoverView: View {
         .animation(.smooth, value: viewModel.activePanelType != nil)
     }
     
-    var tradeSliderValueView: some View {
-        HStack {
-            Button("-100") {
-                viewModel.trade.tradeAmount -= 1
-            }
-            .padding(.vertical, 2)
-            .padding(.horizontal, 7)
-            .background(.lightsecondaryBackground)
-            .cornerRadius(4)
-            Button("-10") {
-                viewModel.trade.tradeAmount -= 0.1
-            }
-            .padding(.vertical, 2)
-            .padding(.horizontal, 7)
-            .background(.lightsecondaryBackground)
-            .cornerRadius(4)
-            Text("\(Int(viewModel.trade.tradeAmount * 100))")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundColor(.light)
-                .padding(.horizontal, 20)
-            Button("+10") {
-                viewModel.trade.tradeAmount += 0.1
-            }
-            .padding(.vertical, 2)
-            .padding(.horizontal, 7)
-            .background(.lightsecondaryBackground)
-            .cornerRadius(4)
-            Button("+100") {
-                viewModel.trade.tradeAmount += 1
-            }
-            .padding(.vertical, 2)
-            .padding(.horizontal, 7)
-            .background(.lightsecondaryBackground)
-            .cornerRadius(4)
-        }
-        .padding(.top, 10)
-    }
-
-    
     var tradeActionButtons: some View {
         HStack(spacing:20) {
             if viewModel.trade.tradingByEnemy {
@@ -142,8 +102,7 @@ struct BoardPopoverView: View {
                 .cornerRadius(5)
                 Spacer()
             } else {
-                #warning("todo: set min/max")
-                Slider(value: $viewModel.trade.tradeAmount)
+                Slider(value: $viewModel.trade.tradeAmount, in: 0...Float(viewModel.myPlayerPosition.balance / 100), step: 0.01)
             }
             
             Button("OK") {
@@ -172,7 +131,7 @@ struct BoardPopoverView: View {
                 PropertyListView(list: Array(viewModel.enemyPosition.bought.keys.sorted(by: {$0.rawValue >= $1.rawValue})), selectedProperties: $viewModel.trade.enemyProperties)
 
             }
-            tradeSliderValueView
+            sliderTextPanel($viewModel.trade.tradeAmount)
             tradeActionButtons
         }
         .overlay(content: {
@@ -180,7 +139,7 @@ struct BoardPopoverView: View {
                 HStack(content:  {
                     Spacer()
                     #warning("close button reusable")
-                    Button("close") {
+                    Button("Close") {
                         viewModel.activePanelType = nil
                     }
                     .tint(.light)
@@ -203,7 +162,95 @@ struct BoardPopoverView: View {
 
     }
     
-    var bettingView: some View {
+    func sliderButton(_ value:Binding<Float>, multiplier:Float) -> some View {
+        Button("\(Int(multiplier * 100))") {
+            value.wrappedValue += multiplier
+        }
+        .padding(.vertical, 2)
+        .padding(.horizontal, 7)
+        .background(.lightsecondaryBackground)
+        .cornerRadius(4)
+    }
+    
+    func sliderTextPanel(_ value:Binding<Float>) -> some View {
+        let minus:[Float] = [-1, -0.1]
+        let plus:[Float] = [0.1, 1]
+        return HStack {
+            ForEach(minus, id:\.self) { i in
+                self.sliderButton(value, multiplier: i)
+            }
+            Text("\(Int(value.wrappedValue * 100))")
+                .font(.system(size: 17, weight: .semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.2)
+                .foregroundColor(.light)
+                .padding(.horizontal, 20)
+            ForEach(plus, id:\.self) { i in
+                self.sliderButton(value, multiplier: i)
+            }
+        }
+    }
+    
+    var auctionBetListView: some View {
+        VStack {
+            if viewModel.bet.bet.isEmpty {
+                VStack {
+                    Spacer().frame(maxHeight: .infinity)
+                    Text("Start betting")
+                        .font(.system(size: 18, weight: .semibold))
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.secondaryText)
+                }
+                .frame(height: 140)
+                
+            }
+            ForEach(viewModel.bet.bet, id:\.1) { bet in
+                HStack(alignment:.bottom) {
+                    Text(viewModel.myPlayerPosition.id == bet.0.id ? "You" : "robot")
+                        .foregroundColor(.secondaryText)
+                        .font(.system(size: 13))
+                    Text("\(bet.1)")
+                        .foregroundColor(.white)
+                        .font(.system(size: 16, weight:.semibold))
+
+                }
+                .padding(.horizontal, 5)
+                .padding(.vertical, 2)
+                .frame(maxWidth:.infinity, alignment: .trailing)
+                Divider()
+            }
+        }
+    }
+    
+    var auctionButtonsView: some View {
+        VStack {
+            HStack {
+                Spacer()
+                sliderTextPanel($viewModel.bet.betValue)
+                Spacer()
+            }
+            HStack(spacing:30) {
+                Button("Decline") {
+                    print(viewModel.bet.bet.last?.1, " robotWin ")
+                    self.viewModel.setBetWone()
+                }
+                .tint(.red)
+                    Slider(value: $viewModel.bet.betValue, in: viewModel.bet.betSliderRange, step: 0.01)
+                        .frame(height: 20)
+                Button("Bet") {
+                    print(Int(viewModel.bet.betValue * 100), " tegrfweda ", Int(viewModel.bet.betValue * 100))
+                    viewModel.bet.bet.append((viewModel.myPlayerPosition, Int(viewModel.bet.betValue * 100)))
+                    viewModel.robotBet()
+                }.disabled(!viewModel.myPlayerPosition.canBuy(viewModel.bet.betProperty ?? .blue1, price: viewModel.bet.bet.last?.1 ?? Int(viewModel.bet.betValue * 100)))
+            }
+            .disabled(viewModel.bet.bet.last?.0.id == viewModel.myPlayerPosition.id)
+            .frame(height:40)
+            .padding(.horizontal, 5)
+        }
+    }
+    
+    var auctionView: some View {
         VStack {
             Text("Auction")
                 .font(.system(size: 18, weight:.semibold))
@@ -215,61 +262,11 @@ struct BoardPopoverView: View {
                     .frame(maxWidth: .infinity,
                            maxHeight: .infinity)
                 ScrollView(.vertical) {
-                    VStack {
-                        if viewModel.bet.bet.isEmpty {
-                            VStack {
-                                Spacer().frame(maxHeight: .infinity)
-                                Text("Start betting")
-                                    .font(.system(size: 18, weight: .semibold))
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(.secondaryText)
-                            }
-                            .frame(height: 140)
-                            
-                        }
-                        ForEach(viewModel.bet.bet, id:\.1) { bet in
-                            HStack(alignment:.bottom) {
-                                Text(viewModel.myPlayerPosition.id == bet.0.id ? "You" : "robot")
-                                    .foregroundColor(.secondaryText)
-                                    .font(.system(size: 13))
-                                Text("\(bet.1)")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 16, weight:.semibold))
-
-                            }
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 2)
-                            .frame(maxWidth:.infinity, alignment: .trailing)
-                            Divider()
-                        }
-                    }
+                    auctionBetListView
                 }.frame(maxWidth: .infinity,
                         maxHeight: .infinity)
             }
-            VStack {
-                HStack(spacing:30) {
-                    Button("Decline") {
-                        print(viewModel.bet.bet.last?.1, " robotWin ")
-                        self.viewModel.setBetWone()
-                    }
-                    .tint(.red)
-                    HStack {
-                        Slider(value: $viewModel.bet.betValue, in: viewModel.bet.betSliderRange, step: 0.01)
-                            .frame(height: 20)
-                        Text("\(Int(viewModel.bet.betValue * 100))")
-                            .foregroundColor(.white)
-                    }
-                    Button("Bet") {
-                        print(Int(viewModel.bet.betValue * 100), " tegrfweda ", Int(viewModel.bet.betValue * 100))
-                        viewModel.bet.bet.append((viewModel.myPlayerPosition, Int(viewModel.bet.betValue * 100)))
-                        viewModel.robotBet()
-                    }.disabled(!viewModel.myPlayerPosition.canBuy(viewModel.bet.betProperty ?? .blue1, price: viewModel.bet.bet.last?.1 ?? Int(viewModel.bet.betValue * 100)))
-                }
-                .disabled(viewModel.bet.bet.last?.0.id == viewModel.myPlayerPosition.id)
-                .frame(height:40)
-                .padding(.horizontal, 5)
-            }
+            auctionButtonsView
         }
         .background(.secondaryBackground)
         .cornerRadius(5)

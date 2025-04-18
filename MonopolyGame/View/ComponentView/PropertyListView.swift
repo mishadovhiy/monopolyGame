@@ -13,6 +13,15 @@ struct PropertyListView: View {
     var body: some View {
         ScrollView(.vertical) {
             VStack {
+                if list.isEmpty {
+                    VStack {
+                        Spacer().frame(height: 150)
+                        Text("Property list is empty")
+                            .font(.system(size: 18, weight:.semibold))
+                            .foregroundColor(.secondaryText)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
                 ForEach(list, id:\.rawValue) { step in
                     PropertyView(step: step, canScroll: false)
                         .onTapGesture {

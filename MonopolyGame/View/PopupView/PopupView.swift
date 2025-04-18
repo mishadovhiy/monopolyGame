@@ -89,7 +89,7 @@ struct PopupView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Text("+")
+                    Text("Close")
                         .padding(10)
 
                 }

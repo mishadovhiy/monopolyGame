@@ -9,7 +9,7 @@ import Foundation
 
 class AppData:ObservableObject {
     let gameCenter:GameCenterModel
-    private let dbkey = "db5"
+    private let dbkey = "db6"
     @Published var deviceSize:CGSize = .zero
     @Published var db:DataBase = .init() {
         didSet {
@@ -175,7 +175,9 @@ class AppData:ObservableObject {
 //                        .red3:.largest
 //                    ]
 //                    value.balance = 2000
-                    return _player
+                                        var value = PlayerStepModel.init(playerPosition: .blue1)
+                    value.balance = 502
+                    return value
                 }
                 set {
                     _player = newValue
