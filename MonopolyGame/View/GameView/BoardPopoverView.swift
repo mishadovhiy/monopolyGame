@@ -24,21 +24,12 @@ struct BoardPopoverView: View {
     
     #warning("not tested")
     var gameCompleted: some View {
-        VStack {
-            if viewModel.gameCompleted {
-                VStack {
-                    Text("Game Completed!")
-                    Button("OK") {
-                        isGamePresenting = false
-                    }
-                }
-                .background {
-                    Color(.secondaryBackground)
-                        .cornerRadius(12)
-                }
-            }
-        }
-        
+        messageOverlayView(.init(title: "Game Completed!"), buttons: [
+            (.init(title: "OK", pressed: {
+                isGamePresenting = false
+            }), false)
+        ])
+        .opacity(viewModel.gameCompleted ? 1 : 0)
     }
     
     func messageOverlayView(_ message:MessageContent, titleColor:ColorResource = .light,
@@ -214,38 +205,61 @@ struct BoardPopoverView: View {
     
     var bettingView: some View {
         VStack {
+            Text("Auction")
+                .font(.system(size: 18, weight:.semibold))
+                .foregroundColor(.light)
+                .padding(.top, 10)
+                .padding(.bottom, 5)
             HStack {
                 PropertyView(step: viewModel.bet.betProperty ?? .blue1)
                     .frame(maxWidth: .infinity,
                            maxHeight: .infinity)
                 ScrollView(.vertical) {
                     VStack {
+                        if viewModel.bet.bet.isEmpty {
+                            VStack {
+                                Spacer().frame(maxHeight: .infinity)
+                                Text("Start betting")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(.secondaryText)
+                            }
+                            .frame(height: 140)
+                            
+                        }
                         ForEach(viewModel.bet.bet, id:\.1) { bet in
-                            HStack {
+                            HStack(alignment:.bottom) {
                                 Text(viewModel.myPlayerPosition.id == bet.0.id ? "You" : "robot")
-                                    .foregroundColor(.white)
-
+                                    .foregroundColor(.secondaryText)
+                                    .font(.system(size: 13))
                                 Text("\(bet.1)")
                                     .foregroundColor(.white)
+                                    .font(.system(size: 16, weight:.semibold))
+
                             }
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .frame(maxWidth:.infinity, alignment: .trailing)
+                            Divider()
                         }
                     }
                 }.frame(maxWidth: .infinity,
                         maxHeight: .infinity)
             }
             VStack {
-                HStack {
-                    Slider(value: $viewModel.bet.betValue, in: viewModel.bet.betSliderRange, step: 0.01)
-                        .frame(height: 20)
-                    Text("\(Int(viewModel.bet.betValue * 100))")
-                        .foregroundColor(.white)
-                }
-                HStack {
+                HStack(spacing:30) {
                     Button("Decline") {
                         print(viewModel.bet.bet.last?.1, " robotWin ")
                         self.viewModel.setBetWone()
                     }
-                    Spacer()
+                    .tint(.red)
+                    HStack {
+                        Slider(value: $viewModel.bet.betValue, in: viewModel.bet.betSliderRange, step: 0.01)
+                            .frame(height: 20)
+                        Text("\(Int(viewModel.bet.betValue * 100))")
+                            .foregroundColor(.white)
+                    }
                     Button("Bet") {
                         print(Int(viewModel.bet.betValue * 100), " tegrfweda ", Int(viewModel.bet.betValue * 100))
                         viewModel.bet.bet.append((viewModel.myPlayerPosition, Int(viewModel.bet.betValue * 100)))
@@ -254,12 +268,13 @@ struct BoardPopoverView: View {
                 }
                 .disabled(viewModel.bet.bet.last?.0.id == viewModel.myPlayerPosition.id)
                 .frame(height:40)
+                .padding(.horizontal, 5)
             }
         }
         .background(.secondaryBackground)
+        .cornerRadius(5)
         .padding(.horizontal, viewModel.itemWidth / 2)
         .padding(.vertical, viewModel.itemWidth + 30)
-        .cornerRadius(5)
         .shadow(radius: 10)
         .opacity(viewModel.bet.betProperty != nil ? 1 : 0)
     }

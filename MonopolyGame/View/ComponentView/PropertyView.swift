@@ -76,7 +76,7 @@ struct PropertyView: View {
                                 .font(.system(size: 9))
                         }
                         .frame(height:20)
-                        .padding(.vertical, higlightUpgrade == upgrade ? 5 : 2)
+                        .padding(.vertical, higlightUpgrade == upgrade ? 2 : 0)
                         .padding(.horizontal, higlightUpgrade == upgrade ? 5 : 0)
                         .background {
                             if higlightUpgrade == upgrade {

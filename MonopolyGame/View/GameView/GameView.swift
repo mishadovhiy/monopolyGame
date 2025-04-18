@@ -108,7 +108,7 @@ struct GameView: View {
                     VStack(alignment:.leading) {
                         Text("Your Balance")
                             .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(60))
+                            .foregroundColor(.secondaryText)
                             .frame(alignment: .leading)
                         Text("\(viewModel.myPlayerPosition.balance)")
                             .font(.system(size: 18, weight:.bold))
@@ -133,7 +133,7 @@ struct GameView: View {
                     VStack(alignment:.leading) {
                         Text("Enemy balance")
                             .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(60))
+                            .foregroundColor(.secondaryText)
                             .frame(alignment: .leading)
                         Text("\(viewModel.enemyPosition.balance)")
                             .font(.system(size: 18, weight:.bold))

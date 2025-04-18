@@ -76,11 +76,10 @@ struct PopupView: View {
     }
     
     var canClose:Bool {
-        true
-//        if let canCloseSet {
-//            return canCloseSet
-//        }
-//        return dataType?.canClose ?? true
+        if let canCloseSet {
+            return canCloseSet
+        }
+        return dataType?.canClose ?? true
     }
     
     var closeButton: some View {
@@ -157,6 +156,7 @@ struct PopupView: View {
 
             }
         }
+        .padding(.bottom, 3)
     }
     
     private func primaryButton(title:String, background:Color, pressed:@escaping()->()) -> some View {

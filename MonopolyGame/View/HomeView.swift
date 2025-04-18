@@ -12,17 +12,22 @@ struct HomeView: View {
     var body: some View {
         NavigationView(content: {
             GeometryReader(content: { proxy in
-                VStack {
+                VStack(spacing:30) {
                     Spacer()
                         .frame(maxHeight: .infinity)
-                    Button("Play") {
+                    Button {
                         viewModel.isGamePresenting = true
+                    } label: {
+                        Text("Play")
+                            .font(.system(size: 32, weight:.black))
+                            .padding(.horizontal, 80)
+                            .padding(.vertical, 15)
                     }
-                    .padding(10)
+                    .tint(.white)
+                    .background(.green.opacity(0.7))
+                    .cornerRadius(50)
+                    .shadow(radius: 5)
                     VStack {
-                        Spacer()
-                            .frame(maxHeight: .infinity)
-
                         HStack {
                             Spacer()
                             Button("Leaderboard") {
@@ -30,6 +35,8 @@ struct HomeView: View {
                                     viewModel.navigationPresenting.leaderBoard = true
                                 }
                             }
+                            .font(.system(size: 18, weight:.bold))
+                            .tint(.light)
                             .padding(10)
                             Spacer()
                         }

@@ -12,7 +12,7 @@ struct MenuView: View {
     var body: some View {
         VStack {
             VStack {
-                HStack() {
+                HStack {
                     
                     NavigationLink(destination: SoundSettingsView(viewModel: $viewModel), isActive: .init(get: {
                         viewModel.navigationPresenting.sound
@@ -52,10 +52,9 @@ struct MenuView: View {
                             viewModel.popToRootView()
                         }
                     }
-                    .tint(.red)
                     .padding(.horizontal, 15)
                     .padding(.vertical, 5)
-                    .background(.lightsecondaryBackground)
+                    .background(.red)
                     .cornerRadius(4)
                     .frame(maxWidth: !viewModel.isGamePresenting ? 0 : .infinity, alignment: .leading)
                     .clipped()
@@ -84,7 +83,7 @@ struct MenuView: View {
                         Text("Rate")
                             .padding(.horizontal, 15)
                             .padding(.vertical, 5)
-                            .background(.lightsecondaryBackground)
+                            .background(.lightsecondaryBackground.opacity(0.4))
                             .cornerRadius(4)
                     }
                     Button {
@@ -93,7 +92,7 @@ struct MenuView: View {
                         Text("Share App")
                             .padding(.horizontal, 15)
                             .padding(.vertical, 5)
-                            .background(.lightsecondaryBackground)
+                            .background(.lightsecondaryBackground.opacity(0.4))
                             .cornerRadius(4)
                         
                     }

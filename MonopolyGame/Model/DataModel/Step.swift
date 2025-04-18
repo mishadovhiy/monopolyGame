@@ -214,7 +214,7 @@ enum Step:String, Codable, CaseIterable {
         ])))
         return result
     }
-    
+    #warning("increes rent")
     var rent:Int? {
         guard let buyPrice else {
             return nil
@@ -229,7 +229,7 @@ enum Step:String, Codable, CaseIterable {
     func rentTotal(_ type:PlayerStepModel.Upgrade) -> Int? {
         Int((type.multiplier + 0.5) * CGFloat(self.rent ?? 0))
     }
-    
+#warning("upgrade price too high")
     func upgradePrice(_ type:PlayerStepModel.Upgrade) -> Int {
         Int(type.multiplier * CGFloat(self.buyPrice ?? 0))
     }
