@@ -9,6 +9,7 @@ import Foundation
 
 class AppData:ObservableObject {
     let gameCenter:GameCenterModel
+    var audioManager:AudioPlayerManagers?
     private let dbkey = "db6"
     @Published var deviceSize:CGSize = .zero
     @Published var db:DataBase = .init() {
@@ -31,6 +32,7 @@ class AppData:ObservableObject {
     init() {
         self.gameCenter = .init()
         self.fetch()
+
         self.gameCenter.configureGameCenterPlayer()
     }
     
@@ -53,6 +55,10 @@ class AppData:ObservableObject {
         DispatchQueue.main.async {
             self.dataLoaded = false
             self.db = .configure(db) ?? .init()
+            if self.audioManager == nil {
+                self.audioManager = .init(db: self.db)
+                self.audioManager?.play(.background1)
+            }
         }
     }
 

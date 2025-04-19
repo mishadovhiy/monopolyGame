@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State var viewModel:HomeViewModel = .init()
+    
     var body: some View {
         NavigationView(content: {
             GeometryReader(content: { proxy in

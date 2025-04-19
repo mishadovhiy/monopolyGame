@@ -41,6 +41,12 @@
 		82126F2B2DACD7FA0081983A /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F2A2DACD7FA0081983A /* UIImage.swift */; };
 		82126F2D2DACDBBC0081983A /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126F2C2DACDBBC0081983A /* Keys.swift */; };
 		825AE44A2DB19A460075B26B /* PlayerStepModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825AE4492DB19A460075B26B /* PlayerStepModel.swift */; };
+		825AE44D2DB381E30075B26B /* AudioPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825AE44C2DB381E20075B26B /* AudioPlayerManager.swift */; };
+		825AE4532DB3A0890075B26B /* background2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE44F2DB3A0890075B26B /* background2.mp3 */; };
+		825AE4542DB3A0890075B26B /* background1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE44E2DB3A0890075B26B /* background1.mp3 */; };
+		825AE4552DB3A0890075B26B /* background5.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE4522DB3A0890075B26B /* background5.mp3 */; };
+		825AE4562DB3A0890075B26B /* background3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE4502DB3A0890075B26B /* background3.mp3 */; };
+		825AE4572DB3A0890075B26B /* background4.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE4512DB3A0890075B26B /* background4.mp3 */; };
 		82C51E2C2DAD6B7000EC71F4 /* StorekitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */; };
 		82C51E2E2DAD6C7400EC71F4 /* ShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */; };
 		82C51E302DAD7C1700EC71F4 /* GameCenterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2F2DAD7C1700EC71F4 /* GameCenterModel.swift */; };
@@ -86,6 +92,12 @@
 		82126F2A2DACD7FA0081983A /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		82126F2C2DACDBBC0081983A /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		825AE4492DB19A460075B26B /* PlayerStepModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStepModel.swift; sourceTree = "<group>"; };
+		825AE44C2DB381E20075B26B /* AudioPlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerManager.swift; sourceTree = "<group>"; };
+		825AE44E2DB3A0890075B26B /* background1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background1.mp3; sourceTree = "<group>"; };
+		825AE44F2DB3A0890075B26B /* background2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background2.mp3; sourceTree = "<group>"; };
+		825AE4502DB3A0890075B26B /* background3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background3.mp3; sourceTree = "<group>"; };
+		825AE4512DB3A0890075B26B /* background4.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background4.mp3; sourceTree = "<group>"; };
+		825AE4522DB3A0890075B26B /* background5.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background5.mp3; sourceTree = "<group>"; };
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorekitModel.swift; sourceTree = "<group>"; };
 		82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
@@ -192,14 +204,15 @@
 		82126EB82DAADA360081983A /* MonopolyGame */ = {
 			isa = PBXGroup;
 			children = (
-				82126EA22DAADA360081983A /* Extension */,
 				82126EA82DAADA360081983A /* Model */,
 				82126EB22DAADA360081983A /* View */,
 				82126EB42DAADA360081983A /* ViewModel */,
 				82126EB52DAADA360081983A /* Assets.xcassets */,
+				82126F2C2DACDBBC0081983A /* Keys.swift */,
+				825AE4592DB3A0960075B26B /* Mics */,
+				82126EA22DAADA360081983A /* Extension */,
 				82126EB62DAADA360081983A /* MonopolyGame.entitlements */,
 				82126EB72DAADA360081983A /* MonopolyGameApp.swift */,
-				82126F2C2DACDBBC0081983A /* Keys.swift */,
 			);
 			path = MonopolyGame;
 			sourceTree = "<group>";
@@ -238,6 +251,26 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
+		825AE4582DB3A08E0075B26B /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+				825AE44E2DB3A0890075B26B /* background1.mp3 */,
+				825AE44F2DB3A0890075B26B /* background2.mp3 */,
+				825AE4502DB3A0890075B26B /* background3.mp3 */,
+				825AE4512DB3A0890075B26B /* background4.mp3 */,
+				825AE4522DB3A0890075B26B /* background5.mp3 */,
+			);
+			path = Sound;
+			sourceTree = "<group>";
+		};
+		825AE4592DB3A0960075B26B /* Mics */ = {
+			isa = PBXGroup;
+			children = (
+				825AE4582DB3A08E0075B26B /* Sound */,
+			);
+			path = Mics;
+			sourceTree = "<group>";
+		};
 		82C290002D9EEDD100E6EC40 = {
 			isa = PBXGroup;
 			children = (
@@ -260,6 +293,7 @@
 				82126EA72DAADA360081983A /* DataBase.swift */,
 				82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */,
 				82126ED02DAB78550081983A /* NetworkModel.swift */,
+				825AE44C2DB381E20075B26B /* AudioPlayerManager.swift */,
 				82C51E2F2DAD7C1700EC71F4 /* GameCenterModel.swift */,
 				82126F282DACD5EE0081983A /* FileManagerModel.swift */,
 			);
@@ -345,6 +379,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				825AE4532DB3A0890075B26B /* background2.mp3 in Resources */,
+				825AE4542DB3A0890075B26B /* background1.mp3 in Resources */,
+				825AE4552DB3A0890075B26B /* background5.mp3 in Resources */,
+				825AE4562DB3A0890075B26B /* background3.mp3 in Resources */,
+				825AE4572DB3A0890075B26B /* background4.mp3 in Resources */,
 				82C51E642DAF885100EC71F4 /* SuccessSKScene.sks in Resources */,
 				82126EB92DAADA360081983A /* Assets.xcassets in Resources */,
 			);
@@ -378,6 +417,7 @@
 				82126F2B2DACD7FA0081983A /* UIImage.swift in Sources */,
 				82126ECF2DAB47A60081983A /* HomeView.swift in Sources */,
 				82126ECB2DAB3C790081983A /* ImageView.swift in Sources */,
+				825AE44D2DB381E30075B26B /* AudioPlayerManager.swift in Sources */,
 				82126EF92DABF8710081983A /* TopNavigationView.swift in Sources */,
 				82126EC12DAADA360081983A /* PropertyView.swift in Sources */,
 				82126EFE2DABF8C60081983A /* AboutView.swift in Sources */,
