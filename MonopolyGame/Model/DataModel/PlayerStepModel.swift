@@ -10,6 +10,7 @@ import Foundation
 struct PlayerStepModel:Codable {
     var edited = false
     var id:UUID = .init()
+    var specialCards:[BoardCard.PlayerSpecialCard] = []
     var playerPosition:Step {
         didSet {
             edited = true
@@ -141,7 +142,7 @@ struct PlayerStepModel:Codable {
         }
         
         var multiplier:CGFloat {
-            0.5 + CGFloat(index)
+            0.2 + CGFloat(index / 10)
         }
     }
 }

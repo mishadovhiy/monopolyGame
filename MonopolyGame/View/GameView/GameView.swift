@@ -33,7 +33,6 @@ struct GameView: View {
         }
         .tint(.light)
         .background(.secondaryBackground)
-        
         .onChange(of: scenePhase) { newValue in
             if newValue == .inactive || newValue == .background {
                 if !viewModel.dbUpdated {
@@ -63,7 +62,8 @@ struct GameView: View {
     }
     
     func chanceView(_ isOnTop:Bool, canOpen:Bool = true) -> some View {
-        let isOpened = canOpen ? (isOnTop ? viewModel.chancePresenting : viewModel.chestPresenting) : false
+        let data = canOpen ? (isOnTop ? viewModel.chancePresenting : viewModel.chestPresenting) : nil
+        let isOpened = data != nil
         return HStack {
             if !isOnTop {
                 Spacer()
@@ -84,10 +84,45 @@ struct GameView: View {
                         
                     } else {
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(.red)
+                            .fill(.light)
                             .overlay(content: {
-                                Text("Front")
-                                    .rotation3DEffect(Angle(degrees: 180), axis: (x: 0.0, y: 1.0, z: 0.0))
+                                VStack(spacing:10) {
+                                    Text(data?.title ?? "")
+                                        .font(.system(size: 18, weight:.bold))
+                                        .foregroundColor(.primaryBackground)
+                                    Text(data?.text ?? "")
+                                        .font(.system(size: 12, weight:.medium))
+                                        .foregroundColor(.primaryBackground.opacity(0.8))
+                                    Spacer()
+                                    if data?.canClose ?? false {
+                                        HStack {
+                                            Spacer()
+                                            Button {
+                                                if isOnTop {
+                                                    viewModel.chanceOkPressed()
+                                                } else {
+                                                    viewModel.chestOkPressed()
+                                                }
+                                            } label: {
+                                                Text("Close")
+                                                    .font(.system(size: 12, weight: .semibold))
+                                                
+                                            }
+                                            .tint(.light)
+                                            .padding(.horizontal, 20)
+                                            .padding(.vertical, 6)
+                                            .background(.secondaryBackground)
+                                            .cornerRadius(4)
+                                        }
+
+                                    }
+
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.bottom, 5)
+                                .padding(.horizontal, 5)
+                                .padding(.top, 10)
+                                .rotation3DEffect(Angle(degrees: 180), axis: (x: 0.0, y: 1.0, z: 0.0))
                                 
                             })
                     }
@@ -102,9 +137,19 @@ struct GameView: View {
                 .onTapGesture {
                     withAnimation(.spring()) {
                         if isOnTop {
-                            viewModel.chancePresenting.toggle()
+                            if viewModel.chancePresenting != nil {
+                                viewModel.chancePresenting = nil
+                            } else {
+                                viewModel.chancePresenting = viewModel.chances.first
+                                viewModel.chances.removeFirst()
+                            }
                         } else {
-                            viewModel.chestPresenting.toggle()
+                            if viewModel.chestPresenting != nil {
+                                viewModel.chestPresenting = nil
+                            } else {
+                                viewModel.chestPresenting = viewModel.chests.first
+                                viewModel.chests.removeFirst()
+                            }
                         }
                     }
                 }
@@ -209,6 +254,11 @@ struct GameView: View {
                 .background(viewModel.myPlayerBalanceHiglightingPositive ? .green : (viewModel.myPlayerBalanceHiglightingNegative ? .red : .secondaryBackground))
                 .cornerRadius(13)
                 .padding(.leading, 5)
+//                .onTapGesture {
+//                    viewModel.message = .propertyList(viewModel.myPlayerPosition.bought.compactMap({ (key: Step, value: PlayerStepModel.Upgrade) in
+//                            .init(owner: "You", ownerUpgrade: value, property: key)
+//                    }))
+//                }
                 Spacer()
                 HStack {
                     Image(.robot)

@@ -10,8 +10,12 @@ import SwiftUI
 class GameViewModel:ObservableObject {
     @Published var diceDestination:Int = 0
     private var balanceChangeHolder:Int = 0
-    @Published var chestPresenting:Bool = false
-    @Published var chancePresenting:Bool = false
+    var chests:[BoardCard] = .chest.shuffled()
+    var chances:[BoardCard] = .chance.shuffled()
+    #warning("implement: special card: lose move")
+    #warning("player moved to example decreese rent")
+    @Published var chestPresenting:BoardCard? = nil
+    @Published var chancePresenting:BoardCard? = nil
     @Published var myPlayerPosition:PlayerStepModel = .init(playerPosition: .go) {
         willSet {
             balanceChangeHolder = myPlayerPosition.balance
@@ -83,7 +87,116 @@ class GameViewModel:ObservableObject {
     @Published var gameCompleted:Bool = false
     @Published var deviceWidth:CGFloat = 0
     var itemWidth:CGFloat = 60
+    var moovingBack:Bool = false
+    var selectingProperty:BoardCard.Action.PropertySelectionAction?
+    
+    func chestDidSet() {
+        guard let type = chestPresenting ?? chancePresenting else {
+            return
+        }
+        switch type.action {
+        case .propertySelection(let propertySelectionAction):
+            print(playersArray.flatMap({$0.bought}).count, " jbhbjkbjkbjk ")
+                if !playersArray.flatMap({$0.bought}).filter({$0.value.index >= 1}).isEmpty {
+                    selectingProperty = propertySelectionAction
+                } else {
+                    selectingProperty = nil
+                    if chestPresenting != nil {
+                        chestPresenting = nil
+                        chests.removeFirst()
+                    }
+                    
+                    if chancePresenting != nil {
+                        chancePresenting = nil
+                        chances.removeFirst()
+                    }
+                }
+                
+            
+        default:break
+        }
+    }
+    
+    func chestChanceOkPressed(_ action:BoardCard.Action?) {
+        switch action {
+        case .goTo(let step):
+            let destinationIndex:Int
+            if step.color == nil {
+                let number = "\(step.rawValue.number ?? 0)"
+                let rawValue = step.rawValue.replacingOccurrences(of: number, with: "")
+                let steps = Step.allCases[playerPosition.playerPosition.index...Step.allCases.count]
+                let playerPositionIndex = playerPosition.playerPosition.index
+                let property = Step.allCases.first {
+                    if playerPositionIndex >= $0.index {
+                        if $0.rawValue.contains(rawValue) {
+                            return true
+                        }
+                    }
+                    return false
+                } ?? Step.allCases.first(where: {
+                    $0.rawValue.contains(rawValue)
+                })
+                destinationIndex = property?.index ?? 0
+            } else {
+                destinationIndex = step.index
+            }
+            if myPlayerPosition.playerPosition.index >= destinationIndex {
+                self.diceDestination = (40 + destinationIndex) - myPlayerPosition.playerPosition.index
+            } else {
+                self.diceDestination = destinationIndex - myPlayerPosition.playerPosition.index
+            }
+            print(self.diceDestination, " rtgerf")
+            self.move()
+        case .moveIncrement(let int):
+            self.moovingBack = int <= 0
+            self.diceDestination = int * (int <= 0 ? -1 : 1)
+            print(self.moovingBack, " grefd")
+            self.move()
+        case .specialCard(let playerSpecialCard):
+            playerPosition.specialCards.append(playerSpecialCard)
+        case .balanceIncrement(let balanceIncrement):
+            var i = 1
+            switch balanceIncrement.from {
+            case .otherPlayers:
+                playersArray.forEach { player in
+                    if player.id != playerPosition.id {
+                        let index = playersArray.firstIndex(where: {$0.id == player.id}) ?? 0
+                        playersArray[index].balance += (balanceIncrement.amount * -1)
+                    }
+                }
+            case .houses:
+                i = playerPosition.bought.filter { dict in
+                    dict.value.index >= 1
+                }.count
 
+            default:
+                break
+//                playerPosition.balance += balanceIncrement.amount
+            }
+            playerPosition.balance += (balanceIncrement.amount * i)
+
+        case .propertySelection(let type):
+break
+        case nil:
+            return
+        }
+    }
+    
+    func chestOkPressed() {
+        let holder = chestPresenting
+        chestPresenting = nil
+        chests.removeFirst()
+        chestChanceOkPressed(holder?.action)
+    }
+    
+    func chanceOkPressed() {
+        let holder = chancePresenting
+
+        chancePresenting = nil
+        chances.removeFirst()
+        chestChanceOkPressed(holder?.action)
+
+    }
 //    var itemWidth:CGFloat {
 //        deviceWidth / Step.numberOfItemsInSection
 //    }
@@ -109,10 +222,20 @@ class GameViewModel:ObservableObject {
             self.myPlayerPosition = db.gameProgress.player
             self.enemyPosition = db.gameProgress.enemy
         }
-        
     }
     
     func propertySelected(_ step: Step) {
+        if let holder = selectingProperty {
+            onPropertyMoved.updateValue(holder, forKey: step)
+            withAnimation {
+                selectingProperty = nil
+                chancePresenting = nil
+                chances.removeFirst()
+                chestPresenting = nil
+                chests.removeFirst()
+            }
+            return
+        }
         if activePanelType != nil {
             boardActionPropertySelected(step)
         } else {
@@ -127,6 +250,13 @@ class GameViewModel:ObservableObject {
     }
     
     func propertyTapDisabled(_ step: Step) -> Bool {
+        if selectingProperty != nil {
+            if self.playersArray.first(where: {$0.bought[step] != nil}) != nil {
+                return false
+            } else {
+                return true
+            }
+        }
         guard let activePanelType else {
             return false
         }
@@ -154,6 +284,8 @@ class GameViewModel:ObservableObject {
             return true
         }
     }
+    
+    var onPropertyMoved:[Step:BoardCard.Action.PropertySelectionAction] = [:]
     
     func boardActionPropertySelected(_ step: Step) {
         switch activePanelType {
@@ -204,7 +336,7 @@ class GameViewModel:ObservableObject {
     }
     var currentPlayerIndex:Int = 0
     var canDice:Bool {
-        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting && !updateBalancePresenting
+        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting && !updateBalancePresenting && chestPresenting == nil && chancePresenting == nil
     }
     
     @Published var moveCompleted:Bool = true
@@ -451,7 +583,7 @@ class GameViewModel:ObservableObject {
         moveCompleted = false
         withAnimation {
             playerPosition.playerPosition = Step.allCases.first(where: {
-                (playerPosition.playerPosition.index + 1) == $0.index
+                (playerPosition.playerPosition.index + (moovingBack ? -1 : 1)) == $0.index
             }) ?? .go
         }
         print(diceDestination, " newDestination ")
@@ -469,6 +601,8 @@ class GameViewModel:ObservableObject {
             print(playerPosition.playerPosition, " gvhvhgvg ")
             self.playerCompletedMoving()
             self.checkPlayersBalance()
+            moovingBack = false
+            //check card holder actions
         }
     }
     

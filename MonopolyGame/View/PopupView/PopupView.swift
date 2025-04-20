@@ -187,7 +187,12 @@ struct PopupView: View {
                 }
             case .property(let step):
                 PropertyView(step: step.property, higlightUpgrade: step.ownerUpgrade, needPrice: false)
-                    
+            case .propertyList(let list):
+                ScrollView(.vertical) {
+                    ForEach(list, id:\.property.index) { property in
+                        PropertyView(step: property.property, higlightUpgrade: property.ownerUpgrade, canScroll: false, needPrice: true)
+                    }
+                }
             default:Text("").hidden()
             }
             
@@ -218,6 +223,7 @@ extension PopupView {
     enum PopupType {
         case custom(MessageContent)
         case property(Property)
+        case propertyList([Property])
         
         struct Property {
             var owner:String?
@@ -229,7 +235,7 @@ extension PopupView {
             switch self {
             case .custom(let messageContent):
                 messageContent.image
-            case .property(_):
+            case .property(_), .propertyList(_):
                 nil
             }
         }
@@ -238,7 +244,7 @@ extension PopupView {
             switch self {
             case .custom(let messageContent):
                 messageContent
-            case .property(_):
+            case .property(_), .propertyList(_):
                     .init(title: "Buy Property")
             }
         }
@@ -253,7 +259,7 @@ extension PopupView {
         
         var canClose:Bool {
             switch self {
-            case .custom(_):
+            case .custom(_), .propertyList(_):
                 true
             case .property(_):
                 false

@@ -227,7 +227,7 @@ enum Step:String, Codable, CaseIterable {
     }
     
     func rentTotal(_ type:PlayerStepModel.Upgrade) -> Int? {
-        Int((type.multiplier + 0.5) * CGFloat(self.rent ?? 0))
+        Int((type.multiplier * 2) * CGFloat(self.rent ?? 0))
     }
 #warning("upgrade price too high")
     func upgradePrice(_ type:PlayerStepModel.Upgrade) -> Int {
