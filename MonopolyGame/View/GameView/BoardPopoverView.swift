@@ -13,7 +13,6 @@ struct BoardPopoverView: View {
     let gameLost:()->()
     var body: some View {
         ZStack {
-            #warning("test")
             sellToPlayView
             auctionView
             boardActionCancelView

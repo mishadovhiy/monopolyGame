@@ -10,7 +10,7 @@ import Foundation
 class AppData:ObservableObject {
     let gameCenter:GameCenterModel
     var audioManager:AudioPlayerManagers?
-    private let dbkey = "db6"
+    private let dbkey = "db9"
     @Published var deviceSize:CGSize = .zero
     @Published var db:DataBase = .init() {
         didSet {

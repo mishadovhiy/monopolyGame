@@ -16,10 +16,10 @@ struct AudioPlayerManagers {
     }
     
     func play(_ name:AudioType) {
-//        var name = name
-//        if name.isBackground {
-//            name = AudioType.allCases.filter({$0.isBackground}).randomElement() ?? name
-//        }
+        var name = name
+        if name.isBackground {
+            name = AudioType.allCases.filter({$0.isBackground}).randomElement() ?? name
+        }
         if let audio = audioPlayers.first(where: {$0.audioType == name}) {
             audio.play()
         } else {
@@ -51,13 +51,28 @@ class AudioPlayerManager:NSObject, AVAudioPlayerDelegate {
     
     init(type:AudioType = .default, db:AppData.DataBase) {
         super.init()
+        self.setAudioFile(type: type, db: db)
+    }
+    
+    func play() {
+        print(audioType?.rawValue, " playingg")
+        self.player?.play()
+    }
+    
+    func stop() {
+        self.player?.stop()
+    }
+    
+    var audioType:AudioType?
+    private var volume:Float = 0
+    private func setAudioFile(type:AudioType = .default, db:AppData.DataBase?) {
         self.audioType = type
         if let soundUrl = Bundle.main.url(forResource: type.rawValue, withExtension: type.format) {
             do {
                 player = try? AVAudioPlayer(contentsOf: soundUrl)
-                if type.isBackground {
-                    player?.numberOfLoops = -1
-                }
+//                if type.isBackground {
+//                    player?.numberOfLoops = -1
+//                }
                 player?.delegate = self
                 player?.prepareToPlay()
                 if type.isBackground {
@@ -74,21 +89,22 @@ class AudioPlayerManager:NSObject, AVAudioPlayerDelegate {
         }
     }
     
-    func play() {
-        print(audioType?.rawValue, " playingg")
-        self.player?.play()
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        if flag && (audioType?.isBackground ?? false) {
+            print("changingaudiofile")
+            self.player?.stop()
+            self.player = nil
+            self.setAudioFile(type: .randomBackground, db: nil)
+            self.play()
+        }
     }
     
-    func stop() {
-        self.player?.stop()
-    }
-    
-    var audioType:AudioType?
-    
-    func setDBVolume(_ db:AppData.DataBase,
+    func setDBVolume(_ db:AppData.DataBase?,
                      completion:@escaping()->() = {}) {
         let action = {
-            let sound = self.audioType?.volume(db)
+            
+            let sound = db == nil ? self.volume : self.audioType?.volume(db!)
+            self.volume = sound ?? 0.5
             DispatchQueue.main.async {
                 self.player?.volume = sound ?? 0.5
                 completion()
@@ -105,7 +121,6 @@ class AudioPlayerManager:NSObject, AVAudioPlayerDelegate {
 }
 
 enum AudioType: String, CaseIterable {
-    case background
     case background1, background2, background3, background4, background5
     case click, click2, click3, click4
     case collect, loose, motorShort
@@ -119,7 +134,7 @@ enum AudioType: String, CaseIterable {
     static var playerHitted:AudioType = .hit
 
     static var randomBackground:AudioType {
-        allCases.filter({$0.isBackground}).randomElement() ?? .background
+        allCases.filter({$0.isBackground}).randomElement() ?? .background1
     }
     
     var format:String {

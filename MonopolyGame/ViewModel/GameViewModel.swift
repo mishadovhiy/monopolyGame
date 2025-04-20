@@ -9,15 +9,67 @@ import SwiftUI
 
 class GameViewModel:ObservableObject {
     @Published var diceDestination:Int = 0
-    @Published var myPlayerPosition:PlayerStepModel = .init(playerPosition: .go)
-    @Published var enemyPosition:PlayerStepModel = .init(playerPosition: .go)
+    private var balanceChangeHolder:Int = 0
+    @Published var chestPresenting:Bool = false
+    @Published var chancePresenting:Bool = false
+    @Published var myPlayerPosition:PlayerStepModel = .init(playerPosition: .go) {
+        willSet {
+            balanceChangeHolder = myPlayerPosition.balance
+        }
+        didSet {
+            print(myPlayerPosition.balance, " rgterfwed ", balanceChangeHolder)
+            if myPlayerPosition.balance != balanceChangeHolder {
+                
+                if myPlayerPosition.balance > balanceChangeHolder {
+                    myPlayerBalanceHiglightingPositive = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                        self.myPlayerBalanceHiglightingPositive = false
+                    })
+                } else if myPlayerPosition.balance < balanceChangeHolder {
+                    myPlayerBalanceHiglightingNegative = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                        self.myPlayerBalanceHiglightingNegative = false
+                    })
+                }
+                balanceChangeHolder = 0
+            }
+        }
+    }
+    @Published var enemyPosition:PlayerStepModel = .init(playerPosition: .go) {
+        willSet {
+            balanceChangeHolder = enemyPosition.balance
+        }
+        didSet {
+            print(enemyPosition.balance, " rgterfwed ", balanceChangeHolder)
+            if enemyPosition.balance != balanceChangeHolder {
+                
+                if enemyPosition.balance > balanceChangeHolder {
+                    robotBalanceHiglightingPositive = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                        self.robotBalanceHiglightingPositive = false
+                    })
+                } else if enemyPosition.balance < balanceChangeHolder {
+                    robotBalanceHiglightingNegative = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                        self.robotBalanceHiglightingNegative = false
+                    })
+                }
+                balanceChangeHolder = 0
+            }
+        }
+    }
     @Published var message:PopupView.PopupType?
     @Published var messagePressed:ButtonData? = nil
     @Published var messagePressedSecondary:ButtonData? = nil
     var viewAppeared = false
     var dbUpdated = false
     @Published var bet:BetModel = .init(betValue: 0)
-    
+    @Published var myPlayerBalanceHiglightingPositive = false
+    @Published var myPlayerBalanceHiglightingNegative = false
+
+    @Published var robotBalanceHiglightingPositive = false
+    @Published var robotBalanceHiglightingNegative = false
+
     @Published var trade:Trade = .init() {
         didSet {
             if (trade.tradeAmount * 100) < 0 {

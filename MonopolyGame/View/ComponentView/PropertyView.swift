@@ -59,12 +59,10 @@ struct PropertyView: View {
                     }
                     ForEach(PlayerStepModel.Upgrade.allCases, id:\.rawValue) { upgrade in
                         HStack {
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(.red)
-                                .aspectRatio(1, contentMode: .fit)
-                                .overlay {
-                                    Text("\(upgrade.index)")
-                                }
+                            Image("upgrades/\(upgrade.index)")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width:30)
                             Spacer()
                             Text("\(step.upgradePrice(upgrade))")
                                 .foregroundColor(higlightUpgrade == upgrade ? .black : .light)
