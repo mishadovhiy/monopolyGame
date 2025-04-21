@@ -11,7 +11,7 @@ import SceneKit
 
 struct DiceSceneView: UIViewControllerRepresentable {
     @Binding var dicePressed:Bool
-    var diceCompleted:((_ diceResult:Int)->())?
+    var diceCompleted:((_ diceResult:Int, _ isEquel:Bool)->())?
     
     func makeUIViewController(context: Context) -> some UIViewController {
         let vc = DiceVC.init()
@@ -40,19 +40,19 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
         }) ?? []
     }
     
-    var diceCompleted:((_ diceResult:Int)->())?
+    var diceCompleted:((_ diceResult:Int, _ isEquel:Bool)->())?
     let cameraHeight: CGFloat = 15.0
     func dicePressed() {
         diceValue = (0,0)
-        if diceNodes.isEmpty {
-            self.loadDices()
-            self.resetPositions()
-        } else {
+//        if diceNodes.isEmpty {
+//            self.loadDices()
+//            self.resetPositions()
+//        } else {
             diceNodes.forEach { node in
                 node.physicsBody?.isAffectedByGravity = true
             }
             self.resetPositions()
-        }
+//        }
         
     }
     func resetPositions() {
@@ -292,7 +292,7 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
     var diceValue:(Int, Int) = (0,0)
     func completedDice() {
         sceneView.scene?.isPaused = true
-        diceCompleted?(diceValue.0 + diceValue.1)
+        diceCompleted?(diceValue.0 + diceValue.1, diceValue.0 == diceValue.1)
         print(diceValue.0 + diceValue.1, " jnlnklknlknkljnklnlk ")
     }
     

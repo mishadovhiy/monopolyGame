@@ -74,6 +74,7 @@ struct GameView: View {
                 db.audioManager?.play(.wone)
             }
             viewModel.fetchGame(db: db.db)
+            viewModel.askPlayerToBuy(property: .purpure1)
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
@@ -258,7 +259,15 @@ struct GameView: View {
             })
             .overlay(content: {
                 if viewModel.usingDice {
-                    DiceSceneView(dicePressed: $viewModel.dicePressed) { diceResult in
+                    DiceSceneView(dicePressed: $viewModel.dicePressed) { diceResult, isEquel in
+                        if isEquel {
+                            viewModel.playerPosition.inJail = false
+                        }
+                        if !isEquel && viewModel.playerPosition.inJail {
+                            
+                        } else {
+                            viewModel.isEquelDices = isEquel
+                        }
                         viewModel.dicePressed = false
                         viewModel.diceDestination = diceResult
                         viewModel.move()
@@ -557,7 +566,7 @@ struct GameView: View {
                 Text("\(step.index + 1)")
                     .font(.system(size: 10, weight:.semibold))
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryBackground)
                 if let price = step.buyPrice {
                     Text("$\(price)")
                         .font(.system(size: 9))

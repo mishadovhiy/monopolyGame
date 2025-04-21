@@ -71,25 +71,28 @@ struct BoardPopoverView: View {
     var inJailView: some View {
         messageOverlayView(.init(title: "You are in jail"), buttons: [
             (.init(title: "skip move", pressed: {
-                viewModel.jailDisabled = false
-                viewModel.performNextPlayer()
+                viewModel.performDice()
             }), false),
             (.init(title: "use card", pressed: {
                 var removed = false
+                viewModel.myPlayerPosition.inJail = false
                 viewModel.myPlayerPosition.specialCards.removeAll { card in
-                    card == .outOfJail && !removed
+                    if card == .outOfJail && !removed {
+                        removed = true
+                        return true
+                    }
+                    return false
                 }
-                viewModel.jailDisabled = false
-                
-            }), false),
+                viewModel.performDice()
+            }), !viewModel.myPlayerPosition.specialCards.contains(.outOfJail)),
             (.init(title: "pay 100", pressed: {
-                var removed = false
+                viewModel.myPlayerPosition.inJail = false
                 viewModel.myPlayerPosition.balance -= 100
-                viewModel.jailDisabled = false
+                viewModel.performDice()
                 
-            }), false)
+            }), viewModel.myPlayerPosition.balance < 100)
         ])
-        .opacity(viewModel.jailDisabled ? 1 : 0)
+        .opacity(viewModel.playerPosition.id == viewModel.myPlayerPosition.id && viewModel.myPlayerInJail ? 1 : 0)
     }
     
     var sellToPlayView: some View {

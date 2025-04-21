@@ -92,27 +92,30 @@ class GameViewModel:ObservableObject {
     }
     @Published var usingDice = false
     @Published var dicePressed:Bool = false
-    @Published var jailDisabled = false
-    func inJailPresent() {
-        jailDisabled = true
+    
+    func performDice() {
+        if !usingDice {
+            diceDestination = (2..<12).randomElement() ?? 0
+            isEquelDices = diceDestination % 2 == 0
+        } else {
+            dicePressed = true
+        }
     }
     
     func performNextPlayer() {
         let array = playersArray
-        currentPlayerIndex += 1
+        if !isEquelDices {
+            currentPlayerIndex += 1
+        } else {
+            isEquelDices = false
+        }
         if currentPlayerIndex > array.count - 1 {
             currentPlayerIndex = 0
         }
-        if !usingDice {
-            diceDestination = (2..<12).randomElement() ?? 0
-
+        if self.myPlayerPosition.id != self.playerPosition.id && self.playerPosition.inJail {
+            self.enemyInJail()
         } else {
-            dicePressed = true
-        }
-        if playerPosition.playerPosition == .jail1 && myPlayerPosition.id == playerPosition.id {
-            inJailPresent()
-        } else if playerPosition.playerPosition == .jail1 {
-            //robot in jail
+            self.performDice()
         }
 //        dicePressed = true
         //check players special cards, example - move loosed
@@ -240,8 +243,20 @@ class GameViewModel:ObservableObject {
         }
     }
     var currentPlayerIndex:Int = 0
+    var myPlayerInJail:Bool {
+        myPlayerPosition.inJail
+    }
     var canDice:Bool {
-        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting && chestPresenting == nil && chancePresenting == nil && !jailDisabled
+        let array = [moveCompleted,
+                     bet.betProperty == nil,
+                     activePanelType == nil,
+                     !trade.isPresenting,
+                     chestPresenting == nil,
+                     chancePresenting == nil,
+                     message == nil,
+                     (myPlayerInJail && myPlayerPosition.id == playerPosition.id ? false : (myPlayerPosition.id != playerPosition.id ? true : !myPlayerInJail))
+        ]
+        return !array.contains(false)
     }
     
     @Published var moveCompleted:Bool = true
@@ -430,13 +445,16 @@ class GameViewModel:ObservableObject {
             self.move()
         }
     }
-    
+    var isEquelDices = false
     func move() {
         moveCompleted = false
-        withAnimation {
-            playerPosition.playerPosition = Step.allCases.first(where: {
-                (playerPosition.playerPosition.index + (moovingBack ? -1 : 1)) == $0.index
-            }) ?? .go
+        let moveDisabled = playerPosition.inJail && !isEquelDices
+        if !moveDisabled {
+            withAnimation {
+                playerPosition.playerPosition = Step.allCases.first(where: {
+                    (playerPosition.playerPosition.index + (moovingBack ? -1 : 1)) == $0.index
+                }) ?? .go
+            }
         }
         if playerPosition.playerPosition == .go {
             playerPosition.balance += 200
@@ -453,6 +471,26 @@ class GameViewModel:ObservableObject {
             //check card holder actions
         }
     }
+    
+    func askPlayerToBuy(property:Step) {
+        if property.buyPrice != nil && myPlayerPosition.bought[property] == nil && occupiedByPlayer(property) == nil {
+            self.messagePressed = .init(title: "Buy", pressed: {
+                if self.myPlayerPosition.balance < (property.buyPrice ?? 0) {
+                    self.bet.playerPalance = self.myPlayerPosition.balance
+                    self.bet.betProperty = property
+                } else {
+                    self.myPlayerPosition.buyIfCan(property)
+                }
+                
+            })
+            self.messagePressedSecondary = .init(title: "auction", pressed: {
+                self.bet.playerPalance = self.myPlayerPosition.balance
+                self.bet.betProperty = property
+            })
+            self.message = .property(.init(property: property))
+        }
+    }
+
     
     func enemyTrade() {
         let price = trade.myPlayerProperties.reduce(0) { partialResult, step in
@@ -539,23 +577,6 @@ fileprivate extension GameViewModel {
         }
     }
     
-    private func askPlayerToBuy(property:Step) {
-        if property.buyPrice != nil && myPlayerPosition.bought[property] == nil && occupiedByPlayer(property) == nil {
-            if self.myPlayerPosition.canBuy(property) {
-                self.messagePressed = .init(title: "Buy", pressed: {
-                    self.myPlayerPosition.buyIfCan(property)
-                })
-            } else {
-                self.messagePressed = nil
-            }
-            self.messagePressedSecondary = .init(title: "auction", pressed: {
-                self.bet.playerPalance = self.myPlayerPosition.balance
-                self.bet.betProperty = property
-            })
-            self.message = .property(.init(property: property))
-        }
-    }
-    
     func movingCompletedCheckChance(_ property:Step) {
         if let first = (property.isChest ? chests.first : chances.first) {
             if property.isChest {
@@ -585,15 +606,38 @@ fileprivate extension GameViewModel {
                 playerPosition.balance -= Int(CGFloat(playerPosition.bought.totalPrice.price + playerPosition.balance) / 10)
             case .tax2:
                 playerPosition.balance -= 100
+            case .jail1:
+                playerPosition.inJail = true
             case .jail2:
-                self.moovingBack = true
-                self.diceDestination = 20
-                self.move()
+                self.playerPosition.playerPosition = .jail1
+                self.playerPosition.inJail = true
             case .win1:
                 self.playerPosition.balance += 100
             default:break
             }
         }
+    }
+    
+    func enemyInJail() {
+        if playerPosition.specialCards.contains(.outOfJail) {
+            playerPosition.inJail = false
+            var removed = false
+            playerPosition.specialCards.removeAll { card in
+                if card == .outOfJail && !removed {
+                    removed = true
+                    return true
+                }
+                return false
+            }
+            performDice()
+        } else if playerPosition.balance >= 100 {
+            playerPosition.inJail = false
+            playerPosition.balance -= 100
+            performDice()
+        } else {
+            performDice()
+        }
+        
     }
 }
 
@@ -651,6 +695,11 @@ extension GameViewModel {
     }
     
     func chestOkPressedGoTo(_ step:Step) {
+        if step == .jail1 {
+            playerPosition.inJail = true
+            playerPosition.playerPosition = .jail1
+            return
+        }
         let destinationIndex:Int
         if step.color == nil {
             let number = "\(step.rawValue.number ?? 0)"
