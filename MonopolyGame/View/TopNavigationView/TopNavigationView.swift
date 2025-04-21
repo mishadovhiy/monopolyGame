@@ -92,17 +92,19 @@ struct TopNavigationView: View {
                     
                 }, label: {
                     Image(uiImage: self.viewModel.profileImage ?? .init(named: "profile1")!)
-                        .frame(width: self.viewModel.isGamePresenting ? 45 : 56, height: self.viewModel.isGamePresenting ? 45 : 56)
+                        .resizable()
+                        .frame(width: self.viewModel.isGamePresenting ? 45 : (self.viewModel.navigationPresenting.profile ? 60 : 50), height:self.viewModel.isGamePresenting ? 45 : (self.viewModel.navigationPresenting.profile ? 60 : 50))
+                        .aspectRatio(1, contentMode: .fit)
                         .cornerRadius(56 / 2)
                         .animation(.bouncy, value: self.viewModel.isGamePresenting)
-
                 })
                 .offset(y:viewModel.navigationPresenting.profile ? -5 : (viewModel.isGamePresenting ? 3 : 0))
                 .frame(width: viewModel.profileWidth)
                 .padding(viewModel.navigationPresenting.profile ? 10 : 0)
                 .aspectRatio(1, contentMode: .fit)
-                .animation(.bouncy, value: viewModel.isNavigationPushed)
-                .clipped()
+                .animation(.bouncy, value: viewModel.isNavigationPushed || viewModel.isGamePresenting)
+                .opacity(viewModel.isNavigationPushed && !viewModel.navigationPresenting.profile ? 0 : 1)
+//                .clipped()
                 .disabled(viewModel.profileWidth == 0 || viewModel.isGamePresenting)
                 Spacer()
             }

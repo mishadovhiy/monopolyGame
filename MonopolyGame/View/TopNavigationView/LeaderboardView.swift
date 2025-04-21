@@ -13,8 +13,19 @@ struct LeaderboardView: View {
     
     var body: some View {
         VStack(content: {
-            self.itemView(nil)
+            if !db.db.gameCompletions.completionList.isEmpty {
+                self.itemView(nil)
+                    .opacity(0.15)
+            }
             ScrollView(.vertical, content: {
+                if db.db.gameCompletions.completionList.isEmpty {
+                    Spacer().frame(height: 120)
+                    Text("Your winning progress will be displeyed here")
+                        .foregroundColor(.secondaryText)
+                        .font(.system(size: 24, weight:.semibold))
+                        .frame(maxWidth: .infinity)
+                    
+                }
                 VStack {
                     ForEach(db.db.gameCompletions.completionList.sorted(by: {
                         ($0.balance + $0.upgrades.totalPrice.price) >= ($1.balance + $1.upgrades.totalPrice.price)
@@ -28,8 +39,13 @@ struct LeaderboardView: View {
                     db.gameCenter.presentAchievements()
                 } label: {
                     Text("Game center")
+                        .font(.system(size: 18, weight: .semibold))
                 }
-                .background(.green)
+                .padding(.vertical, 5)
+                .padding(.horizontal, 25)
+                
+                .background(Color(.lightsecondaryBackground))
+                .cornerRadius(4)
             }
         })
         .background {

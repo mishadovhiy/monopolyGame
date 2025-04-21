@@ -18,11 +18,11 @@ struct SoundSettingsView: View {
                     VStack(spacing:10, content: {
                         ForEach(AppData.DataBase.Settings.Sound.CodingKeys.allCases, id:\.rawValue) { key in
                             VStack(alignment:.leading) {
-                                Text(key.rawValue)
+                                Text(key.rawValue.capitalized)
                                     .font(.system(size: 18, weight:.semibold))
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(key.description)
-                                    .font(.system(size: 14))
+                                Text(key.description.capitalized)
+                                    .font(.system(size: 12))
                                     .foregroundColor(.secondaryText)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Slider(value: .init(get: {
