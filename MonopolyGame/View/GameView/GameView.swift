@@ -101,7 +101,22 @@ struct GameView: View {
                     
                     if !isOpened {
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(.red)
+                            .fill(Color(isOnTop ? .blue : .orange))
+                            .overlay {
+                                HStack {
+                                    Spacer()
+                                    VStack {
+                                        Spacer()
+                                        Image(!isOnTop ? .chest : .question)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(maxWidth: 50)
+                                        Spacer()
+                                    }
+                                    
+                                    Spacer()
+                                }
+                            }
                         
                     } else {
                         RoundedRectangle(cornerRadius: 6)
@@ -157,25 +172,6 @@ struct GameView: View {
                     axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
                 .animation(.default, value: isOpened)
-                .onTapGesture {
-                    withAnimation(.spring()) {
-                        if isOnTop {
-                            if viewModel.chancePresenting != nil {
-                                viewModel.chancePresenting = nil
-                            } else {
-                                viewModel.chancePresenting = viewModel.chances.first
-                                viewModel.chances.removeFirst()
-                            }
-                        } else {
-                            if viewModel.chestPresenting != nil {
-                                viewModel.chestPresenting = nil
-                            } else {
-                                viewModel.chestPresenting = viewModel.chests.first
-                                viewModel.chests.removeFirst()
-                            }
-                        }
-                    }
-                }
                 if isOnTop {
                     Spacer()
                         .frame(maxHeight: isOpened ? 0 : .infinity)
@@ -224,7 +220,7 @@ struct GameView: View {
                     .padding(.bottom, -20)
             }
             .background(content: {
-                Color.lightGreen
+                Color(.lightGreen)
                     .padding(.leading, 50)
                     .padding(.top, 20)
                     .padding(.trailing, 130)
@@ -451,11 +447,23 @@ struct GameView: View {
     }
     
     func propertyBackgroundView(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
-        RoundedRectangle(cornerRadius: 5)
-            .fill(.lightGreen)
+        RoundedRectangle(cornerRadius: 0)
+            .fill(Color(.lightGreen))
             .overlay(content: {
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(Color.red, lineWidth: 2)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 0)
+                        .stroke(Color.black, lineWidth: 1)
+                    if let image = step.backgroundImage {
+                        Image(image)
+                            .resizable()
+                            .scaledToFit()
+                            .opacity(0.4)
+                            .shadow(radius: 3)
+                            .padding(step == .parking || step == .jail1 ? 0 : 5)
+                    }
+                }
+                
+                .clipped()
             })
             .overlay(content: {
                 if isVerticalStack {
@@ -463,14 +471,17 @@ struct GameView: View {
                         if section == 0 {
                             Spacer()
                         }
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(step.color?.color ?? .gray)
-                            .frame(height: viewModel.itemWidth / 3)
-                            .overlay {
-                                propertyName(step, section: section)
-                                    .opacity(step.buyPrice == nil ? 0.5 : 1)
-                            }
-//                            .clipped()
+                        if let color = step.color?.color {
+                            RoundedRectangle(cornerRadius: 5)
+                                .fill(step.color?.color ?? .clear)
+                                .opacity(0.8)
+                                .frame(height: viewModel.itemWidth / 3)
+                                .overlay {
+                                    propertyName(step, section: section)
+                                        .opacity(step.buyPrice == nil ? 0.5 : 1)
+                                }
+    //                            .clipped()
+                        }
                         if section != 0 {
                             Spacer()
                         }
@@ -481,16 +492,18 @@ struct GameView: View {
                         if section == 3 {
                             Spacer()
                         }
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(step.color?.color ?? .gray)
-                            .frame(width: viewModel.itemWidth / 3)
-                            .overlay {
-                                propertyName(step, section: section)
-                                    .rotationEffect(.degrees(-90))
-                                    .frame(width: viewModel.itemWidth)
-                                    .opacity(step.buyPrice == nil ? 0.5 : 1)
-                            }
-//                            .clipped()
+                        if let color = step.color {
+                            RoundedRectangle(cornerRadius: 5)
+                                .fill(step.color?.color ?? .gray)
+                                .frame(width: viewModel.itemWidth / 3)
+                                .overlay {
+                                    propertyName(step, section: section)
+                                        .rotationEffect(.degrees(-90))
+                                        .frame(width: viewModel.itemWidth)
+                                        .opacity(step.buyPrice == nil ? 0.5 : 1)
+                                }
+    //                            .clipped()
+                        }
                         if section != 3 {
                             Spacer()
                         }
@@ -514,7 +527,7 @@ struct GameView: View {
                         Spacer()
                     }
                 }
-                Text("\(step.index)")
+                Text("\(step.index + 1)")
                     .font(.system(size: 10, weight:.semibold))
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.black)
@@ -545,7 +558,6 @@ struct GameView: View {
         let disabled = viewModel.propertyTapDisabled(step)
         return Button(action: {
             db.audioManager?.play(.menuRegular)
-
             viewModel.propertySelected(step)
         }, label: {
             ZStack  {
@@ -610,55 +622,86 @@ struct GameView: View {
                 if (3 * Step.numberOfItemsInSection..<4 * Step.numberOfItemsInSection).contains(viewModel.playersArray[player].playerPosition.index) {
                     VStack {
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(player == 0 ? .pink : .blue)
+                            .fill(.clear)
                             .aspectRatio(1, contentMode: .fit)
+                            .overlay(content: {
+                                Image(player == 0 ? .pawn : .pawn1)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width:20)
+                                    .offset(x:player == 0 ? -10 : 10)
+                                    .shadow(radius: 5)
+
+                            })
                             .offset(y:CGFloat((30 - viewModel.playersArray[player].playerPosition.index) * -Int((viewModel.itemWidth - 8) - 10)))
                         Spacer()
                         
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
-                    .opacity(0.5)
                 }
             case 0:
                 if (0 * Step.numberOfItemsInSection..<1 * Step.numberOfItemsInSection).contains(viewModel.playersArray[player].playerPosition.index) {
                     HStack {
                         Spacer()
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(player == 0 ? .pink : .blue)
+                            .fill(.clear)
                             .aspectRatio(1, contentMode: .fit)
+                            .overlay(content: {
+                                Image(player == 0 ? .pawn : .pawn1)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width:20)
+                                    .offset(x:player == 0 ? -10 : 10)
+                                    .shadow(radius: 5)
+
+                            })
                             .offset(x:CGFloat((0 - viewModel.playersArray[player].playerPosition.index) * Int((viewModel.itemWidth - 8) - 10)))
                         
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
                     
-                    .opacity(0.5)
                 }
             case 1:
                 if (1 * Step.numberOfItemsInSection..<2 * Step.numberOfItemsInSection).contains(viewModel.playersArray[player].playerPosition.index) {
                     VStack {
                         Spacer()
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(player == 0 ? .pink : .blue)
+                            .fill(.clear)
                             .aspectRatio(1, contentMode: .fit)
+                            .overlay(content: {
+                                Image(player == 0 ? .pawn : .pawn1)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width:20)
+                                    .offset(x:player == 0 ? -10 : 10)
+                                    .shadow(radius: 5)
+
+                            })
                             .offset(y:CGFloat((10 - viewModel.playersArray[player].playerPosition.index) * Int((viewModel.itemWidth - 8) - 10)))
                         
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
                     
-                    .opacity(0.5)
                 }
             case 2:
                 if (2 * Step.numberOfItemsInSection..<3 * Step.numberOfItemsInSection).contains(viewModel.playersArray[player].playerPosition.index) {
                     HStack {
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(player == 0 ? .pink : .blue)
+                            .fill(.clear)
                             .aspectRatio(1, contentMode: .fit)
+                            .overlay(content: {
+                                Image(player == 0 ? .pawn : .pawn1)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width:20)
+                                    .offset(x:player == 0 ? -10 : 10)
+                                    .shadow(radius: 5)
+                            })
                             .offset(x:CGFloat((20 - viewModel.playersArray[player].playerPosition.index) * -Int((viewModel.itemWidth - 8) - 10)))
                         Spacer()
                     }
                     .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
                     
-                    .opacity(0.5)
                 }
             default:Text("?")
             }

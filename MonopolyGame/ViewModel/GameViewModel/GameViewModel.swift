@@ -571,6 +571,8 @@ fileprivate extension GameViewModel {
                 self.moovingBack = true
                 self.diceDestination = 20
                 self.move()
+            case .win1:
+                self.playerPosition.balance += 100
             default:break
             }
         }

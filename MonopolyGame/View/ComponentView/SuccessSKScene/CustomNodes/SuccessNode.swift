@@ -51,15 +51,15 @@ extension SuccessNode {
             switch self {
                 
             case .Oval:
-                let names = ["sell", "sell", "sell"].randomElement() ?? ""
+                let names = ["money3", "money2", "money"].randomElement() ?? ""
                 return names
             case .YellowLine:
-                let lines = ["sell", "sell"].randomElement() ?? ""
+                let lines = ["pawn", "pawn1"].randomElement() ?? ""
                 return lines
             case .RedLine:
-                return "sell"
+                return "chest"
             case .greenTriggles:
-                return "sell"
+                return "money3"
             }
         }
         

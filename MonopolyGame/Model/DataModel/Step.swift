@@ -191,6 +191,23 @@ enum Step:String, Codable, CaseIterable {
         }
     }
     
+    var backgroundImage:ImageResource? {
+        switch self {
+        case .jail1:.jail
+        case .jail2:.gavel
+        case .parking:.parking
+        case .singlePopertyClear1:.idea
+        case .transportGrey1, .transportGrey2, .transportGrey3, .transportGrey4:.train
+        case .tax1:.water
+        case .tax2:.water
+        case .go:.start
+        case .chance1, .chance2, .chance3: .question
+        case .chest1, .chest2, .chest3: .chest
+        case .win1:.star
+        default:nil
+        }
+    }
+    
     enum FontSize {
         case small, medium, large
         var fontSize:CGFloat {
