@@ -12,31 +12,28 @@ class GameViewModel:ObservableObject {
     private var balanceChangeHolder:Int = 0
     var chests:[BoardCard] = .chest.shuffled()
     var chances:[BoardCard] = .chance.shuffled()
-    #warning("implement: special card: lose move")
-    #warning("player moved to example decreese rent")
-    @Published var chestPresenting:BoardCard? = nil
-    @Published var chancePresenting:BoardCard? = nil
+#warning("implement: special card: lose move")
+#warning("player moved to example decreese rent")
+    @Published var chestPresenting:BoardCard? = nil {
+        didSet {
+            if chestPresenting != nil {
+                chestChanceDidSet()
+            }
+        }
+    }
+    @Published var chancePresenting:BoardCard? = nil {
+        didSet {
+            if chancePresenting != nil {
+                chestChanceDidSet()
+            }
+        }
+    }
     @Published var myPlayerPosition:PlayerStepModel = .init(playerPosition: .go) {
         willSet {
             balanceChangeHolder = myPlayerPosition.balance
         }
         didSet {
-            print(myPlayerPosition.balance, " rgterfwed ", balanceChangeHolder)
-            if myPlayerPosition.balance != balanceChangeHolder {
-                
-                if myPlayerPosition.balance > balanceChangeHolder {
-                    myPlayerBalanceHiglightingPositive = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                        self.myPlayerBalanceHiglightingPositive = false
-                    })
-                } else if myPlayerPosition.balance < balanceChangeHolder {
-                    myPlayerBalanceHiglightingNegative = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                        self.myPlayerBalanceHiglightingNegative = false
-                    })
-                }
-                balanceChangeHolder = 0
-            }
+            playerUpdated(false)
         }
     }
     @Published var enemyPosition:PlayerStepModel = .init(playerPosition: .go) {
@@ -44,24 +41,10 @@ class GameViewModel:ObservableObject {
             balanceChangeHolder = enemyPosition.balance
         }
         didSet {
-            print(enemyPosition.balance, " rgterfwed ", balanceChangeHolder)
-            if enemyPosition.balance != balanceChangeHolder {
-                
-                if enemyPosition.balance > balanceChangeHolder {
-                    robotBalanceHiglightingPositive = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                        self.robotBalanceHiglightingPositive = false
-                    })
-                } else if enemyPosition.balance < balanceChangeHolder {
-                    robotBalanceHiglightingNegative = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                        self.robotBalanceHiglightingNegative = false
-                    })
-                }
-                balanceChangeHolder = 0
-            }
+            playerUpdated(true)
         }
     }
+    
     @Published var message:PopupView.PopupType?
     @Published var messagePressed:ButtonData? = nil
     @Published var messagePressedSecondary:ButtonData? = nil
@@ -70,10 +53,10 @@ class GameViewModel:ObservableObject {
     @Published var bet:BetModel = .init(betValue: 0)
     @Published var myPlayerBalanceHiglightingPositive = false
     @Published var myPlayerBalanceHiglightingNegative = false
-
+    
     @Published var robotBalanceHiglightingPositive = false
     @Published var robotBalanceHiglightingNegative = false
-
+    
     @Published var trade:Trade = .init() {
         didSet {
             if (trade.tradeAmount * 100) < 0 {
@@ -84,35 +67,44 @@ class GameViewModel:ObservableObject {
             }
         }
     }
+    
     @Published var gameCompleted:Bool = false
     @Published var deviceWidth:CGFloat = 0
     var itemWidth:CGFloat = 60
     var moovingBack:Bool = false
     var selectingProperty:BoardCard.Action.PropertySelectionAction?
     
-    func chestDidSet() {
+    func playerCompletedMoving() {
+        self.moveCompleted = true
+        let property = playerPosition.playerPosition
+        payRent(property: property)
+        if playerPosition.id == myPlayerPosition.id {
+            askPlayerToBuy(property: property)
+        } else {
+            enemyCompletedMooving(property: property)
+        }
+    }
+    
+    func chestChanceDidSet() {
         guard let type = chestPresenting ?? chancePresenting else {
             return
         }
         switch type.action {
         case .propertySelection(let propertySelectionAction):
-            print(playersArray.flatMap({$0.bought}).count, " jbhbjkbjkbjk ")
-                if !playersArray.flatMap({$0.bought}).filter({$0.value.index >= 1}).isEmpty {
-                    selectingProperty = propertySelectionAction
-                } else {
-                    selectingProperty = nil
-                    if chestPresenting != nil {
-                        chestPresenting = nil
-                        chests.removeFirst()
-                    }
-                    
-                    if chancePresenting != nil {
-                        chancePresenting = nil
-                        chances.removeFirst()
-                    }
+            if !playersArray.flatMap({$0.bought}).filter({$0.value.index >= 1}).isEmpty {
+                selectingProperty = propertySelectionAction
+            } else {
+                selectingProperty = nil
+                if chestPresenting != nil {
+                    chestPresenting = nil
+                    chests.removeFirst()
                 }
                 
-            
+                if chancePresenting != nil {
+                    chancePresenting = nil
+                    chances.removeFirst()
+                }
+            }
         default:break
         }
     }
@@ -120,65 +112,22 @@ class GameViewModel:ObservableObject {
     func chestChanceOkPressed(_ action:BoardCard.Action?) {
         switch action {
         case .goTo(let step):
-            let destinationIndex:Int
-            if step.color == nil {
-                let number = "\(step.rawValue.number ?? 0)"
-                let rawValue = step.rawValue.replacingOccurrences(of: number, with: "")
-                let steps = Step.allCases[playerPosition.playerPosition.index...Step.allCases.count]
-                let playerPositionIndex = playerPosition.playerPosition.index
-                let property = Step.allCases.first {
-                    if playerPositionIndex >= $0.index {
-                        if $0.rawValue.contains(rawValue) {
-                            return true
-                        }
-                    }
-                    return false
-                } ?? Step.allCases.first(where: {
-                    $0.rawValue.contains(rawValue)
-                })
-                destinationIndex = property?.index ?? 0
-            } else {
-                destinationIndex = step.index
-            }
-            if myPlayerPosition.playerPosition.index >= destinationIndex {
-                self.diceDestination = (40 + destinationIndex) - myPlayerPosition.playerPosition.index
-            } else {
-                self.diceDestination = destinationIndex - myPlayerPosition.playerPosition.index
-            }
-            print(self.diceDestination, " rtgerf")
+            self.chestOkPressedGoTo(step)
             self.move()
+            
         case .moveIncrement(let int):
             self.moovingBack = int <= 0
             self.diceDestination = int * (int <= 0 ? -1 : 1)
-            print(self.moovingBack, " grefd")
             self.move()
+            
         case .specialCard(let playerSpecialCard):
             playerPosition.specialCards.append(playerSpecialCard)
+            
         case .balanceIncrement(let balanceIncrement):
-            var i = 1
-            switch balanceIncrement.from {
-            case .otherPlayers:
-                playersArray.forEach { player in
-                    if player.id != playerPosition.id {
-                        let index = playersArray.firstIndex(where: {$0.id == player.id}) ?? 0
-                        playersArray[index].balance += (balanceIncrement.amount * -1)
-                    }
-                }
-            case .houses:
-                i = playerPosition.bought.filter { dict in
-                    dict.value.index >= 1
-                }.count
+            chestOkPressedBalanceIncrement(balanceIncrement)
 
-            default:
-                break
-//                playerPosition.balance += balanceIncrement.amount
-            }
-            playerPosition.balance += (balanceIncrement.amount * i)
-
-        case .propertySelection(let type):
-break
-        case nil:
-            return
+        default:
+            break
         }
     }
     
@@ -189,17 +138,69 @@ break
         chestChanceOkPressed(holder?.action)
     }
     
+    func chestOkPressedGoTo(_ step:Step) {
+        let destinationIndex:Int
+        if step.color == nil {
+            let number = "\(step.rawValue.number ?? 0)"
+            let rawValue = step.rawValue.replacingOccurrences(of: number, with: "")
+            let steps = Step.allCases[playerPosition.playerPosition.index...Step.allCases.count]
+            let playerPositionIndex = playerPosition.playerPosition.index
+            let property = Step.allCases.first {
+                if playerPositionIndex >= $0.index {
+                    if $0.rawValue.contains(rawValue) {
+                        return true
+                    }
+                }
+                return false
+            } ?? Step.allCases.first(where: {
+                $0.rawValue.contains(rawValue)
+            })
+            destinationIndex = property?.index ?? 0
+        } else {
+            destinationIndex = step.index
+        }
+        if myPlayerPosition.playerPosition.index >= destinationIndex {
+            self.diceDestination = (40 + destinationIndex) - myPlayerPosition.playerPosition.index
+        } else {
+            self.diceDestination = destinationIndex - myPlayerPosition.playerPosition.index
+        }
+        print(self.diceDestination, " rtgerf")
+    }
+    
+    func chestOkPressedBalanceIncrement(_ balanceIncrement:BoardCard.Action.BalanceIncrement) {
+        var i = 1
+        switch balanceIncrement.from {
+        case .otherPlayers:
+            playersArray.forEach { player in
+                if player.id != playerPosition.id {
+                    let index = playersArray.firstIndex(where: {$0.id == player.id}) ?? 0
+                    playersArray[index].balance += (balanceIncrement.amount * -1)
+                }
+            }
+        case .houses:
+            i = playerPosition.bought.filter { dict in
+                dict.value.index >= 1
+            }.count
+            
+        default:
+            break
+            //                playerPosition.balance += balanceIncrement.amount
+        }
+        playerPosition.balance += (balanceIncrement.amount * i)
+    }
+    
+    
     func chanceOkPressed() {
         let holder = chancePresenting
-
+        
         chancePresenting = nil
         chances.removeFirst()
         chestChanceOkPressed(holder?.action)
-
+        
     }
-//    var itemWidth:CGFloat {
-//        deviceWidth / Step.numberOfItemsInSection
-//    }
+    //    var itemWidth:CGFloat {
+    //        deviceWidth / Step.numberOfItemsInSection
+    //    }
     
     @Published var activePanelType:PanelType?
     enum PanelType:String, CaseIterable {
@@ -343,11 +344,11 @@ break
     var playerPosition:PlayerStepModel {
         get {
             return playersArray[currentPlayerIndex]
-
+            
         }
         set {
             playersArray[currentPlayerIndex] = newValue
-
+            
         }
     }
     
@@ -358,7 +359,7 @@ break
         set {
             myPlayerPosition = newValue[playersArray.firstIndex(where: {$0.id == myPlayerPosition.id}) ?? 0]
             enemyPosition = newValue[playersArray.firstIndex(where: {$0.id == enemyPosition.id}) ?? 0]
-
+            
         }
     }
     var enemyLostAction:(()->())?
@@ -370,26 +371,64 @@ break
     var enemyMorgagedBalance = false
     @Published var updateBalancePresenting:Bool = false
     func prepareMoving() {
-//        if playerPosition.balance < 0 {
-
-//        } else {
-            let array = playersArray
-            currentPlayerIndex += 1
-            if currentPlayerIndex > array.count - 1 {
-                currentPlayerIndex = 0
-            }
-            print("preparepleyer:", playerPosition.id == self.myPlayerPosition.id)
-
-            diceDestination = (2..<12).randomElement() ?? 0
-//        }
+        //        if playerPosition.balance < 0 {
+        
+        //        } else {
+        let array = playersArray
+        currentPlayerIndex += 1
+        if currentPlayerIndex > array.count - 1 {
+            currentPlayerIndex = 0
+        }
+        print("preparepleyer:", playerPosition.id == self.myPlayerPosition.id)
+        
+        diceDestination = (2..<12).randomElement() ?? 0
+        //        }
         
         
     }
     
+    func playerUpdated(_ isEnemy:Bool) {
+        let player = isEnemy ? enemyPosition : myPlayerPosition
+        if player.balance != balanceChangeHolder {
+            
+            if player.balance > balanceChangeHolder {
+                if isEnemy {
+                    robotBalanceHiglightingPositive = true
+                } else {
+                    myPlayerBalanceHiglightingPositive = true
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                    if isEnemy {
+                        self.robotBalanceHiglightingPositive = false
+                    } else {
+                        self.myPlayerBalanceHiglightingPositive = false
+                    }
+                    
+                })
+            } else if player.balance < balanceChangeHolder {
+                if isEnemy {
+                    robotBalanceHiglightingNegative = true
+                } else {
+                    myPlayerBalanceHiglightingNegative = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                    if isEnemy {
+                        self.robotBalanceHiglightingNegative = false
+                    } else {
+                        self.myPlayerBalanceHiglightingNegative = false
+                    }
+                })
+            }
+            balanceChangeHolder = 0
+        }
+    }
+    
+    
     func enemySellAll(minMorgage:Int = 0) {
         print("enemySellAllenemySellAll")
         if enemyPosition.balance >= 0 && minMorgage == 0 {
-//            prepareMoving()
+            //            prepareMoving()
             return
         }
         enemyPosition.bought.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
@@ -404,7 +443,7 @@ break
                         enemyPosition.morgageProperties.append(key)
                         enemyPosition.balance += price
                     }
-                   
+                    
                 }
             }
         }
@@ -413,8 +452,8 @@ break
             enemyPosition.bought.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
                 if enemyPosition.balance < 0 && !enemyPosition.morgageProperties.contains(key) {
                     if let price = key.buyPrice,
-                        let prev = value.previousValue,
-                        value != .bought {
+                       let prev = value.previousValue,
+                       value != .bought {
                         enemyPosition.balance += (price / 2)
                         enemyPosition.bought.updateValue(prev, forKey: key)
                         canRepeat = true
@@ -456,7 +495,7 @@ break
             if (self.bet.betProperty?.buyPrice ?? 0) >= (last?.1 ?? 0) {
                 if self.enemyPosition.balance >= ((last?.1 ?? 0) + 1) {
                     self.bet.bet.append((self.enemyPosition, (last?.1 ?? 0) + 1))
-
+                    
                 } else {
                     self.setBetWone()
                 }
@@ -466,77 +505,26 @@ break
         })
     }
     
-    func playerCompletedMoving() {
-        self.moveCompleted = true
-        let property = playerPosition.playerPosition
-        if let occupiedBy = playersArray.first(where: { player in
-            player.bought[property] != nil
-        }) {
-            if let upgrade = occupiedBy.bought[property],
-               occupiedBy.id != playerPosition.id {
-                let amount = occupiedBy.morgageProperties.contains(property) ? 0 : (property.rentTotal(upgrade) ?? 0)
-                playerPosition.balance -= amount
-                playersArray.forEach { model in
-                    if model.id == occupiedBy.id {
-                        playersArray[playersArray.firstIndex(where: {$0.id == occupiedBy.id}) ?? 0].balance += amount
-                    }
-                }
-            }
-            return
-        }
-        if playerPosition.id == myPlayerPosition.id {
-            if property.buyPrice != nil && myPlayerPosition.bought[property] == nil {
-                if self.myPlayerPosition.canBuy(property) {
-                    self.messagePressed = .init(title: "Buy", pressed: {
-                        self.myPlayerPosition.buyIfCan(property)
-                    })
-                }
-                self.messagePressedSecondary = .init(title: "auction", pressed: {
-                    self.bet.playerPalance = self.myPlayerPosition.balance
-                    self.bet.betProperty = property
-                })
-                self.message = .property(.init(property: property))
-            }
-            
-        } else {
-            if property.buyPrice == nil {
-                print("notbuible")
-                checkEnemyCanUpgradeProperties()
-
-                return
-            }
-            if enemyPosition.canBuy(property) {
-                self.enemyPosition.buyIfCan(property)
-
-            } else {
-                self.bet.playerPalance = self.myPlayerPosition.balance
-                self.bet.betProperty = property
-            }
-            checkEnemyCanUpgradeProperties()
-        }
-
-    }
-    
     func checkPlayersBalance() {
         if myPlayerPosition.id == self.playerPosition.id {
             if myPlayerPosition.balance <= 0 {
                 updateBalancePresenting = true
             }
         } else {
-//            if !enemyMorgagedBalance {
-//                if enemyPosition.balance >= 260 {
-//                    self.enemyPosition.morgageProperties.forEach { step in
-//                        if let price = step.morgage {
-//                            if (price + 100) <= self.enemyPosition.balance {
-//                                self.enemyPosition.balance += price
-//                                self.enemyPosition.morgageProperties.removeAll(where: {
-//                                    $0 == step
-//                                })
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            //            if !enemyMorgagedBalance {
+            //                if enemyPosition.balance >= 260 {
+            //                    self.enemyPosition.morgageProperties.forEach { step in
+            //                        if let price = step.morgage {
+            //                            if (price + 100) <= self.enemyPosition.balance {
+            //                                self.enemyPosition.balance += price
+            //                                self.enemyPosition.morgageProperties.removeAll(where: {
+            //                                    $0 == step
+            //                                })
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
             //check balance
             if enemyPosition.balance <= 250 && !enemyMorgagedBalance {
                 enemyMorgagedBalance = true
@@ -575,7 +563,7 @@ break
         self.prepareMoving()
         if self.myPlayerPosition.id != self.playerPosition.id || forceMove {
             self.move()
-
+            
         }
     }
     
@@ -647,11 +635,11 @@ break
             self.activePanelType = nil
         })))
         
-//        if price >= pricePlayer {
-//            let colors = myPlayerProperties.c
-//        } else {
-//            trade.tradeResponse = false
-//        }
+        //        if price >= pricePlayer {
+        //            let colors = myPlayerProperties.c
+        //        } else {
+        //            trade.tradeResponse = false
+        //        }
     }
     
 }
@@ -714,7 +702,61 @@ extension GameViewModel {
                 to = from + 1
             }
             return ((from / 100)...(to / 100))
-    //        0...10
+            //        0...10
+        }
+    }
+}
+
+
+//MARK: completed mooving
+fileprivate extension GameViewModel {
+    private func enemyCompletedMooving(property:Step) {
+        if property.buyPrice == nil {
+            print("notbuible")
+            checkEnemyCanUpgradeProperties()
+            
+            return
+        }
+        if enemyPosition.canBuy(property) {
+            self.enemyPosition.buyIfCan(property)
+            
+        } else {
+            self.bet.playerPalance = self.myPlayerPosition.balance
+            self.bet.betProperty = property
+        }
+        checkEnemyCanUpgradeProperties()
+    }
+    
+    private func payRent(property:Step) {
+        if let occupiedBy = playersArray.first(where: { player in
+            player.bought[property] != nil
+        }) {
+            if let upgrade = occupiedBy.bought[property],
+               occupiedBy.id != playerPosition.id {
+                let amount = occupiedBy.morgageProperties.contains(property) ? 0 : (property.rentTotal(upgrade) ?? 0)
+                playerPosition.balance -= amount
+                playersArray.forEach { model in
+                    if model.id == occupiedBy.id {
+                        playersArray[playersArray.firstIndex(where: {$0.id == occupiedBy.id}) ?? 0].balance += amount
+                    }
+                }
+            }
+            return
+        }
+    }
+    
+    private func askPlayerToBuy(property:Step) {
+        if property.buyPrice != nil && myPlayerPosition.bought[property] == nil {
+            if self.myPlayerPosition.canBuy(property) {
+                self.messagePressed = .init(title: "Buy", pressed: {
+                    self.myPlayerPosition.buyIfCan(property)
+                })
+            }
+            self.messagePressedSecondary = .init(title: "auction", pressed: {
+                self.bet.playerPalance = self.myPlayerPosition.balance
+                self.bet.betProperty = property
+            })
+            self.message = .property(.init(property: property))
         }
     }
 }

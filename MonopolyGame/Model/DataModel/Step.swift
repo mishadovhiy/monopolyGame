@@ -26,10 +26,12 @@ enum Step:String, Codable, CaseIterable {
     case parking
     case chance2
     case red1, red2, red3
+    #warning("implement: buy when color == nil")
     case transport3
     case yellow1, yellow2
     case win1
     case yellow3
+    #warning("implement: go to chail 1")
     case jail2
     case green1, green2
     case chest3
@@ -95,6 +97,13 @@ enum Step:String, Codable, CaseIterable {
     
     var image:ImageResource? {
         return .propery
+    }
+    
+    var isChance:Bool {
+        rawValue.contains("chance")
+    }
+    var isChest:Bool {
+        rawValue.contains("chest")
     }
     
     var title:String {
