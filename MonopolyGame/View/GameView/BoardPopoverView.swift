@@ -244,6 +244,7 @@ struct BoardPopoverView: View {
                     Slider(value: $viewModel.bet.betValue, in: viewModel.bet.betSliderRange, step: 0.01)
                         .frame(height: 20)
                 Button("Bet") {
+                    db.audioManager?.play(.menu)
                     print(Int(viewModel.bet.betValue * 100), " tegrfweda ", Int(viewModel.bet.betValue * 100))
                     viewModel.bet.bet.append((viewModel.myPlayerPosition, Int(viewModel.bet.betValue * 100)))
                     viewModel.robotBet()
