@@ -38,6 +38,14 @@ struct AudioPlayerManagers {
             }
         }
     }
+    
+    func dbVolumeChanged(_ db:AppData.DataBase) {
+        audioPlayers.forEach { manager in
+            manager.setDBVolume(db) {
+                
+            }
+        }
+    }
 }
 
 class AudioPlayerManager:NSObject, AVAudioPlayerDelegate {

@@ -29,7 +29,11 @@ struct SoundSettingsView: View {
                                     db.db.settings.sound.dict[key.rawValue] ?? 0.5
                                 }, set: { newValue in
                                     db.db.settings.sound.dict.updateValue(newValue, forKey: key.rawValue)
-                                }))
+                                }), onEditingChanged:{
+                                    if !$0 {
+                                        db.audioManager?.dbVolumeChanged(db.db)
+                                    }
+                                })
                                 Divider()
                             }
                             .frame(maxWidth:.infinity, alignment: .leading)
