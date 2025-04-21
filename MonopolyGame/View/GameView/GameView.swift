@@ -226,6 +226,9 @@ struct GameView: View {
             .overlay(content: {
                 boardCardsOverley
             })
+            .overlay(content: {
+                DiceSceneView()
+            })
             .padding(.horizontal, 0)
         }
     }

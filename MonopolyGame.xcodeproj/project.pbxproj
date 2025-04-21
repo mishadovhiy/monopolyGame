@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		820679A52DB6192600B8DEF6 /* Trade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820679A42DB6192600B8DEF6 /* Trade.swift */; };
 		820679A72DB6193C00B8DEF6 /* BetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820679A62DB6193C00B8DEF6 /* BetModel.swift */; };
+		820679B92DB65D2F00B8DEF6 /* DiceSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820679B82DB65D2F00B8DEF6 /* DiceSceneView.swift */; };
 		82126EB92DAADA360081983A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82126EB52DAADA360081983A /* Assets.xcassets */; };
 		82126EBA2DAADA360081983A /* Codable+Decodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA02DAADA360081983A /* Codable+Decodable.swift */; };
 		82126EBB2DAADA360081983A /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA12DAADA360081983A /* String.swift */; };
@@ -62,6 +63,7 @@
 /* Begin PBXFileReference section */
 		820679A42DB6192600B8DEF6 /* Trade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trade.swift; sourceTree = "<group>"; };
 		820679A62DB6193C00B8DEF6 /* BetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetModel.swift; sourceTree = "<group>"; };
+		820679B82DB65D2F00B8DEF6 /* DiceSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceSceneView.swift; sourceTree = "<group>"; };
 		82126EA02DAADA360081983A /* Codable+Decodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Codable+Decodable.swift"; sourceTree = "<group>"; };
 		82126EA12DAADA360081983A /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		82126EA32DAADA360081983A /* ButtonData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonData.swift; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 				82C51E612DAF885100EC71F4 /* SuccessSKScene */,
 				82126EA92DAADA360081983A /* PropertyListView.swift */,
 				82126F262DACC35F0081983A /* PhotoLibraryView.swift */,
+				820679B82DB65D2F00B8DEF6 /* DiceSceneView.swift */,
 				82126F0F2DAC3FED0081983A /* BaseView */,
 				82126EAA2DAADA360081983A /* PropertyView.swift */,
 			);
@@ -433,6 +436,7 @@
 				82126EC02DAADA360081983A /* PropertyListView.swift in Sources */,
 				82126F112DAC48BC0081983A /* MenuView.swift in Sources */,
 				82126F172DACC1F80081983A /* ProfileView.swift in Sources */,
+				820679B92DB65D2F00B8DEF6 /* DiceSceneView.swift in Sources */,
 				82126F2B2DACD7FA0081983A /* UIImage.swift in Sources */,
 				82126ECF2DAB47A60081983A /* HomeView.swift in Sources */,
 				82126ECB2DAB3C790081983A /* ImageView.swift in Sources */,
