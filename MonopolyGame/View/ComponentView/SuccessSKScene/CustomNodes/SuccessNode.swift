@@ -54,7 +54,7 @@ extension SuccessNode {
                 let names = ["money3", "money2", "money"].randomElement() ?? ""
                 return names
             case .YellowLine:
-                let lines = ["pawn", "pawn1"].randomElement() ?? ""
+                let lines = ["pawn", "pawn1", "drop1", "drop2", "drop3", "drop4", "drop5", "drop6", "drop7", "drop8", "drop9"].randomElement() ?? ""
                 return lines
             case .RedLine:
                 return "chest"
@@ -68,7 +68,7 @@ extension SuccessNode {
                 
             case .Oval:
                 let ovals = [15, 25, 40, 60, 40, 30, 10, 30, 35, 30].randomElement() ?? 0
-                return .init(width: ovals, height: ovals)
+                return .init(width: ovals, height: ovals / 2)
             case .YellowLine:
                 let vals = [(80, 80), (60, 60), (40, 40), (20, 20)].randomElement() ?? (0,0)
                 return .init(width: vals.0, height: vals.1)
@@ -77,7 +77,7 @@ extension SuccessNode {
                 return .init(width: vals.0, height: vals.1)
             case .greenTriggles:
                 let vals = [(80, 80), (60, 60), (40, 40), (20, 20)].randomElement() ?? (0,0)
-                return .init(width: vals.0, height: vals.1)
+                return .init(width: vals.0, height: vals.1 / 2)
             }
         }
     }

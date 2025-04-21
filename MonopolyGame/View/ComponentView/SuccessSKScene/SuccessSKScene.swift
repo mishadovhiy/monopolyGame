@@ -44,7 +44,7 @@ class SuccessSKScene: SKScene {
     static func create(view:UIView, type:ObjectsType = .coloredConfety) {
         if let newView = view as! SKView? {
             if let scene = SKScene(fileNamed: "SuccessSKScene") as? SuccessSKScene {
-                scene.scaleMode = .aspectFill
+                scene.scaleMode = .aspectFit
                 scene.scsType = type
                 scene.backgroundColor = .clear
                 newView.presentScene(scene)

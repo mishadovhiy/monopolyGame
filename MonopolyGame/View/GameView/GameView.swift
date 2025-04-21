@@ -74,7 +74,6 @@ struct GameView: View {
                 db.audioManager?.play(.wone)
             }
             viewModel.fetchGame(db: db.db)
-            viewModel.askPlayerToBuy(property: .purpure1)
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
