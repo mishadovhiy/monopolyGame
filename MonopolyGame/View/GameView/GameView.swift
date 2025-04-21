@@ -380,14 +380,20 @@ struct GameView: View {
         
     }
     
-    func propertyName(_ step:Step) -> some View {
+    func propertyName(_ step:Step, section:Int) -> some View {
         VStack(content: {
-            
-            
             Text(step.attributedTitle(.small))
                 .font(.system(size: 10))
                 .foregroundColor(.black)
-            
+                .overlay {
+                    if let occupied = viewModel.occupiedByPlayer(step) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(occupied.id == viewModel.myPlayerPosition.id ? .red : .blue)
+                            .frame(width:20, height: 20)
+                            .offset(y:[0, 3].contains(section) ? 20 : -20)
+                    }
+                    
+                }
         })
     }
     
@@ -408,10 +414,10 @@ struct GameView: View {
                             .fill(step.color?.color ?? .gray)
                             .frame(height: viewModel.itemWidth / 3)
                             .overlay {
-                                propertyName(step)
+                                propertyName(step, section: section)
                                     .opacity(step.buyPrice == nil ? 0.5 : 1)
                             }
-                            .clipped()
+//                            .clipped()
                         if section != 0 {
                             Spacer()
                         }
@@ -426,12 +432,12 @@ struct GameView: View {
                             .fill(step.color?.color ?? .gray)
                             .frame(width: viewModel.itemWidth / 3)
                             .overlay {
-                                propertyName(step)
+                                propertyName(step, section: section)
                                     .rotationEffect(.degrees(-90))
                                     .frame(width: viewModel.itemWidth)
                                     .opacity(step.buyPrice == nil ? 0.5 : 1)
                             }
-                            .clipped()
+//                            .clipped()
                         if section != 3 {
                             Spacer()
                         }
@@ -509,9 +515,6 @@ struct GameView: View {
                             HStack {
                                 Spacer()
                                 if upgrade.index == 0 {
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .fill(.red)
-                                        .frame(width:30, height: 30)
                                 } else {
                                     Image("upgrades/\(upgrade.index)")
                                         .resizable()
@@ -525,10 +528,6 @@ struct GameView: View {
                         VStack {
                             HStack {
                                 if upgrade.index == 0 {
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .fill(.orange)
-                                        .frame(width:30, height: 30)
-                                    
                                 } else {
                                     Image("upgrades/\(upgrade.index)")
                                         .resizable()

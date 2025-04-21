@@ -477,17 +477,16 @@ class GameViewModel:ObservableObject {
         })))
     }
     
-}
-
-
-//MARK: completed mooving
-fileprivate extension GameViewModel {
-    
     func occupiedByPlayer(_ property:Step) -> PlayerStepModel? {
         playersArray.first(where: { player in
             player.bought[property] != nil
         })
     }
+}
+
+
+//MARK: completed mooving
+fileprivate extension GameViewModel {
     
     private func enemyCompletedMooving(property:Step) {
         if property.buyPrice == nil {
