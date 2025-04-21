@@ -92,6 +92,11 @@ class GameViewModel:ObservableObject {
     }
     @Published var usingDice = false
     @Published var dicePressed:Bool = false
+    @Published var jailDisabled = false
+    func inJailPresent() {
+        jailDisabled = true
+    }
+    
     func performNextPlayer() {
         let array = playersArray
         currentPlayerIndex += 1
@@ -103,6 +108,11 @@ class GameViewModel:ObservableObject {
 
         } else {
             dicePressed = true
+        }
+        if playerPosition.playerPosition == .jail1 && myPlayerPosition.id == playerPosition.id {
+            inJailPresent()
+        } else if playerPosition.playerPosition == .jail1 {
+            //robot in jail
         }
 //        dicePressed = true
         //check players special cards, example - move loosed
@@ -231,7 +241,7 @@ class GameViewModel:ObservableObject {
     }
     var currentPlayerIndex:Int = 0
     var canDice:Bool {
-        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting && chestPresenting == nil && chancePresenting == nil
+        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting && chestPresenting == nil && chancePresenting == nil && !jailDisabled
     }
     
     @Published var moveCompleted:Bool = true
@@ -645,7 +655,7 @@ extension GameViewModel {
         if step.color == nil {
             let number = "\(step.rawValue.number ?? 0)"
             let rawValue = step.rawValue.replacingOccurrences(of: number, with: "")
-            let steps = Step.allCases[playerPosition.playerPosition.index...Step.allCases.count]
+//            let steps = Step.allCases[playerPosition.playerPosition.index...Step.allCases.count]
             let playerPositionIndex = playerPosition.playerPosition.index
             let property = Step.allCases.first {
                 if playerPositionIndex >= $0.index {

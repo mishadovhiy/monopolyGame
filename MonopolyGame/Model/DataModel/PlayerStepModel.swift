@@ -10,7 +10,7 @@ import Foundation
 struct PlayerStepModel:Codable {
     var edited = false
     var id:UUID = .init()
-    var specialCards:[BoardCard.PlayerSpecialCard] = []
+    var specialCards:[BoardCard.PlayerSpecialCard] = [.outOfJail]
     var playerPosition:Step {
         didSet {
             edited = true

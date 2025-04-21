@@ -150,14 +150,14 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
         
         addBoundaryWalls(to: scene, floorWidth: floorWidth, floorHeight: floorHeight, wallHeight: cameraHeight)
         
-//        loadDices()
+        loadDices()
         sceneView.allowsCameraControl = false
         sceneView.showsStatistics = false
     }
     
     func addBoundaryWalls(to scene: SCNScene, floorWidth: CGFloat, floorHeight: CGFloat, wallHeight: CGFloat) {
         let wallThickness: CGFloat = 0.5
-        let wallColor = UIColor.blue.withAlphaComponent(0.1)
+        let wallColor = UIColor.clear
         
         let wallY = Float(wallHeight / 2)
         

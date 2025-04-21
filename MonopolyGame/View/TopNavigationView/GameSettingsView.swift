@@ -67,9 +67,9 @@ struct GameSettingsView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Divider()
-//            Toggle(isOn: $db.db.settings.game.usingDice) {
-//                Text("Is using dice 3D Images")
-//            }
+            Toggle(isOn: $db.db.settings.game.usingDice) {
+                Text("Is using dice 3D Images")
+            }
             VStack {
                 Button("Clear progress") {
                     db.audioManager?.play(.menu)

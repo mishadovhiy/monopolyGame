@@ -19,6 +19,7 @@ struct BoardPopoverView: View {
             boardActionCancelView
             tradeView
             gameCompleted
+            inJailView
         }
     }
     
@@ -65,6 +66,30 @@ struct BoardPopoverView: View {
         .background(.secondaryBackground)
         .cornerRadius(4)
         .shadow(radius: 10)
+    }
+    
+    var inJailView: some View {
+        messageOverlayView(.init(title: "You are in jail"), buttons: [
+            (.init(title: "skip move", pressed: {
+                viewModel.jailDisabled = false
+                viewModel.performNextPlayer()
+            }), false),
+            (.init(title: "use card", pressed: {
+                var removed = false
+                viewModel.myPlayerPosition.specialCards.removeAll { card in
+                    card == .outOfJail && !removed
+                }
+                viewModel.jailDisabled = false
+                
+            }), false),
+            (.init(title: "pay 100", pressed: {
+                var removed = false
+                viewModel.myPlayerPosition.balance -= 100
+                viewModel.jailDisabled = false
+                
+            }), false)
+        ])
+        .opacity(viewModel.jailDisabled ? 1 : 0)
     }
     
     var sellToPlayView: some View {

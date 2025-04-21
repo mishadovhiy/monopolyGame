@@ -74,7 +74,6 @@ struct GameView: View {
                 db.audioManager?.play(.wone)
             }
             viewModel.fetchGame(db: db.db)
-            self.viewModel.viewAppeared = true
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
@@ -166,7 +165,7 @@ struct GameView: View {
                 }
                 ZStack {
                     if !isOpened {
-                        chanceCardBackground(isOpened)
+                        chanceCardBackground(isOnTop)
                         
                     } else {
                         chanceContent(data, isOnTop: isOnTop)
@@ -249,9 +248,9 @@ struct GameView: View {
             })
             .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
             .overlay(content: {
-                if !viewModel.usingDice {
+//                if !viewModel.usingDice {
                     diceNumberView
-                }
+//                }
                 
             })
             .overlay(content: {
@@ -355,7 +354,7 @@ struct GameView: View {
             VStack {
                 Button(viewModel.playerPosition.id != viewModel.myPlayerPosition.id ? "Dice" : "Done") {
                     db.audioManager?.play(.menu)
-
+                    viewModel.moveCompleted = false
 //                    viewModel.dicePressed = true
                     if viewModel.usingDice {
                         viewModel.performNextPlayer()
