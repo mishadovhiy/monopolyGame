@@ -12,6 +12,10 @@ class GameViewModel:ObservableObject {
     private var balanceChangeHolder:Int = 0
     var chests:[BoardCard] = .chest.shuffled()
     var chances:[BoardCard] = .chance.shuffled()
+    #warning("if morgage - show morgage icon")
+    #warning("bug: when by me owned - robot can buy")
+    //show porperty ouner color on top of property name
+    #warning("buy presed - if not enought balance - nothing heppens, need to show auction only")
 #warning("implement: special card: lose move")
 #warning("player moved to example decreese rent")
     @Published var chestPresenting:BoardCard? = nil {
@@ -121,9 +125,7 @@ class GameViewModel:ObservableObject {
             withAnimation {
                 selectingProperty = nil
                 chancePresenting = nil
-                chances.removeFirst()
                 chestPresenting = nil
-                chests.removeFirst()
             }
             return
         }
@@ -491,16 +493,15 @@ fileprivate extension GameViewModel {
             checkEnemyCanUpgradeProperties()
             return
         }
-        if enemyPosition.canBuy(property) {
-            self.enemyPosition.buyIfCan(property)
-            
-        } else {
-            if occupiedByPlayer(property) == nil {
+        if occupiedByPlayer(property) == nil {
+            if enemyPosition.canBuy(property) {
+                self.enemyPosition.buyIfCan(property)
+            } else {
                 self.bet.playerPalance = self.myPlayerPosition.balance
                 self.bet.betProperty = property
             }
-           
         }
+        
         checkEnemyCanUpgradeProperties()
     }
     
@@ -526,6 +527,8 @@ fileprivate extension GameViewModel {
                 self.messagePressed = .init(title: "Buy", pressed: {
                     self.myPlayerPosition.buyIfCan(property)
                 })
+            } else {
+                self.messagePressed = nil
             }
             self.messagePressedSecondary = .init(title: "auction", pressed: {
                 self.bet.playerPalance = self.myPlayerPosition.balance
@@ -551,15 +554,25 @@ fileprivate extension GameViewModel {
             } else if property.isChance {
                 chances = .chance
             }
-            self.movingCompletedCheckProperty(property)
+            self.movingCompletedCheckChance(property)
         }
     }
     
     func movingCompletedCheckProperty(_ property:Step) {
         if property.isChest || property.isChance {
             movingCompletedCheckChance(property)
-        } else if property == .jail2 {
-            //move player to jail
+        } else  {
+            switch property {
+            case .tax1:
+                playerPosition.balance -= Int(CGFloat(playerPosition.bought.totalPrice.price + playerPosition.balance) / 10)
+            case .tax2:
+                playerPosition.balance -= 100
+            case .jail2:
+                self.moovingBack = true
+                self.diceDestination = 20
+                self.move()
+            default:break
+            }
         }
     }
 }
@@ -579,12 +592,10 @@ extension GameViewModel {
                 selectingProperty = nil
                 if chestPresenting != nil {
                     chestPresenting = nil
-                    chests.removeFirst()
                 }
                 
                 if chancePresenting != nil {
                     chancePresenting = nil
-                    chances.removeFirst()
                 }
             }
         default:break
@@ -616,7 +627,6 @@ extension GameViewModel {
     func chestOkPressed() {
         let holder = chestPresenting
         chestPresenting = nil
-        chests.removeFirst()
         chestChanceOkPressed(holder?.action)
     }
     
@@ -673,11 +683,8 @@ extension GameViewModel {
     
     func chanceOkPressed() {
         let holder = chancePresenting
-        
         chancePresenting = nil
-        chances.removeFirst()
         chestChanceOkPressed(holder?.action)
-        
     }
 }
 

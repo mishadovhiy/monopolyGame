@@ -72,6 +72,11 @@ struct PropertyView: View {
                                 .foregroundColor(higlightUpgrade == upgrade ? .black : .light)
 
                                 .font(.system(size: 9))
+                            
+                            Text("\(upgrade.multiplier)")
+                                .foregroundColor(higlightUpgrade == upgrade ? .black : .light)
+
+                                .font(.system(size: 9))
                         }
                         .frame(height:20)
                         .padding(.vertical, higlightUpgrade == upgrade ? 2 : 0)

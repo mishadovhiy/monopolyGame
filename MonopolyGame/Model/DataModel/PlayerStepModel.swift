@@ -66,7 +66,7 @@ struct PlayerStepModel:Codable {
     }
     
     func canBuy(_ step:Step, price:Int? = nil) -> Bool {
-        balance >= (price ?? (step.buyPrice ?? 0)) && bought[step] == nil
+        (balance >= (price ?? (step.buyPrice ?? 0))) && bought[step] == nil
     }
     
     mutating func upgradePropertyIfCan(_ property:Step) {
@@ -142,7 +142,7 @@ struct PlayerStepModel:Codable {
         }
         
         var multiplier:CGFloat {
-            0.2 + CGFloat(index / 10)
+            0.2 + CGFloat(CGFloat(index) / 10)
         }
     }
 }
