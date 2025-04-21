@@ -46,11 +46,32 @@ struct GameView: View {
         .onDisappear(perform: {
             viewModel.saveProgress(db: &db.db)
         })
+        .onChange(of: viewModel.diceDestination) { newValue in
+            db.audioManager?.play(.menu)
+        }
+        .onChange(of: viewModel.myPlayerBalanceHiglightingPositive) {  newValue in
+            if newValue {
+                db.audioManager?.play(.money)
+
+            }
+        }
+        .onChange(of: viewModel.myPlayerBalanceHiglightingNegative) {  newValue in
+            if newValue {
+                db.audioManager?.play(.money)
+
+            }
+        }
+        .onChange(of: viewModel.updateBalancePresenting) { newValue in
+            if newValue {
+                db.audioManager?.play(.loose)
+            }
+        }
         .onAppear {
             viewModel.enemyLostAction = {
                 db.db.gameProgress = .init()
                 db.gameCenter.addGameCompletionScore(viewModel.myPlayerPosition)
                 db.db.gameCompletions.completionList.append(.init(balance: viewModel.myPlayerPosition.balance, time: .init(), upgrades: viewModel.myPlayerPosition.bought))
+                db.audioManager?.play(.wone)
             }
             viewModel.fetchGame(db: db.db)
             self.viewModel.viewAppeared = true
@@ -98,6 +119,8 @@ struct GameView: View {
                                         HStack {
                                             Spacer()
                                             Button {
+                                                db.audioManager?.play(.menu)
+
                                                 if isOnTop {
                                                     viewModel.chanceOkPressed()
                                                 } else {
@@ -312,9 +335,17 @@ struct GameView: View {
     var panelView: some View {
         VStack(spacing:-27) {
             VStack {
-                Button("dice") {
+                Button(viewModel.playerPosition.id != viewModel.myPlayerPosition.id ? "Dice" : "Done") {
+                    db.audioManager?.play(.menu)
+
                     viewModel.resumeNextPlayer(forceMove: true)
                 }
+                .tint(.primaryBackground)
+                .font(.system(size: 14, weight:.semibold))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(.light)
+                .cornerRadius(4)
                 Spacer()
             }
             .frame(maxWidth: .infinity)
@@ -323,6 +354,8 @@ struct GameView: View {
             HStack() {
                 ForEach(GameViewModel.PanelType.allCases, id:\.rawValue) { type in
                     Button {
+                        db.audioManager?.play(.menuRegular)
+
                         viewModel.activePanelType = type
                     } label: {
                         VStack {
@@ -511,6 +544,8 @@ struct GameView: View {
     func propertyItem(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
         let disabled = viewModel.propertyTapDisabled(step)
         return Button(action: {
+            db.audioManager?.play(.menuRegular)
+
             viewModel.propertySelected(step)
         }, label: {
             ZStack  {

@@ -72,8 +72,16 @@ struct TopNavigationView: View {
                 .animation(.bouncy, value: viewModel.isGamePresenting)
                 
         }
-        .frame(maxHeight: viewModel.isNavigationPushed ? (viewModel.navigationPresenting.profile ? 180 : (viewModel.navigationPresenting.leaderBoard ? .infinity : (viewModel.navigationPresenting.dict?.values.filter({$0}).count ?? 0) <= 1 ? 140 : .infinity)) : 85)
+        .frame(maxHeight: viewModel.isNavigationPushed ? (viewModel.navigationPresenting.profile ? (viewModel.navigationPresenting.profileProtoPicker ? .infinity : 180) : (viewModel.navigationPresenting.leaderBoard ? .infinity : (viewModel.navigationPresenting.dict?.values.filter({$0}).count ?? 0) <= 1 ? 140 : .infinity)) : 85)
         .padding(.top, viewModel.isGamePresenting ? 5 : 0)
+        .onChange(of: viewModel.navigationPresenting.dict) { newValue in
+            db.audioManager?.play(.menuRegular)
+        }
+        .onChange(of: viewModel.isGamePresenting) { newValue in
+            if newValue {
+                db.audioManager?.play(.menuPlay)
+            }
+        }
         .overlay(content: {
             HStack {
                 Spacer()
@@ -83,10 +91,10 @@ struct TopNavigationView: View {
                     if viewModel.navigationPresenting.profile {
                         viewModel.navigationPresenting.profileProtoPicker = true
                     } else {
-
+                        
                         withAnimation {
                             viewModel.navigationPresenting.profile = true
-
+                            
                         }
                     }
                     
@@ -103,7 +111,7 @@ struct TopNavigationView: View {
                 .padding(viewModel.navigationPresenting.profile ? 10 : 0)
                 .aspectRatio(1, contentMode: .fit)
                 .animation(.bouncy, value: viewModel.isNavigationPushed || viewModel.isGamePresenting)
-                .opacity(viewModel.isNavigationPushed && !viewModel.navigationPresenting.profile ? 0 : 1)
+                .opacity((viewModel.isNavigationPushed && !viewModel.navigationPresenting.profile) || viewModel.navigationPresenting.profileProtoPicker ? 0 : 1)
 //                .clipped()
                 .disabled(viewModel.profileWidth == 0 || viewModel.isGamePresenting)
                 Spacer()

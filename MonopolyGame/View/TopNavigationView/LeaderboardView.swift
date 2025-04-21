@@ -36,6 +36,7 @@ struct LeaderboardView: View {
             })
             HStack {
                 Button {
+                    db.audioManager?.play(.menu)
                     db.gameCenter.presentAchievements()
                 } label: {
                     Text("Game center")

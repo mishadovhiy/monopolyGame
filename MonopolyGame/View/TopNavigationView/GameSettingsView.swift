@@ -26,6 +26,7 @@ struct GameSettingsView: View {
                 HStack {
                     HStack(spacing:10) {
                         Button("-100") {
+                            db.audioManager?.play(.menu)
                             db.db.settings.game.balance -= 100
                         }
                         .padding(.vertical, 2)
@@ -33,6 +34,7 @@ struct GameSettingsView: View {
                         .background(.lightsecondaryBackground)
                         .cornerRadius(4)
                         Button("-10") {
+                            db.audioManager?.play(.menu)
                             db.db.settings.game.balance -= 10
                         }
                         .padding(.vertical, 2)
@@ -44,6 +46,7 @@ struct GameSettingsView: View {
                     Text("\(db.db.settings.game.balance)")
                     HStack(spacing:10) {
                         Button("+10") {
+                            db.audioManager?.play(.menu)
                             db.db.settings.game.balance += 10
                         }
                         .padding(.vertical, 2)
@@ -51,6 +54,7 @@ struct GameSettingsView: View {
                         .background(.lightsecondaryBackground)
                         .cornerRadius(4)
                         Button("+100") {
+                            db.audioManager?.play(.menu)
                             db.db.settings.game.balance += 100
                         }
                         .padding(.vertical, 2)
@@ -65,6 +69,7 @@ struct GameSettingsView: View {
             Divider()
             VStack {
                 Button("Clear progress") {
+                    db.audioManager?.play(.menu)
                     viewModel.navigationPresenting.clearGameConfirmation = true
                 }
                 .frame(maxWidth:.infinity)

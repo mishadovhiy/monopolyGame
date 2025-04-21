@@ -12,7 +12,7 @@ struct PopupView: View {
     @Binding var buttonData:ButtonData?
     @Binding var secondaryButton:ButtonData?
     @State var isPresenting = false
-
+    @EnvironmentObject var db: AppData
     var canCloseSet:Bool? = nil
 
     var body: some View {
@@ -87,6 +87,8 @@ struct PopupView: View {
             Spacer()
             VStack {
                 Button {
+                    db.audioManager?.play(.menuRegular)
+
                     dismiss()
                 } label: {
                     Text("Close")
@@ -161,7 +163,8 @@ struct PopupView: View {
     
     private func primaryButton(title:String, background:Color, pressed:@escaping()->()) -> some View {
         Button {
-            
+            db.audioManager?.play(.menuRegular)
+
             pressed()
             dismiss()
         } label: {

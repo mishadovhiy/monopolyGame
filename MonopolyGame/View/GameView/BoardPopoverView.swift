@@ -10,6 +10,7 @@ import SwiftUI
 struct BoardPopoverView: View {
     @StateObject var viewModel:GameViewModel
     @Binding var isGamePresenting:Bool
+    @EnvironmentObject var db: AppData
     let gameLost:()->()
     var body: some View {
         ZStack {
@@ -44,6 +45,7 @@ struct BoardPopoverView: View {
             HStack {
                 ForEach(buttons, id:\.0.title) { buttonData in
                     Button(buttonData.0.title) {
+                        db.audioManager?.play(.menu)
                         if let action = buttonData.button.pressed {
                             action()
                         } else {
@@ -105,6 +107,7 @@ struct BoardPopoverView: View {
             }
             
             Button("OK") {
+                db.audioManager?.play(.menu)
                 viewModel.enemyTrade()
             }
             .tint(.black)
@@ -139,6 +142,7 @@ struct BoardPopoverView: View {
                     Spacer()
                     #warning("close button reusable")
                     Button("Close") {
+                        db.audioManager?.play(.menu)
                         viewModel.activePanelType = nil
                     }
                     .tint(.light)
@@ -163,6 +167,7 @@ struct BoardPopoverView: View {
     
     func sliderButton(_ value:Binding<Float>, multiplier:Float) -> some View {
         Button("\(Int(multiplier * 100))") {
+            db.audioManager?.play(.menu)
             value.wrappedValue += multiplier
         }
         .padding(.vertical, 2)
@@ -232,6 +237,7 @@ struct BoardPopoverView: View {
             HStack(spacing:30) {
                 Button("Decline") {
                     print(viewModel.bet.bet.last?.1, " robotWin ")
+                    db.audioManager?.play(.menu)
                     self.viewModel.setBetWone()
                 }
                 .tint(.red)

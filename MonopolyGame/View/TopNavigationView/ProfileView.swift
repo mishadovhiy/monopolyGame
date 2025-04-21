@@ -19,7 +19,9 @@ struct ProfileView: View {
                     NavigationLink(destination: PhotoLibraryView(imageSelected: { newImage in
                         self.imageSelected(image: newImage)
 
-                    }, isPreseting: $viewModel.navigationPresenting.profileProtoPicker), isActive: .init(get: {
+                    }, isPreseting: $viewModel.navigationPresenting.profileProtoPicker).background {
+                        ClearBackgroundView()
+                    }, isActive: .init(get: {
                         viewModel.navigationPresenting.profileProtoPicker
                     }, set: { newValue in
                         withAnimation {

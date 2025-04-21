@@ -18,6 +18,7 @@ struct PhotoLibraryView: UIViewControllerRepresentable {
         let vc = PhotoLibraryVC()
         vc.didSelectImage = self.imageSelected
         vc.didDismiss = dissmiss
+        vc.view.backgroundColor = .clear
         return vc
     }
     

@@ -122,25 +122,21 @@ class AudioPlayerManager:NSObject, AVAudioPlayerDelegate {
 
 enum AudioType: String, CaseIterable {
     case background1, background2, background3, background4, background5
-    case click, click2, click3, click4
-    case collect, loose, motorShort
-    case shoot, hit
-    
-    static var wone:AudioType = .click2
-    static var `default`:AudioType = .click2
-    static var enemyShoot:AudioType = .shoot
-    static var playerShoot:AudioType = .shoot
-    static var enemyHitted:AudioType = .hit
-    static var playerHitted:AudioType = .hit
-
+    case money, loose, menu, wone
+    case menuRegular, menuPlay
+    static var `default`:AudioType { .menu}
     static var randomBackground:AudioType {
         allCases.filter({$0.isBackground}).randomElement() ?? .background1
     }
     
     var format:String {
-        let m4a:[AudioType] = [.hit, .shoot]
+        let m4a:[AudioType] = [.money, .menuPlay, .menuRegular]
+        let wav:[AudioType] = [.loose, .menu, .wone]
         if m4a.contains(self) {
             return "m4a"
+        }
+        if wav.contains(self) {
+            return "wav"
         }
         return "mp3"
     }
