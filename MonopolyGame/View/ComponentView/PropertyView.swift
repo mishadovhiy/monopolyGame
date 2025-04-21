@@ -23,6 +23,59 @@ struct PropertyView: View {
         }
     }
     
+    var upgradeListView: some View {
+        VStack {
+            if needPrice, let price = step.buyPrice {
+                HStack {
+                    Text("Price:")
+                        .foregroundColor(.secondaryText)
+                        .font(.system(size: 15))
+
+                    Text("$\(price)")
+                        .foregroundColor(.light)
+                        .font(.system(size: 24, weight:.semibold))
+                }
+            }
+            HStack {
+                Spacer()
+                Text("upgrade")
+                    .foregroundColor(.secondaryText)
+                    .font(.system(size: 9))
+                Text("rent")
+                    .foregroundColor(.secondaryText)
+                    .font(.system(size: 9))
+            }
+            ForEach(PlayerStepModel.Upgrade.allCases, id:\.rawValue) { upgrade in
+                HStack {
+                    Image("upgrades/\(upgrade.index)")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width:30)
+                    Spacer()
+                    if upgrade.index != 0 {
+                        Text("\(step.upgradePrice(upgrade))")
+                            .foregroundColor(higlightUpgrade == upgrade ? .black : .light)
+                            .font(.system(size: 9))
+                    }
+                    
+                    Text("\(step.rentTotal(upgrade) ?? 0)")
+                        .foregroundColor(higlightUpgrade == upgrade ? .black : .light)
+                        .font(.system(size: 9))
+                }
+                .frame(height:20)
+                .padding(.vertical, higlightUpgrade == upgrade ? 2 : 0)
+                .padding(.horizontal, higlightUpgrade == upgrade ? 5 : 0)
+                .background {
+                    if higlightUpgrade == upgrade {
+                        Color(.green)
+                            .cornerRadius(4)
+                    }
+                }
+                Divider()
+            }
+        }
+    }
+    
     var contentView: some View {
         VStack {
             Text(step.attributedTitle(.medium))
@@ -31,64 +84,28 @@ struct PropertyView: View {
                 .background(step.color?.color ?? .gray)
                 .cornerRadius(4)
             VStack {
-                HStack {
-                    Text("Morgage:")
-                        .foregroundColor(.secondaryText)
-                        .font(.system(size: 12))
-
-                    Text("$ \(step.morgage ?? 0)")
-                        .foregroundColor(.light)
-                        .font(.system(size: 12, weight: .semibold))
-
-                }
-                Spacer().frame(height: 10)
-                Text("Rent is doubled on owning all unimproved sites in the group.")
-                    .foregroundColor(.secondaryText)
-                    .font(.system(size: 9))
-                Spacer().frame(height: 10)
-
-                VStack {
+                if step.color != nil {
                     HStack {
-                        Spacer()
-                        Text("upgrade")
+                        Text("Morgage:")
                             .foregroundColor(.secondaryText)
-                            .font(.system(size: 9))
-                        Text("rent")
-                            .foregroundColor(.secondaryText)
-                            .font(.system(size: 9))
+                            .font(.system(size: 12))
+
+                        Text("$ \(step.morgage ?? 0)")
+                            .foregroundColor(.light)
+                            .font(.system(size: 12, weight: .semibold))
+
                     }
-                    ForEach(PlayerStepModel.Upgrade.allCases, id:\.rawValue) { upgrade in
-                        HStack {
-                            Image("upgrades/\(upgrade.index)")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width:30)
-                            Spacer()
-                            Text("\(step.upgradePrice(upgrade))")
-                                .foregroundColor(higlightUpgrade == upgrade ? .black : .light)
+                    Spacer().frame(height: 10)
+                    Text("Rent is doubled on owning all unimproved sites in the group.")
+                        .foregroundColor(.secondaryText)
+                        .font(.system(size: 9))
+                    Spacer().frame(height: 10)
+                } else {
+                    Spacer()
+                }
 
-                                .font(.system(size: 9))
-                            Text("\(step.rentTotal(upgrade) ?? 0)")
-                                .foregroundColor(higlightUpgrade == upgrade ? .black : .light)
-
-                                .font(.system(size: 9))
-                            
-                            Text("\(upgrade.multiplier)")
-                                .foregroundColor(higlightUpgrade == upgrade ? .black : .light)
-
-                                .font(.system(size: 9))
-                        }
-                        .frame(height:20)
-                        .padding(.vertical, higlightUpgrade == upgrade ? 2 : 0)
-                        .padding(.horizontal, higlightUpgrade == upgrade ? 5 : 0)
-                        .background {
-                            if higlightUpgrade == upgrade {
-                                Color(.green)
-                                    .cornerRadius(4)
-                            }
-                        }
-                        Divider()
-                    }
+                if step.upgradePrice(.bought) != 0 {
+                    upgradeListView
                 }
                 
             }
@@ -100,7 +117,5 @@ struct PropertyView: View {
                 
         })
         .padding(3)
-        
-//        .background(step.color?.color ?? .gray)
     }
 }

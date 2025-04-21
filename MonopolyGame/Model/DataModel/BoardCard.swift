@@ -131,9 +131,11 @@ extension [BoardCard] {
             .init(title: "Pay $100 in legal fees.", action: .balanceIncrement(.init(amount: -100))),
             .init(title: "You’ve been awarded a grant.", text: "Collect $250.", action: .balanceIncrement(.init(amount: 250))),
             .init(title: "You’ve won a cooking contest.", text: "Collect $50.", action: .balanceIncrement(.init(amount: 50))),
-            .init(title: "Advance to the nearest Train station.", text: "Pay rent if owned.", action: .goTo(.transport1)),
+            .init(title: "Advance to the nearest Train station.", text: "Pay rent if owned.", action: .goTo(.transportGrey1)),
             .init(title: "You have been given an inheritance. Collect $200.", action: .balanceIncrement(.init(amount: 200)))
         ]
     }
+#warning("if title.contains(nearest) - go to nearest color")
+
 }
 //if color == nil ? find nearest
