@@ -450,11 +450,28 @@ class GameViewModel:ObservableObject {
         moveCompleted = false
         let moveDisabled = playerPosition.inJail && !isEquelDices
         if !moveDisabled {
-            withAnimation {
+            if playerPosition.specialCards.contains(.looseMove) {
+                var removed = false
+                playerPosition.specialCards.removeAll { card in
+                    if card == .looseMove && !removed {
+                        removed = true
+                        return true
+                    } else {
+                        return false
+                    }
+                }
                 playerPosition.playerPosition = Step.allCases.first(where: {
-                    (playerPosition.playerPosition.index + (moovingBack ? -1 : 1)) == $0.index
+                    (playerPosition.playerPosition.index) == $0.index
                 }) ?? .go
+                diceDestination = 0
+            } else {
+                withAnimation {
+                    playerPosition.playerPosition = Step.allCases.first(where: {
+                        (playerPosition.playerPosition.index + (moovingBack ? -1 : 1)) == $0.index
+                    }) ?? .go
+                }
             }
+            
         }
         if playerPosition.playerPosition == .go {
             playerPosition.balance += 200

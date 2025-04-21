@@ -248,9 +248,9 @@ struct GameView: View {
             })
             .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
             .overlay(content: {
-//                if !viewModel.usingDice {
+                if !viewModel.usingDice {
                     diceNumberView
-//                }
+                }
                 
             })
             .overlay(content: {
