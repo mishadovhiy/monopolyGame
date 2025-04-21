@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		820679A52DB6192600B8DEF6 /* Trade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820679A42DB6192600B8DEF6 /* Trade.swift */; };
+		820679A72DB6193C00B8DEF6 /* BetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820679A62DB6193C00B8DEF6 /* BetModel.swift */; };
 		82126EB92DAADA360081983A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82126EB52DAADA360081983A /* Assets.xcassets */; };
 		82126EBA2DAADA360081983A /* Codable+Decodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA02DAADA360081983A /* Codable+Decodable.swift */; };
 		82126EBB2DAADA360081983A /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82126EA12DAADA360081983A /* String.swift */; };
@@ -58,6 +60,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		820679A42DB6192600B8DEF6 /* Trade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trade.swift; sourceTree = "<group>"; };
+		820679A62DB6193C00B8DEF6 /* BetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetModel.swift; sourceTree = "<group>"; };
 		82126EA02DAADA360081983A /* Codable+Decodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Codable+Decodable.swift"; sourceTree = "<group>"; };
 		82126EA12DAADA360081983A /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		82126EA32DAADA360081983A /* ButtonData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonData.swift; sourceTree = "<group>"; };
@@ -121,6 +125,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		820679A32DB6190A00B8DEF6 /* GameViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				82126EB32DAADA360081983A /* GameViewModel.swift */,
+				820679A42DB6192600B8DEF6 /* Trade.swift */,
+				820679A62DB6193C00B8DEF6 /* BetModel.swift */,
+			);
+			path = GameViewModel;
+			sourceTree = "<group>";
+		};
 		82126EA22DAADA360081983A /* Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,7 +212,7 @@
 		82126EB42DAADA360081983A /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				82126EB32DAADA360081983A /* GameViewModel.swift */,
+				820679A32DB6190A00B8DEF6 /* GameViewModel */,
 				82126EF62DABF5CB0081983A /* HomeViewModel.swift */,
 			);
 			path = ViewModel;
@@ -413,6 +427,8 @@
 				82C51E632DAF885100EC71F4 /* SuccessSKScene.swift in Sources */,
 				82126F0E2DAC3FCB0081983A /* ClearBackgroundView.swift in Sources */,
 				82126EBE2DAADA360081983A /* Step.swift in Sources */,
+				820679A72DB6193C00B8DEF6 /* BetModel.swift in Sources */,
+				820679A52DB6192600B8DEF6 /* Trade.swift in Sources */,
 				82126EBF2DAADA360081983A /* DataBase.swift in Sources */,
 				82126EC02DAADA360081983A /* PropertyListView.swift in Sources */,
 				82126F112DAC48BC0081983A /* MenuView.swift in Sources */,
