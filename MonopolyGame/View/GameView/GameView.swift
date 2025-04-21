@@ -224,11 +224,28 @@ struct GameView: View {
             })
             .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
             .overlay(content: {
-                boardCardsOverley
+                VStack {
+                    Spacer()
+                    Text("\(viewModel.diceDestination)")
+                        .multilineTextAlignment(.center)
+                        .font(.system(size: 24, weight:.semibold))
+                        .foregroundColor(.light)
+                        .padding(.vertical, 3)
+                        .padding(.horizontal, 15)
+                        .background(.primaryBackground.opacity(0.2))
+                        .cornerRadius(4)
+                    
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .disabled(true)
             })
             .overlay(content: {
-                DiceSceneView()
+                boardCardsOverley
             })
+//            .overlay(content: {
+//                DiceSceneView()
+//            })
             .padding(.horizontal, 0)
         }
     }

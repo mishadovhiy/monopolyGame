@@ -46,8 +46,8 @@
             filePath = "MonopolyGame/View/GameView/GameView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "500"
-            endingLineNumber = "500"
+            startingLineNumber = "517"
+            endingLineNumber = "517"
             landmarkName = "propertyItem(_:isFirst:isVerticalStack:section:)"
             landmarkType = "7">
          </BreakpointContent>

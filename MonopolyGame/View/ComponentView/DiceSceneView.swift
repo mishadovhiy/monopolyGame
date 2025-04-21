@@ -29,8 +29,21 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
             $0.name == "dice"
         }) ?? []
     }
-
+    
     let cameraHeight: CGFloat = 15.0
+    
+    func resetPositions() {
+        let startingPositions: [SCNVector3] = [
+            SCNVector3(-0.5, 10, 0),
+            SCNVector3( 0.5, 10, 0)
+        ]
+        diceNodes.forEach { node in
+            node.position = startingPositions.randomElement()!
+            addDropAnimation(node)
+
+        }
+        
+    }
     
     func loadDices() {
         let startingPositions: [SCNVector3] = [
@@ -51,18 +64,23 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
             cubeNode.physicsBody?.damping = 0.5
             cubeNode.physicsBody?.angularDamping = 0.5
             cubeNode.name = "dice"
+            cubeNode.castsShadow = false   // Disable casting shadow
             sceneView.scene!.rootNode.addChildNode(cubeNode)
-
-            let randomForceX = Float.random(in: -10...10)
-            let randomForceZ = Float.random(in: -10...10)
-            cubeNode.physicsBody?.applyForce(SCNVector3(randomForceX, 0, randomForceZ), asImpulse: true)
             
-            let randomTorqueX = Float.random(in: -5...5)
-            let randomTorqueY = Float.random(in: -5...5)
-            let randomTorqueZ = Float.random(in: -5...5)
-            cubeNode.physicsBody?.applyTorque(SCNVector4(randomTorqueX, randomTorqueY, randomTorqueZ, 1), asImpulse: true)
+addDropAnimation(cubeNode)
         }
-
+        
+    }
+    
+    func addDropAnimation(_ cubeNode:SCNNode) {
+        let randomForceX = Float.random(in: -10...10)
+        let randomForceZ = Float.random(in: -10...10)
+        cubeNode.physicsBody?.applyForce(SCNVector3(randomForceX, 0, randomForceZ), asImpulse: true)
+        
+        let randomTorqueX = Float.random(in: -5...5)
+        let randomTorqueY = Float.random(in: -5...5)
+        let randomTorqueZ = Float.random(in: -5...5)
+        cubeNode.physicsBody?.applyTorque(SCNVector4(randomTorqueX, randomTorqueY, randomTorqueZ, 1), asImpulse: true)
     }
     
     override func viewDidLoad() {
@@ -75,10 +93,10 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
         NSLayoutConstraint.activate([
             sceneView.leadingAnchor.constraint(equalTo: sceneView.superview!.leadingAnchor),
             sceneView.trailingAnchor.constraint(equalTo: sceneView.superview!.trailingAnchor),
-
+            
             sceneView.topAnchor.constraint(equalTo: sceneView.superview!.topAnchor),
             sceneView.bottomAnchor.constraint(equalTo: sceneView.superview!.bottomAnchor)
-
+            
         ])
         let scene = SCNScene()
         sceneView.scene = scene
@@ -107,9 +125,7 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
         
         loadDices()
         sceneView.allowsCameraControl = false
-        sceneView.showsStatistics = true
-        
-        
+        sceneView.showsStatistics = false
     }
     
     func addBoundaryWalls(to scene: SCNScene, floorWidth: CGFloat, floorHeight: CGFloat, wallHeight: CGFloat) {
@@ -147,7 +163,12 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
         scene.rootNode.addChildNode(bottomWallNode)
     }
     
+    var imageCache: [String: UIImage] = [:]
     func imageWithText(_ text: String, size: CGSize = CGSize(width: 256, height: 256)) -> UIImage {
+        if let cachedImage = imageCache[text] {
+            return cachedImage
+        }
+        
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         defer { UIGraphicsEndImageContext() }
         
@@ -157,18 +178,22 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.boldSystemFont(ofSize: size.height/2),
+            .font: UIFont.boldSystemFont(ofSize: size.height / 2),
             .foregroundColor: UIColor.white,
             .paragraphStyle: paragraphStyle
         ]
         
-        let textHeight = size.height/2
+        let textHeight = size.height / 2
         let textRect = CGRect(x: 0, y: (size.height - textHeight) / 2, width: size.width, height: textHeight)
         (text as NSString).draw(in: textRect, withAttributes: attributes)
         
-        return UIGraphicsGetImageFromCurrentImageContext()!
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()!
+        
+        imageCache[text] = newImage
+        
+        return newImage
     }
-
+    
     func createDiceMaterials() -> [SCNMaterial] {
         var materials = [SCNMaterial]()
         for i in 1...6 {
@@ -207,15 +232,18 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
                 if let topFaceIndex = upwardFaceIndex(for: dice) {
                     let diceNumber = topFaceIndex + 1
                     dice.name = "diceOK"
+                    dice.physicsBody?.clearAllForces()
+                    dice.physicsBody?.resetTransform()
                     print("Dice has come to rest with \(diceNumber) facing up")
                     if self.diceNodes.isEmpty {
                         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3), execute: { [weak self] in
                             self?.sceneView.scene?.rootNode.childNodes.forEach { node in
                                 if node.name?.contains("dice") ?? false {
-                                    node.removeFromParentNode()
+                                    node.name = "dice"
+//                                    node.removeFromParentNode()
                                 }
                             }
-                            self?.loadDices()
+                            self?.resetPositions()
                         })
                     }
                 }
@@ -248,21 +276,21 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
                 bestIndex = index
             }
         }
-//        if bestIndex == 3 {
-//            bestIndex = 1
-//        } else if bestIndex == 1 {
-//            bestIndex = 3
-//        }
+        //        if bestIndex == 3 {
+        //            bestIndex = 1
+        //        } else if bestIndex == 1 {
+        //            bestIndex = 3
+        //        }
         return bestIndex
     }
     func transformDirection(_ vector: SCNVector3, with transform: SCNMatrix4) -> SCNVector3 {
-            let x = transform.m11 * vector.x + transform.m21 * vector.y + transform.m31 * vector.z
-            let y = transform.m12 * vector.x + transform.m22 * vector.y + transform.m32 * vector.z
-            let z = transform.m13 * vector.x + transform.m23 * vector.y + transform.m33 * vector.z
-            return SCNVector3(x, y, z)
-        }
-        
-        func dotProduct(_ v1: SCNVector3, _ v2: SCNVector3) -> Float {
-            return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z
-        }
+        let x = transform.m11 * vector.x + transform.m21 * vector.y + transform.m31 * vector.z
+        let y = transform.m12 * vector.x + transform.m22 * vector.y + transform.m32 * vector.z
+        let z = transform.m13 * vector.x + transform.m23 * vector.y + transform.m33 * vector.z
+        return SCNVector3(x, y, z)
+    }
+    
+    func dotProduct(_ v1: SCNVector3, _ v2: SCNVector3) -> Float {
+        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z
+    }
 }
