@@ -82,6 +82,73 @@ struct GameView: View {
         .navigationBarHidden(true)
     }
     
+    func chanceCardBackground(_ isOnTop:Bool) -> some View {
+        RoundedRectangle(cornerRadius: 6)
+            .fill(Color(isOnTop ? .blue : .orange))
+            .overlay {
+                HStack {
+                    Spacer()
+                    VStack {
+                        Spacer()
+                        Image(!isOnTop ? .chest : .question)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: 50)
+                        Spacer()
+                    }
+                    
+                    Spacer()
+                }
+            }
+    }
+    
+    func chanceContent(_ data:BoardCard?, isOnTop:Bool) -> some View {
+        RoundedRectangle(cornerRadius: 6)
+            .fill(.light)
+            .overlay(content: {
+                VStack(spacing:10) {
+                    Text(data?.title ?? "")
+                        .font(.system(size: 18, weight:.bold))
+                        .foregroundColor(.primaryBackground)
+                    Text(data?.text ?? "")
+                        .font(.system(size: 12, weight:.medium))
+                        .foregroundColor(.primaryBackground.opacity(0.8))
+                    Spacer()
+                    if data?.canClose ?? false {
+                        HStack {
+                            Spacer()
+                            Button {
+                                db.audioManager?.play(.menu)
+
+                                if isOnTop {
+                                    viewModel.chanceOkPressed()
+                                } else {
+                                    viewModel.chestOkPressed()
+                                }
+                            } label: {
+                                Text("Close")
+                                    .font(.system(size: 12, weight: .semibold))
+                                
+                            }
+                            .tint(.light)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 6)
+                            .background(.secondaryBackground)
+                            .cornerRadius(4)
+                        }
+
+                    }
+
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 5)
+                .padding(.horizontal, 5)
+                .padding(.top, 10)
+                .rotation3DEffect(Angle(degrees: 180), axis: (x: 0.0, y: 1.0, z: 0.0))
+                
+            })
+    }
+    
     func chanceView(_ isOnTop:Bool, canOpen:Bool = true) -> some View {
         let data = canOpen ? (isOnTop ? viewModel.chancePresenting : viewModel.chestPresenting) : nil
         let isOpened = data != nil
@@ -98,71 +165,11 @@ struct GameView: View {
                         .animation(.smooth, value: isOpened)
                 }
                 ZStack {
-                    
                     if !isOpened {
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(isOnTop ? .blue : .orange))
-                            .overlay {
-                                HStack {
-                                    Spacer()
-                                    VStack {
-                                        Spacer()
-                                        Image(!isOnTop ? .chest : .question)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(maxWidth: 50)
-                                        Spacer()
-                                    }
-                                    
-                                    Spacer()
-                                }
-                            }
+                        chanceCardBackground(isOpened)
                         
                     } else {
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(.light)
-                            .overlay(content: {
-                                VStack(spacing:10) {
-                                    Text(data?.title ?? "")
-                                        .font(.system(size: 18, weight:.bold))
-                                        .foregroundColor(.primaryBackground)
-                                    Text(data?.text ?? "")
-                                        .font(.system(size: 12, weight:.medium))
-                                        .foregroundColor(.primaryBackground.opacity(0.8))
-                                    Spacer()
-                                    if data?.canClose ?? false {
-                                        HStack {
-                                            Spacer()
-                                            Button {
-                                                db.audioManager?.play(.menu)
-
-                                                if isOnTop {
-                                                    viewModel.chanceOkPressed()
-                                                } else {
-                                                    viewModel.chestOkPressed()
-                                                }
-                                            } label: {
-                                                Text("Close")
-                                                    .font(.system(size: 12, weight: .semibold))
-                                                
-                                            }
-                                            .tint(.light)
-                                            .padding(.horizontal, 20)
-                                            .padding(.vertical, 6)
-                                            .background(.secondaryBackground)
-                                            .cornerRadius(4)
-                                        }
-
-                                    }
-
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.bottom, 5)
-                                .padding(.horizontal, 5)
-                                .padding(.top, 10)
-                                .rotation3DEffect(Angle(degrees: 180), axis: (x: 0.0, y: 1.0, z: 0.0))
-                                
-                            })
+                        chanceContent(data, isOnTop: isOnTop)
                     }
                     
                 }
@@ -195,7 +202,6 @@ struct GameView: View {
                 chanceView(true, canOpen: false)
                     .offset(x:-4, y:-4)
                 chanceView(true)
-                
             }
             ZStack {
                 chanceView(false, canOpen: false)
@@ -243,30 +249,46 @@ struct GameView: View {
             })
             .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
             .overlay(content: {
-                VStack {
-                    Spacer()
-                    Text("\(viewModel.diceDestination)")
-                        .multilineTextAlignment(.center)
-                        .font(.system(size: 24, weight:.semibold))
-                        .foregroundColor(.light)
-                        .padding(.vertical, 3)
-                        .padding(.horizontal, 15)
-                        .background(.primaryBackground.opacity(0.2))
-                        .cornerRadius(4)
-                    
-                    Spacer()
+                if !viewModel.usingDice {
+                    diceNumberView
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .disabled(true)
+                
             })
             .overlay(content: {
                 boardCardsOverley
             })
-//            .overlay(content: {
-//                DiceSceneView()
-//            })
+            .overlay(content: {
+                if viewModel.usingDice {
+                    DiceSceneView(dicePressed: $viewModel.dicePressed) { diceResult in
+                        viewModel.dicePressed = false
+                        viewModel.diceDestination = diceResult
+                        viewModel.move()
+                    }
+//                    .opacity((viewModel.chestPresenting != nil || viewModel.chancePresenting != nil) ? 0 : 1)
+//                    .animation(.smooth, value: viewModel.chestPresenting != nil || viewModel.chancePresenting != nil)
+                }
+                
+            })
             .padding(.horizontal, 0)
         }
+    }
+    
+    var diceNumberView: some View {
+        VStack {
+            Spacer()
+            Text("\(viewModel.diceDestination)")
+                .multilineTextAlignment(.center)
+                .font(.system(size: 24, weight:.semibold))
+                .foregroundColor(.light)
+                .padding(.vertical, 3)
+                .padding(.horizontal, 15)
+                .background(.primaryBackground.opacity(0.2))
+                .cornerRadius(4)
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .disabled(true)
     }
     
     var balancesView: some View {
@@ -334,7 +356,13 @@ struct GameView: View {
                 Button(viewModel.playerPosition.id != viewModel.myPlayerPosition.id ? "Dice" : "Done") {
                     db.audioManager?.play(.menu)
 
-                    viewModel.resumeNextPlayer(forceMove: true)
+//                    viewModel.dicePressed = true
+                    if viewModel.usingDice {
+                        viewModel.performNextPlayer()
+                    } else {
+                        viewModel.resumeNextPlayer(forceMove: true)
+                    }
+//                    viewModel.performNextPlayer()
                 }
                 .tint(.primaryBackground)
                 .font(.system(size: 14, weight:.semibold))

@@ -10,7 +10,7 @@ import Foundation
 class AppData:ObservableObject {
     let gameCenter:GameCenterModel
     var audioManager:AudioPlayerManagers?
-    private let dbkey = "db10"
+    private let dbkey = "db11"
     @Published var deviceSize:CGSize = .zero
     @Published var db:DataBase = .init() {
         didSet {
@@ -74,6 +74,7 @@ class AppData:ObservableObject {
             struct Game: Codable {
                 var difficulty:Float = 0.5
                 var balance:Int = 1000
+                var usingDice:Bool = false
             }
             struct Sound:Codable {
                 var music:Float = 0.2

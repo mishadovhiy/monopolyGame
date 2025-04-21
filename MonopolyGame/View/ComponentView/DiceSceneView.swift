@@ -10,14 +10,24 @@ import UIKit
 import SceneKit
 
 struct DiceSceneView: UIViewControllerRepresentable {
+    @Binding var dicePressed:Bool
+    var diceCompleted:((_ diceResult:Int)->())?
+    
     func makeUIViewController(context: Context) -> some UIViewController {
         let vc = DiceVC.init()
         vc.view.isUserInteractionEnabled = false
+        vc.diceCompleted = diceCompleted
         return vc
     }
     
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        
+        if dicePressed {
+            print("yrtegfdesaxsd")
+//            fatalError()
+            if let vc = uiViewController as? DiceVC {
+                vc.dicePressed()
+            }
+        }
     }
 }
 
@@ -30,9 +40,25 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
         }) ?? []
     }
     
+    var diceCompleted:((_ diceResult:Int)->())?
     let cameraHeight: CGFloat = 15.0
-    
+    func dicePressed() {
+        diceValue = (0,0)
+        if diceNodes.isEmpty {
+            self.loadDices()
+            self.resetPositions()
+        } else {
+            diceNodes.forEach { node in
+                node.physicsBody?.isAffectedByGravity = true
+            }
+            self.resetPositions()
+        }
+        
+    }
     func resetPositions() {
+        sceneView.scene?.isPaused = false
+ 
+        print(resetPositions, " dfgngtdhftsfgnx ")
         let startingPositions: [SCNVector3] = [
             SCNVector3(-0.5, 10, 0),
             SCNVector3( 0.5, 10, 0)
@@ -57,6 +83,7 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
             cubeNode.position = position
             
             cubeNode.physicsBody = SCNPhysicsBody.dynamic()
+            cubeNode.physicsBody?.isAffectedByGravity = false
             cubeNode.physicsBody?.mass = 0.9
             cubeNode.physicsBody?.restitution = 1
             cubeNode.physicsBody?.friction = 0.8
@@ -67,7 +94,7 @@ class DiceVC: UIViewController, SCNSceneRendererDelegate {
             cubeNode.castsShadow = false   // Disable casting shadow
             sceneView.scene!.rootNode.addChildNode(cubeNode)
             
-addDropAnimation(cubeNode)
+//addDropAnimation(cubeNode)
         }
         
     }
@@ -101,6 +128,7 @@ addDropAnimation(cubeNode)
         let scene = SCNScene()
         sceneView.scene = scene
         sceneView.delegate = self
+        scene.isPaused = true
         sceneView.backgroundColor = .clear
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
@@ -122,8 +150,7 @@ addDropAnimation(cubeNode)
         
         addBoundaryWalls(to: scene, floorWidth: floorWidth, floorHeight: floorHeight, wallHeight: cameraHeight)
         
-        
-        loadDices()
+//        loadDices()
         sceneView.allowsCameraControl = false
         sceneView.showsStatistics = false
     }
@@ -163,11 +190,12 @@ addDropAnimation(cubeNode)
         scene.rootNode.addChildNode(bottomWallNode)
     }
     
-    var imageCache: [String: UIImage] = [:]
-    func imageWithText(_ text: String, size: CGSize = CGSize(width: 256, height: 256)) -> UIImage {
-        if let cachedImage = imageCache[text] {
-            return cachedImage
-        }
+//    var imageCache: [String: UIImage] = [:]
+    func imageWithText(_ text: String, size: CGSize = CGSize(width: 25, height: 25)) -> UIImage {
+//        if let cachedImage = imageCache[text] {
+//            return cachedImage
+//        }
+        
         
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         defer { UIGraphicsEndImageContext() }
@@ -188,8 +216,8 @@ addDropAnimation(cubeNode)
         (text as NSString).draw(in: textRect, withAttributes: attributes)
         
         let newImage = UIGraphicsGetImageFromCurrentImageContext()!
-        
-        imageCache[text] = newImage
+        UIGraphicsEndImageContext()
+//        imageCache[text] = newImage
         
         return newImage
     }
@@ -231,10 +259,19 @@ addDropAnimation(cubeNode)
                 
                 if let topFaceIndex = upwardFaceIndex(for: dice) {
                     let diceNumber = topFaceIndex + 1
+                    if !(dice.physicsBody?.isAffectedByGravity ?? false) {
+                        return
+                    }
                     dice.name = "diceOK"
-                    dice.physicsBody?.clearAllForces()
-                    dice.physicsBody?.resetTransform()
+                    dice.physicsBody?.isAffectedByGravity = false
+//                    dice.physicsBody?.clearAllForces()
+//                    dice.physicsBody?.resetTransform()
                     print("Dice has come to rest with \(diceNumber) facing up")
+                    if diceValue.0 == 0 {
+                        diceValue.0 = diceNumber
+                    } else if diceValue.1 == 0 {
+                        diceValue.1 = diceNumber
+                    }
                     if self.diceNodes.isEmpty {
                         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3), execute: { [weak self] in
                             self?.sceneView.scene?.rootNode.childNodes.forEach { node in
@@ -243,12 +280,20 @@ addDropAnimation(cubeNode)
 //                                    node.removeFromParentNode()
                                 }
                             }
-                            self?.resetPositions()
+                            self?.completedDice()
+//                            self?.resetPositions()
                         })
                     }
                 }
             }
         }
+    }
+    
+    var diceValue:(Int, Int) = (0,0)
+    func completedDice() {
+        sceneView.scene?.isPaused = true
+        diceCompleted?(diceValue.0 + diceValue.1)
+        print(diceValue.0 + diceValue.1, " jnlnklknlknkljnklnlk ")
     }
     
     func upwardFaceIndex(for dice: SCNNode) -> Int? {

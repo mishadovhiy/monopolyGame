@@ -90,14 +90,21 @@ class GameViewModel:ObservableObject {
         }
         movingCompletedCheckProperty(property)
     }
-    
+    @Published var usingDice = false
+    @Published var dicePressed:Bool = false
     func performNextPlayer() {
         let array = playersArray
         currentPlayerIndex += 1
         if currentPlayerIndex > array.count - 1 {
             currentPlayerIndex = 0
         }
-        diceDestination = (2..<12).randomElement() ?? 0
+        if !usingDice {
+            diceDestination = (2..<12).randomElement() ?? 0
+
+        } else {
+            dicePressed = true
+        }
+//        dicePressed = true
         //check players special cards, example - move loosed
 #warning("check if player is in jail - show popup")
 
@@ -111,6 +118,7 @@ class GameViewModel:ObservableObject {
     }
     
     func fetchGame(db: AppData.DataBase) {
+        self.usingDice = db.settings.game.usingDice
         if db.gameProgress.player.playerPosition == .go && db.gameProgress.enemy.playerPosition == .go {
             self.myPlayerPosition.balance = db.settings.game.balance
             self.enemyPosition.balance = db.settings.game.balance
