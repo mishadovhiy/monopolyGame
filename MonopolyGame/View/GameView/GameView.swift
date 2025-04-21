@@ -299,6 +299,7 @@ struct GameView: View {
             }
             .frame(maxWidth: .infinity)
             .background(.primaryBackground)
+            .disabled(viewModel.updateBalancePresenting)
             HStack() {
                 ForEach(GameViewModel.PanelType.allCases, id:\.rawValue) { type in
                     Button {

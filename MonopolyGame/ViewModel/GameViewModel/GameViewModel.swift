@@ -12,8 +12,9 @@ class GameViewModel:ObservableObject {
     private var balanceChangeHolder:Int = 0
     var chests:[BoardCard] = .chest.shuffled()
     var chances:[BoardCard] = .chance.shuffled()
-    #warning("if morgage - show morgage icon")
-    #warning("bug: when by me owned - robot can buy")
+    #warning("declare bancopcy - save to db")
+    #warning("if morgage - show morgage icon")//!!
+    #warning("buy transport")//!!
     //show porperty ouner color on top of property name
     #warning("buy presed - if not enought balance - nothing heppens, need to show auction only")
 #warning("implement: special card: lose move")
@@ -222,7 +223,7 @@ class GameViewModel:ObservableObject {
     }
     var currentPlayerIndex:Int = 0
     var canDice:Bool {
-        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting && !updateBalancePresenting && chestPresenting == nil && chancePresenting == nil
+        return moveCompleted && bet.betProperty == nil && activePanelType == nil && !trade.isPresenting && chestPresenting == nil && chancePresenting == nil
     }
     
     @Published var moveCompleted:Bool = true
