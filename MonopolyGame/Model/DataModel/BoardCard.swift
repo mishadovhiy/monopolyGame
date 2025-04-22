@@ -109,7 +109,7 @@ extension [BoardCard] {
             .init(title: "Move forward 3 spaces", text: "Advance 3 spaces forward.", action: .moveIncrement(3)),
             .init(title: "Move backward 2 spaces", text: "Move backward 2 spaces.", action: .moveIncrement(-2)),
             .init(title: "Take a loan from the bank", text: "Take a $500 loan from the bank", action: .balanceIncrement(.init(amount: 500))),
-            .init(title: "You have a Monopoly in Railroad properties", text: "Collect an additional $100 from each player.", action: .balanceIncrement(.init(from: .otherPlayers, amount: 100))),
+            .init(title: "You have a MonoFusion in Railroad properties", text: "Collect an additional $100 from each player.", action: .balanceIncrement(.init(from: .otherPlayers, amount: 100))),
             .init(title: "Collect $200 from the bank", text: "Collect $200 from the bank.", action: .balanceIncrement(.init(amount: 200))),
             .init(title: "Collect rent from a player of your choice", text: "Choose a player and collect rent on one of their properties.", action: .propertySelection(.firstRent50PercentDecrees)),
             .init(title: "Advance to Boardwalk", text: "Move directly to Boardwalk and pay rent if owned by another player.", action: .goTo(.transportGrey2)),

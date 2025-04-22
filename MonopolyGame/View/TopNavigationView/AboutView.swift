@@ -10,7 +10,7 @@ import SwiftUI
 struct AboutView: View {
     var body: some View {
         VStack(alignment:.leading, content: {
-            Text("About Monopoly")
+            Text("About MonoFusion")
                 .multilineTextAlignment(.leading)
                 .font(.system(size: 24, weight: .black))
                 .foregroundColor(.white)
@@ -61,10 +61,10 @@ struct AboutView: View {
     
     let data:[MessageContent] = [
         .init(title: "Introduction", description: """
-                    Monopoly is a classic board game that has been enjoyed by players around the world for over a century. The game combines strategy, negotiation, and luck, as players try to dominate the real estate market by buying, trading, and developing properties. The goal is to bankrupt your opponents by managing your money wisely and making the right investments.
+                                MonoFusion is a classic board game that has been enjoyed by players around the world for over a century. The game combines strategy, negotiation, and luck, as players try to dominate the real estate market by buying, trading, and developing properties. The goal is to bankrupt your opponents by managing your money wisely and making the right investments.
                     """),
         .init(title: "Objective of the Game", description: """
-            The objective of Monopoly is to become the wealthiest player through property acquisition, development, and strategic trading, while eliminating other players through bankruptcy. The game continues until one player remains financially intact, having outlasted all the other players.
+            The objective of MonoFusion is to become the wealthiest player through property acquisition, development, and strategic trading, while eliminating other players through bankruptcy. The game continues until one player remains financially intact, having outlasted all the other players.
             """),
         .init(title: "How to Play", description: ""),
         .init(title: "", description: """
@@ -84,7 +84,7 @@ struct AboutView: View {
         """, boldDescription: "5. Special Spaces:"),
         .init(title: "Key Features", description: ""),
         .init(title: "", description: """
-        One of the most exciting aspects of Monopoly is the ability to trade properties with other players. Strategic negotiations can help you acquire the properties you need to complete color sets and build houses and hotels.
+        One of the most exciting aspects of MonoFusion is the ability to trade properties with other players. Strategic negotiations can help you acquire the properties you need to complete color sets and build houses and hotels.
         """, boldDescription: "- Trading and Negotiation: "),
         .init(title: "", description: """
         The more you develop your properties, the higher the rent you can charge other players. Owning a complete color set allows you to build houses and eventually hotels to maximize your income.
@@ -98,13 +98,13 @@ struct AboutView: View {
         .init(title: "", description: "Don’t overspend early in the game. Keep enough cash on hand to pay rent and avoid bankruptcy.", boldDescription: "- Manage Your Cash: "),
         .init(title: "", description: "Trading with other players can be the key to completing your color sets and strengthening your position. Be strategic in your trades.", boldDescription: "- Negotiation Is Key: "),
         .init(title: "Fun Facts"),
-        .init(title: "", description: " Monopoly was created in 1903 by Elizabeth Magie as a way to teach about the dangers of monopolies. The game evolved over time, eventually becoming the classic we know today.", boldDescription: " - Origins: "),
+        .init(title: "", description: " MonoFusion was created in 1903 by Elizabeth Magie as a way to teach about the dangers of monopolies. The game evolved over time, eventually becoming the classic we know today.", boldDescription: " - Origins: "),
         .init(title: "", description: """
-        Monopoly has been translated into over 40 languages, with localized editions that feature cities and landmarks from all around the world.
+                    MonoFusion has been translated into over 40 languages, with localized editions that feature cities and landmarks from all around the world.
         """, boldDescription: "- Global Versions: "),
-        .init(title: "", description: "The longest game of Monopoly ever played lasted for 70 straight days!", boldDescription: "- Record: "),
+        .init(title: "", description: "The longest game of MonoFusion ever played lasted for 70 straight days!", boldDescription: "- Record: "),
         .init(title: "Conclusion", description: """
-            Monopoly is a game of strategy, luck, and negotiation. Whether you’re a seasoned player or new to the game, there’s always a new strategy to try and a new way to outsmart your opponents. Gather your friends, roll the dice, and see if you can build your empire in the world of Monopoly!
+                        MonoFusion is a game of strategy, luck, and negotiation. Whether you’re a seasoned player or new to the game, there’s always a new strategy to try and a new way to outsmart your opponents. Gather your friends, roll the dice, and see if you can build your empire in the world of MonoFusion!
             """)
     ]
 }
