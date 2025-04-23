@@ -14,6 +14,18 @@ struct GameSettingsView: View {
     var body: some View {
         VStack(spacing:10) {
             VStack(alignment:.leading) {
+                Text("Using game center")
+                    .foregroundColor(.secondaryText)
+                Text("Your game completion scores \((db.db.settings.usingGameCenter ?? false) ? "will" : "will not") be uploaded to the Game Center")
+                    .foregroundColor(.secondaryText)
+                Toggle("", isOn: .init(get: {
+                    db.db.settings.usingGameCenter ?? false
+                }, set: { newValue in
+                    db.db.settings.usingGameCenter = newValue
+                }))
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment:.leading) {
                 Text("Difficulty")
                     .foregroundColor(.secondaryText)
                 Slider(value: $db.db.settings.game.difficulty)

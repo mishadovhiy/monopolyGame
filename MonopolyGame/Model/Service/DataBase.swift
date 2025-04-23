@@ -71,6 +71,8 @@ class AppData:ObservableObject {
         struct Settings:Codable {
             var sound:Sound = .init()
             var game:Game = .init()
+            var usingGameCenter:Bool? = nil
+            
             struct Game: Codable {
                 var difficulty:Float = 0.5
                 var balance:Int = 1000

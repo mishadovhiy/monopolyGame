@@ -124,15 +124,19 @@ struct PopupView: View {
     
     var contentView: some View {
         HStack(spacing:0) {
-            imageView.frame(maxWidth: .infinity, maxHeight: .infinity)
+            if dataType?.hasImage ?? false {
+                imageView.frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
             VStack(spacing:0) {
-                HStack {
-                    Spacer()
-                    Text(dataType?.message?.title ?? "")
-                        .foregroundColor(.light)
-                    Spacer()
+                if dataType?.hasImage ?? false {
+                    HStack {
+                        Spacer()
+                        Text(dataType?.message?.title ?? "")
+                            .foregroundColor(.light)
+                        Spacer()
+                    }
+                    .padding(.vertical, 5)
                 }
-                .padding(.vertical, 5)
                 ScrollView(.vertical, content: {
                     VStack {
                         rightContentView
@@ -227,7 +231,16 @@ extension PopupView {
         case custom(MessageContent)
         case property(Property)
         case propertyList([Property])
-        
+        var hasImage:Bool {
+            switch self {
+            case .custom(let messageContent):
+                messageContent.image != nil
+            case .property(let property):
+                true
+            case .propertyList(let array):
+                true
+            }
+        }
         struct Property {
             var owner:String?
             var ownerUpgrade:PlayerStepModel.Upgrade?

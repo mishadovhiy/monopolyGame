@@ -69,11 +69,23 @@ struct GameView: View {
         .onAppear {
             viewModel.enemyLostAction = {
                 db.db.gameProgress = .init()
-                db.gameCenter.addGameCompletionScore(viewModel.myPlayerPosition)
+                if db.db.settings.usingGameCenter ?? false {
+                    db.gameCenter.addGameCompletionScore(viewModel.myPlayerPosition)
+                }
                 db.db.gameCompletions.completionList.append(.init(balance: viewModel.myPlayerPosition.balance, time: .init(), upgrades: viewModel.myPlayerPosition.bought))
                 db.audioManager?.play(.wone)
             }
             viewModel.fetchGame(db: db.db)
+            if db.db.settings.usingGameCenter == nil {
+                viewModel.message = .custom(MessageContent(title: "Game center score usage",description:"Would you like to upload scores into the Game Center Leadership board? \n\nUpon successful completion levels, we will upload your level score into the Leadership board\nThis will include - your balance for the level, and total property price, that you own"))
+                viewModel.messagePressed = .init(title: "OK", pressed: {
+                    db.db.settings.usingGameCenter = true
+                })
+                viewModel.messagePressedSecondary = .init(title: "Decline", pressed:{
+                    db.db.settings.usingGameCenter = false
+
+                })
+            }
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
