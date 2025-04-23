@@ -9,12 +9,24 @@ import UIKit
 
 struct HomeViewModel {
     var profileImage:UIImage? = nil
-
+    var supportRequest:NetworkModel.RequestType.SupportRequest = .init(text: "", header: "", title: "")
     var profileWidth:CGFloat {
         isNavigationPushed && isGamePresenting ? 0 : (navigationPresenting.profile ? (navigationPresenting.profileProtoPicker ? 0 : 56) : (isNavigationPushed ? 0 : 56))
     }
     
-    mutating func popToRootView() {
+    var supportRequestCompletion:MessageContent?
+    
+    func sendSupportRequest(completion:@escaping(_ ok:Bool)->()) {
+        NetworkModel().support(supportRequest) { response in
+            completion(response?.success ?? false)
+        }
+    }
+    
+    mutating func popToRootView(force:Bool = false) {
+        if force {
+            navigationPresenting = .init()
+return
+        }
         if navigationPresenting.sound {
             navigationPresenting.sound = false
             return
@@ -48,7 +60,8 @@ struct HomeViewModel {
         var gameCenter = false
         var profileProtoPicker = false
         var profile = false
-        
+        var privacy = false
+        var support = false
         var clearGameConfirmation = false
         
         var dict:[String:Bool]? {

@@ -10,10 +10,13 @@ import Foundation
 extension NetworkModel {
     enum RequestType:Codable {
         case support(SupportRequest)
+        case fetchHTML(String)
         var isInvalid:Bool {
             switch self {
             case .support(let supportRequest):
                 return [supportRequest.header.isEmpty, supportRequest.text.isEmpty, supportRequest.title.isEmpty].contains(true)
+            case .fetchHTML(let url):
+                return url.isEmpty
             }
         }
         struct SupportRequest:Codable {

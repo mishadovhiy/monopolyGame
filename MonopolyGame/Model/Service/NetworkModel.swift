@@ -13,6 +13,13 @@ struct NetworkModel {
             completion(.init(data: $0))
         })
     }
+    
+    /// will fetch HTML in string format, from the passed url
+    func fetchStringFrom(_ urlString:String, completion:@escaping(_ content:String?)->()) {
+        PerformRequest(.fetchHTML(urlString)).start { data in
+            completion(String(data: data ?? .init(), encoding: .utf8))
+        }
+    }
 }
 
 extension NetworkModel {
@@ -27,6 +34,13 @@ extension NetworkModel {
                 return
             }
             switch type {
+            case .fetchHTML(let url):
+                if let url:URL = .init(string: url) {
+                    request = .init(url: url)
+                    request?.httpMethod = "GET"
+                    request?.setValue("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", forHTTPHeaderField: "User-Agent")
+
+                }
             case .support(let support):
                 let toDataString = "emailTitle=\(support.title)&emailHead=\(support.header)&emailBody=\(support.text)"
                 requestData = "44fdcv8jf3"
@@ -67,6 +81,7 @@ extension NetworkModel {
             
             let uploadJob = URLSession.shared.uploadTask(with: request, from: data) { data, response, error in
                 let returnedData = NSString(data: data ?? .init(), encoding: String.Encoding.utf8.rawValue)
+                print(returnedData, " grefsd")
                 if error != nil {
                     completion(nil)
                     return

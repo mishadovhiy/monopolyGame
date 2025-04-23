@@ -18,6 +18,7 @@ struct HomeView: View {
                         .frame(maxHeight: .infinity)
                     VStack {
                         Button {
+                            viewModel.popToRootView(force: true)
                             viewModel.isGamePresenting = true
                         } label: {
                             Text("Play")
@@ -34,6 +35,7 @@ struct HomeView: View {
                                 Spacer()
                                 Button("Leaderboard") {
                                     withAnimation {
+                                        viewModel.popToRootView(force: true)
                                         viewModel.navigationPresenting.leaderBoard = true
                                     }
                                 }

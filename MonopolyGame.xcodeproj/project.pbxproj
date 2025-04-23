@@ -57,6 +57,9 @@
 		825AE4552DB3A0890075B26B /* background5.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE4522DB3A0890075B26B /* background5.mp3 */; };
 		825AE4562DB3A0890075B26B /* background3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE4502DB3A0890075B26B /* background3.mp3 */; };
 		825AE4572DB3A0890075B26B /* background4.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE4512DB3A0890075B26B /* background4.mp3 */; };
+		82A7F86E2DB8CEA000048BD7 /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7F86D2DB8CEA000048BD7 /* PrivacyPolicyView.swift */; };
+		82A7F8702DB8CEB900048BD7 /* UpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7F86F2DB8CEB900048BD7 /* UpdateView.swift */; };
+		82A7F8742DB8DC6300048BD7 /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7F8732DB8DC6300048BD7 /* SupportView.swift */; };
 		82C51E2C2DAD6B7000EC71F4 /* StorekitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */; };
 		82C51E2E2DAD6C7400EC71F4 /* ShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */; };
 		82C51E302DAD7C1700EC71F4 /* GameCenterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2F2DAD7C1700EC71F4 /* GameCenterModel.swift */; };
@@ -118,6 +121,9 @@
 		825AE4502DB3A0890075B26B /* background3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background3.mp3; sourceTree = "<group>"; };
 		825AE4512DB3A0890075B26B /* background4.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background4.mp3; sourceTree = "<group>"; };
 		825AE4522DB3A0890075B26B /* background5.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background5.mp3; sourceTree = "<group>"; };
+		82A7F86D2DB8CEA000048BD7 /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
+		82A7F86F2DB8CEB900048BD7 /* UpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateView.swift; sourceTree = "<group>"; };
+		82A7F8732DB8DC6300048BD7 /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorekitModel.swift; sourceTree = "<group>"; };
 		82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
@@ -253,7 +259,9 @@
 			isa = PBXGroup;
 			children = (
 				82126EF82DABF8710081983A /* TopNavigationView.swift */,
+				82A7F86D2DB8CEA000048BD7 /* PrivacyPolicyView.swift */,
 				82126F102DAC48BC0081983A /* MenuView.swift */,
+				82A7F8732DB8DC6300048BD7 /* SupportView.swift */,
 				82126F162DACC1F80081983A /* ProfileView.swift */,
 				82126F142DAC5B060081983A /* LeaderboardView.swift */,
 				82126F122DAC492D0081983A /* SoundSettingsView.swift */,
@@ -268,6 +276,7 @@
 			children = (
 				82126ECA2DAB3C790081983A /* ImageView.swift */,
 				82C51E312DAD803C00EC71F4 /* BlurView.swift */,
+				82A7F86F2DB8CEB900048BD7 /* UpdateView.swift */,
 				82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */,
 				82126F0D2DAC3FCB0081983A /* ClearBackgroundView.swift */,
 			);
@@ -443,6 +452,7 @@
 				82126EBA2DAADA360081983A /* Codable+Decodable.swift in Sources */,
 				82126F2D2DACDBBC0081983A /* Keys.swift in Sources */,
 				82126EBB2DAADA360081983A /* String.swift in Sources */,
+				82A7F86E2DB8CEA000048BD7 /* PrivacyPolicyView.swift in Sources */,
 				82126EBC2DAADA360081983A /* ButtonData.swift in Sources */,
 				82126F132DAC492D0081983A /* SoundSettingsView.swift in Sources */,
 				82C51E322DAD803C00EC71F4 /* BlurView.swift in Sources */,
@@ -470,6 +480,7 @@
 				82126EC12DAADA360081983A /* PropertyView.swift in Sources */,
 				82126EFE2DABF8C60081983A /* AboutView.swift in Sources */,
 				82126EC22DAADA360081983A /* GameView.swift in Sources */,
+				82A7F8742DB8DC6300048BD7 /* SupportView.swift in Sources */,
 				82C51E302DAD7C1700EC71F4 /* GameCenterModel.swift in Sources */,
 				82126ED12DAB78550081983A /* NetworkModel.swift in Sources */,
 				82126EC32DAADA360081983A /* BuyPopupContentView.swift in Sources */,
@@ -480,6 +491,7 @@
 				82126ED32DAB78690081983A /* NetworkResponse.swift in Sources */,
 				82126F152DAC5B060081983A /* LeaderboardView.swift in Sources */,
 				82126EC52DAADA360081983A /* TradePopupContentView.swift in Sources */,
+				82A7F8702DB8CEB900048BD7 /* UpdateView.swift in Sources */,
 				82126EC62DAADA360081983A /* GameViewModel.swift in Sources */,
 				82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */,
 				82126EFC2DABF88F0081983A /* GameSettingsView.swift in Sources */,

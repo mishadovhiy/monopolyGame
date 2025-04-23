@@ -77,6 +77,20 @@ struct MenuView: View {
                             .cornerRadius(4)
                         
                     }
+                    NavigationLink(destination: PrivacyPolicyView(viewModel: $viewModel), isActive: .init(get: {
+                        viewModel.navigationPresenting.privacy
+                    }, set: { newValue in
+                        withAnimation(.bouncy) {
+                            viewModel.navigationPresenting.privacy = newValue
+                        }
+                    })) {
+                        Text("Privacy")
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 5)
+                            .background(.lightsecondaryBackground)
+                            .cornerRadius(4)
+                        
+                    }
                     Button {
                         StorekitModel().requestReview()
                     } label: {
