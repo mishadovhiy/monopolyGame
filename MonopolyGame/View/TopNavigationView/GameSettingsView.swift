@@ -12,89 +12,94 @@ struct GameSettingsView: View {
     @Binding var viewModel:HomeViewModel
     
     var body: some View {
-        VStack(spacing:10) {
-            VStack(alignment:.leading) {
-                Text("Using game center")
-                    .foregroundColor(.secondaryText)
-                Text("Your game completion scores \((db.db.settings.usingGameCenter ?? false) ? "will" : "will not") be uploaded to the Game Center")
-                    .foregroundColor(.secondaryText)
-                Toggle("", isOn: .init(get: {
-                    db.db.settings.usingGameCenter ?? false
-                }, set: { newValue in
-                    db.db.settings.usingGameCenter = newValue
-                }))
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            VStack(alignment:.leading) {
-                Text("Difficulty")
-                    .foregroundColor(.secondaryText)
-                Slider(value: $db.db.settings.game.difficulty)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            Divider()
-            VStack(alignment:.leading, spacing:5) {
-                Text("Balance")
-                    .foregroundColor(.secondaryText)
-                HStack {
-                    HStack(spacing:10) {
-                        Button("-100") {
-                            db.audioManager?.play(.menu)
-                            db.db.settings.game.balance -= 100
+        VStack(content: {
+            Spacer().frame(height: 1)
+            ScrollView(.vertical, showsIndicators: false, content: {
+                VStack(spacing:10) {
+                    VStack(alignment:.leading) {
+                        Text("Using game center")
+                            .foregroundColor(.secondaryText)
+                        Text("Your game completion scores \((db.db.settings.usingGameCenter ?? false) ? "will" : "will not") be uploaded to the Game Center")
+                            .foregroundColor(.secondaryText)
+                        Toggle("", isOn: .init(get: {
+                            db.db.settings.usingGameCenter ?? false
+                        }, set: { newValue in
+                            db.db.settings.usingGameCenter = newValue
+                        }))
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    VStack(alignment:.leading) {
+                        Text("Difficulty")
+                            .foregroundColor(.secondaryText)
+                        Slider(value: $db.db.settings.game.difficulty)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Divider()
+                    VStack(alignment:.leading, spacing:5) {
+                        Text("Balance")
+                            .foregroundColor(.secondaryText)
+                        HStack {
+                            HStack(spacing:10) {
+                                Button("-100") {
+                                    db.audioManager?.play(.menu)
+                                    db.db.settings.game.balance -= 100
+                                }
+                                .padding(.vertical, 2)
+                                .padding(.horizontal, 8)
+                                .background(.lightsecondaryBackground)
+                                .cornerRadius(4)
+                                Button("-10") {
+                                    db.audioManager?.play(.menu)
+                                    db.db.settings.game.balance -= 10
+                                }
+                                .padding(.vertical, 2)
+                                .padding(.horizontal, 8)
+                                .background(.lightsecondaryBackground)
+                                .cornerRadius(4)
+                            }
+                            .frame(maxWidth: .infinity)
+                            Text("\(db.db.settings.game.balance)")
+                            HStack(spacing:10) {
+                                Button("+10") {
+                                    db.audioManager?.play(.menu)
+                                    db.db.settings.game.balance += 10
+                                }
+                                .padding(.vertical, 2)
+                                .padding(.horizontal, 8)
+                                .background(.lightsecondaryBackground)
+                                .cornerRadius(4)
+                                Button("+100") {
+                                    db.audioManager?.play(.menu)
+                                    db.db.settings.game.balance += 100
+                                }
+                                .padding(.vertical, 2)
+                                .padding(.horizontal, 8)
+                                .background(.lightsecondaryBackground)
+                                .cornerRadius(4)
+                            }
+                            .frame(maxWidth: .infinity)
                         }
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 8)
-                        .background(.lightsecondaryBackground)
-                        .cornerRadius(4)
-                        Button("-10") {
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Divider()
+                    Toggle(isOn: $db.db.settings.game.usingDice) {
+                        Text("Is using dice 3D Images")
+                    }
+                    VStack {
+                        Button("Clear progress") {
                             db.audioManager?.play(.menu)
-                            db.db.settings.game.balance -= 10
+                            viewModel.navigationPresenting.clearGameConfirmation = true
                         }
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 8)
-                        .background(.lightsecondaryBackground)
+                        .frame(maxWidth:.infinity)
+                        .tint(.red)
+                        .padding(.vertical, 10)
+                        .background(.red.opacity(0.15))
                         .cornerRadius(4)
                     }
-                    .frame(maxWidth: .infinity)
-                    Text("\(db.db.settings.game.balance)")
-                    HStack(spacing:10) {
-                        Button("+10") {
-                            db.audioManager?.play(.menu)
-                            db.db.settings.game.balance += 10
-                        }
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 8)
-                        .background(.lightsecondaryBackground)
-                        .cornerRadius(4)
-                        Button("+100") {
-                            db.audioManager?.play(.menu)
-                            db.db.settings.game.balance += 100
-                        }
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 8)
-                        .background(.lightsecondaryBackground)
-                        .cornerRadius(4)
-                    }
-                    .frame(maxWidth: .infinity)
+                    Spacer()
                 }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            Divider()
-            Toggle(isOn: $db.db.settings.game.usingDice) {
-                Text("Is using dice 3D Images")
-            }
-            VStack {
-                Button("Clear progress") {
-                    db.audioManager?.play(.menu)
-                    viewModel.navigationPresenting.clearGameConfirmation = true
-                }
-                .frame(maxWidth:.infinity)
-                .tint(.red)
-                .padding(.vertical, 10)
-                .background(.red.opacity(0.15))
-                .cornerRadius(4)
-            }
-            Spacer()
-        }
+            })
+        })
         .background {
             ClearBackgroundView()
         }
