@@ -10,18 +10,19 @@ import CoreML
 struct CoreMLManager {
     private func model(_ input:Input) -> MLModel? {
         switch input.type {
-        case .upgradeSkip(let upgradeSkip):
-            try? buyPrediction(configuration: MLModelConfiguration()).model
-        case .buyAuction(let buyAction):
-            try? buyPrediction(configuration: MLModelConfiguration()).model
-        case .continiueBetting(let continiueBetting):
-            try? buyPrediction(configuration: MLModelConfiguration()).model
+        case .upgradeSkip(_):
+            return try? UpgradeSkipModel(configuration: MLModelConfiguration()).model
+            
+        case .buyAuction(_):
+            return try? BuyAuctionModel(configuration: MLModelConfiguration()).model
+            
+        case .continiueBetting(_):
+            return try? ContiniueBettingModel(configuration: MLModelConfiguration()).model
         }
     }
     
     func predictAction(_ inputData:Input) -> Output? {
         do {
-            let model = try buyPrediction(configuration: MLModelConfiguration())
             let input = try MLDictionaryFeatureProvider(dictionary: inputData.mlDictionary ?? [:])
             let prediction = try self.model(inputData)?.prediction(from: input)
             

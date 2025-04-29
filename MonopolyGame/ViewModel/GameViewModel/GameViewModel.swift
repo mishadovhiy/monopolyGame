@@ -12,6 +12,9 @@ class GameViewModel:ObservableObject {
     private var balanceChangeHolder:Int = 0
     var chests:[BoardCard] = .chest.shuffled()
     var chances:[BoardCard] = .chance.shuffled()
+    var round:GameRound = .init()
+    var coreMLModel:CoreMLManager = .init()
+    
     #warning("declare bancopcy - save to db")
     #warning("if morgage - show morgage icon")//!!
     #warning("buy transport")//!!
@@ -126,8 +129,11 @@ class GameViewModel:ObservableObject {
     @Published var activePanelType:PanelType?
     
     func saveProgress(db:inout AppData.DataBase) {
-        db.gameProgress.player = myPlayerPosition
-        db.gameProgress.enemy = enemyPosition
+        db.gameProgress = .with({
+            $0.player = myPlayerPosition
+            $0.enemy = enemyPosition
+            $0.round = round
+        })
     }
     
     func fetchGame(db: AppData.DataBase) {
@@ -389,16 +395,29 @@ class GameViewModel:ObservableObject {
     func robotBet() {
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds((250..<3000).randomElement() ?? 0), execute: {
             let last = self.bet.bet.last
-            if (self.bet.betProperty?.buyPrice ?? 0) >= (last?.1 ?? 0) {
-                if self.enemyPosition.balance >= ((last?.1 ?? 0) + 1) {
-                    self.bet.bet.append((self.enemyPosition, (last?.1 ?? 0) + 1))
-                    
-                } else {
+            let difference = self.enemyPosition.balance - (last?.1 ?? 0)
+            if difference <= 2 {
+                self.setBetWone()
+                return
+            }
+            let newBet = (last?.1 ?? 0) + Int.random(in: 1..<difference)
+            if newBet <= self.enemyPosition.balance {
+                let results = self.coreMLModel.predictAction(.init(type: .continiueBetting(.init(opponentBet: Double(last?.1 ?? 0), playerBet: Double(newBet))), base: .configure(self.enemyPosition, self.playerPosition)))
+                switch results {
+                case .continiueBetting(let response):
+                    if response == .true {
+                        self.bet.bet.append((self.enemyPosition, newBet))
+
+                    } else {
+                        self.setBetWone()
+                    }
+                default:
                     self.setBetWone()
                 }
             } else {
                 self.setBetWone()
             }
+
         })
     }
     
@@ -424,16 +443,22 @@ class GameViewModel:ObservableObject {
         let upgrades = enemyPosition.bought.filter {
             enemyPosition.canUpdateProperty($0.key)
         }.sorted(by: {$0.key.upgradePrice($0.value) >= $1.key.upgradePrice($1.value)})
-        let ocupiedPropertiesCount = (self.enemyPosition.bought.compactMap({$0.key}) + self.myPlayerPosition.bought.compactMap({$0.key})).count
-        let occupiedPercent = CGFloat(ocupiedPropertiesCount) / CGFloat(Step.allCases.count)
-        let minEnemyRestBalaance = occupiedPercent >= 0.5 ? 250 : 100
-        var bought = false
+        let maxUpgradeCountPerMove = 4
+        var upgradedCount = 0
         upgrades.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
-            let balanceHolder = self.enemyPosition.balance
-            if minEnemyRestBalaance < self.enemyPosition.balance {
-                self.enemyPosition.upgradePropertyIfCan(key)
-                if self.enemyPosition.balance < balanceHolder {
-                    bought = true
+            if let next = value.nextValue,
+               self.enemyPosition.balance >= key.upgradePrice(next),
+               maxUpgradeCountPerMove >= upgradedCount
+            {
+                let mlResponse = coreMLModel.predictAction(.init(type: .upgradeSkip(.configure(self.playerPosition, self.enemyPosition, step: key)), base: .configure(self.enemyPosition, self.playerPosition)))
+                switch mlResponse {
+                case .upgradeSkip(let skip):
+                    if skip == .upgrade {
+                        upgradedCount += 1
+                        self.enemyPosition.upgradePropertyIfCan(key)
+                        print("enemy upgrading property")
+                    }
+                default:break
                 }
             }
         }
@@ -475,6 +500,11 @@ class GameViewModel:ObservableObject {
         }
         if playerPosition.playerPosition == .go {
             playerPosition.balance += 200
+            if playerPosition.id == enemyPosition.id {
+                round.enemyRound += 1
+            } else {
+                round.playerRound += 1
+            }
         }
         diceDestination -= 1
         if diceDestination >= 1 {
@@ -568,7 +598,19 @@ fileprivate extension GameViewModel {
         }
         if occupiedByPlayer(property) == nil {
             if enemyPosition.canBuy(property) {
-                self.enemyPosition.buyIfCan(property)
+                let request = coreMLModel.predictAction(.init(type: .buyAuction(.configure(property)), base: .configure(enemyPosition, playerPosition)))
+                switch request {
+                case .buyAuction(let results):
+                    if results == .upgrade {
+                        self.enemyPosition.buyIfCan(property)
+                    } else {
+                        self.bet.playerPalance = self.myPlayerPosition.balance
+                        self.bet.betProperty = property
+                    }
+                default:
+                    self.bet.playerPalance = self.myPlayerPosition.balance
+                    self.bet.betProperty = property
+                }
             } else {
                 self.bet.playerPalance = self.myPlayerPosition.balance
                 self.bet.betProperty = property

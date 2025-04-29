@@ -57,14 +57,15 @@
 		825AE4552DB3A0890075B26B /* background5.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE4522DB3A0890075B26B /* background5.mp3 */; };
 		825AE4562DB3A0890075B26B /* background3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE4502DB3A0890075B26B /* background3.mp3 */; };
 		825AE4572DB3A0890075B26B /* background4.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 825AE4512DB3A0890075B26B /* background4.mp3 */; };
-		827CD0202DC0B423006F6BFB /* upgradeSkip.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 827CD01F2DC0B423006F6BFB /* upgradeSkip.mlmodel */; };
-		827CD0232DC0B42E006F6BFB /* buyPrediction.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 827CD0212DC0B42E006F6BFB /* buyPrediction.mlmodel */; };
-		827CD0242DC0B42E006F6BFB /* continiueBetting.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 827CD0222DC0B42E006F6BFB /* continiueBetting.mlmodel */; };
 		827CD0272DC0B505006F6BFB /* CoreMLManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827CD0262DC0B505006F6BFB /* CoreMLManager.swift */; };
 		827CD0292DC0B7AA006F6BFB /* InputCoreML.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827CD0282DC0B7AA006F6BFB /* InputCoreML.swift */; };
+		827CD0682DC0DFD4006F6BFB /* GameRound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827CD0672DC0DFD4006F6BFB /* GameRound.swift */; };
+		827CD0802DC0EC67006F6BFB /* ContiniueBettingModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 827CD07E2DC0EC67006F6BFB /* ContiniueBettingModel.mlmodel */; };
+		827CD0812DC0EC67006F6BFB /* UpgradeSkipModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 827CD07F2DC0EC67006F6BFB /* UpgradeSkipModel.mlmodel */; };
 		82A7F86E2DB8CEA000048BD7 /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7F86D2DB8CEA000048BD7 /* PrivacyPolicyView.swift */; };
 		82A7F8702DB8CEB900048BD7 /* UpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7F86F2DB8CEB900048BD7 /* UpdateView.swift */; };
 		82A7F8742DB8DC6300048BD7 /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7F8732DB8DC6300048BD7 /* SupportView.swift */; };
+		82AB64432DC0ED5B00BAC72A /* BuyAuctionModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 82AB64422DC0ED5B00BAC72A /* BuyAuctionModel.mlmodel */; };
 		82C51E2C2DAD6B7000EC71F4 /* StorekitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */; };
 		82C51E2E2DAD6C7400EC71F4 /* ShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */; };
 		82C51E302DAD7C1700EC71F4 /* GameCenterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E2F2DAD7C1700EC71F4 /* GameCenterModel.swift */; };
@@ -126,14 +127,15 @@
 		825AE4502DB3A0890075B26B /* background3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background3.mp3; sourceTree = "<group>"; };
 		825AE4512DB3A0890075B26B /* background4.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background4.mp3; sourceTree = "<group>"; };
 		825AE4522DB3A0890075B26B /* background5.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background5.mp3; sourceTree = "<group>"; };
-		827CD01F2DC0B423006F6BFB /* upgradeSkip.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = upgradeSkip.mlmodel; sourceTree = "<group>"; };
-		827CD0212DC0B42E006F6BFB /* buyPrediction.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = buyPrediction.mlmodel; sourceTree = "<group>"; };
-		827CD0222DC0B42E006F6BFB /* continiueBetting.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = continiueBetting.mlmodel; sourceTree = "<group>"; };
 		827CD0262DC0B505006F6BFB /* CoreMLManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLManager.swift; sourceTree = "<group>"; };
 		827CD0282DC0B7AA006F6BFB /* InputCoreML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputCoreML.swift; sourceTree = "<group>"; };
+		827CD0672DC0DFD4006F6BFB /* GameRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRound.swift; sourceTree = "<group>"; };
+		827CD07E2DC0EC67006F6BFB /* ContiniueBettingModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; name = ContiniueBettingModel.mlmodel; path = mlHolders/createML/buy/ContiniueBettingModel.mlmodel; sourceTree = SOURCE_ROOT; };
+		827CD07F2DC0EC67006F6BFB /* UpgradeSkipModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; name = UpgradeSkipModel.mlmodel; path = mlHolders/createML/buy/UpgradeSkipModel.mlmodel; sourceTree = SOURCE_ROOT; };
 		82A7F86D2DB8CEA000048BD7 /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
 		82A7F86F2DB8CEB900048BD7 /* UpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateView.swift; sourceTree = "<group>"; };
 		82A7F8732DB8DC6300048BD7 /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
+		82AB64422DC0ED5B00BAC72A /* BuyAuctionModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; name = BuyAuctionModel.mlmodel; path = mlHolders/createML/buy/BuyAuctionModel.mlmodel; sourceTree = SOURCE_ROOT; };
 		82C290092D9EEDD100E6EC40 /* MonopolyGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonopolyGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82C51E2B2DAD6B7000EC71F4 /* StorekitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorekitModel.swift; sourceTree = "<group>"; };
 		82C51E2D2DAD6C7400EC71F4 /* ShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 			children = (
 				825AE44B2DB19A5B0075B26B /* Base */,
 				82126EA52DAADA360081983A /* Step.swift */,
+				827CD0672DC0DFD4006F6BFB /* GameRound.swift */,
 				825AE4492DB19A460075B26B /* PlayerStepModel.swift */,
 				8228620B2DB50DFB005BB71D /* BoardCard.swift */,
 				82126ED22DAB78690081983A /* NetworkResponse.swift */,
@@ -332,10 +335,10 @@
 		827CD0252DC0B4EB006F6BFB /* CoreML */ = {
 			isa = PBXGroup;
 			children = (
-				827CD0212DC0B42E006F6BFB /* buyPrediction.mlmodel */,
-				827CD0222DC0B42E006F6BFB /* continiueBetting.mlmodel */,
-				827CD01F2DC0B423006F6BFB /* upgradeSkip.mlmodel */,
 				827CD0262DC0B505006F6BFB /* CoreMLManager.swift */,
+				82AB64422DC0ED5B00BAC72A /* BuyAuctionModel.mlmodel */,
+				827CD07E2DC0EC67006F6BFB /* ContiniueBettingModel.mlmodel */,
+				827CD07F2DC0EC67006F6BFB /* UpgradeSkipModel.mlmodel */,
 			);
 			path = CoreML;
 			sourceTree = "<group>";
@@ -482,14 +485,17 @@
 				82126EF72DABF5CB0081983A /* HomeViewModel.swift in Sources */,
 				82C51E2E2DAD6C7400EC71F4 /* ShareView.swift in Sources */,
 				82126EC92DAADA630081983A /* BoardPopoverView.swift in Sources */,
-				827CD0202DC0B423006F6BFB /* upgradeSkip.mlmodel in Sources */,
 				82126EBD2DAADA360081983A /* MessageContent.swift in Sources */,
 				82C51E622DAF885100EC71F4 /* SuccessNode.swift in Sources */,
+				827CD0802DC0EC67006F6BFB /* ContiniueBettingModel.mlmodel in Sources */,
+				827CD0812DC0EC67006F6BFB /* UpgradeSkipModel.mlmodel in Sources */,
 				82C51E632DAF885100EC71F4 /* SuccessSKScene.swift in Sources */,
 				82126F0E2DAC3FCB0081983A /* ClearBackgroundView.swift in Sources */,
 				82126EBE2DAADA360081983A /* Step.swift in Sources */,
 				820679A72DB6193C00B8DEF6 /* BetModel.swift in Sources */,
+				82AB64432DC0ED5B00BAC72A /* BuyAuctionModel.mlmodel in Sources */,
 				820679A52DB6192600B8DEF6 /* Trade.swift in Sources */,
+				827CD0682DC0DFD4006F6BFB /* GameRound.swift in Sources */,
 				82126EBF2DAADA360081983A /* DataBase.swift in Sources */,
 				82126EC02DAADA360081983A /* PropertyListView.swift in Sources */,
 				82126F112DAC48BC0081983A /* MenuView.swift in Sources */,
@@ -521,8 +527,6 @@
 				82126EC62DAADA360081983A /* GameViewModel.swift in Sources */,
 				82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */,
 				82126EFC2DABF88F0081983A /* GameSettingsView.swift in Sources */,
-				827CD0232DC0B42E006F6BFB /* buyPrediction.mlmodel in Sources */,
-				827CD0242DC0B42E006F6BFB /* continiueBetting.mlmodel in Sources */,
 				82C51E2C2DAD6B7000EC71F4 /* StorekitModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

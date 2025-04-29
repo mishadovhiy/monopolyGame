@@ -23,7 +23,7 @@ extension CoreMLManager {
         }
         
         enum UpgradeSkip:String {
-            case skip, upgrade
+            case upgrade, skip
         }
     }
     
@@ -48,12 +48,19 @@ extension CoreMLManager {
         }
         /// same properties in all ML projects
         struct BaseInput: Codable {
-            var player_balance: Double
-            var player_properties: Double
-            var player_houses: Double
-            var opponent_balance: Double
-            var opponent_properties: Double
-            var free_properties: Double
+            var playerBalance: Double
+            var playerProperties: Double
+            var playerHouses: Double
+            var opponentBalance: Double
+            var opponentProperties: Double
+            var freeProperties: Double
+            
+            static func configure(_ enemy:PlayerStepModel, _ player:PlayerStepModel) -> Self {
+                let enemyBought = Double(enemy.bought.count)
+                let playerBought = player.bought
+                let freeProperties = Step.allCases.filter({$0.buyPrice != 0}).count - (playerBought.count + Int(enemyBought))
+                return .init(playerBalance: Double(enemy.balance), playerProperties: enemyBought, playerHouses: Double(enemy.bought.filter({$0.value.index >= 1}).count), opponentBalance: Double(player.balance), opponentProperties: Double(playerBought.count), freeProperties: Double(freeProperties))
+            }
         }
         
         var mlDictionary:[String:Any]? {
@@ -71,11 +78,20 @@ extension CoreMLManager {
 extension CoreMLManager.Input.MLProject {
     struct BuyAction:ProjectProtocol {
         var properyPrice:Double
+        
+        static func configure(_ step: Step) -> Self {
+            .init(properyPrice: Double(step.buyPrice ?? 0))
+        }
     }
     
     struct UpgradeSkip:ProjectProtocol {
         var upgradePrice:Double
         var colorPropertiesBoughtCount:Double
+        
+        static func configure(_ player:PlayerStepModel, _ enemy:PlayerStepModel, step:Step) -> Self {
+            let bought = enemy.bought.filter({$0.key.color == step.color}).count
+            return self.init(upgradePrice: Double(step.buyPrice ?? 0), colorPropertiesBoughtCount: Double(bought))
+        }
     }
     
     struct ContiniueBetting:ProjectProtocol {

@@ -10,7 +10,7 @@ import Foundation
 class AppData:ObservableObject {
     let gameCenter:GameCenterModel
     var audioManager:AudioPlayerManagers?
-    private let dbkey = "db12"
+    private let dbkey = "db13"
     @Published var deviceSize:CGSize = .zero
     @Published var db:DataBase = .init() {
         didSet {
@@ -159,6 +159,15 @@ class AppData:ObservableObject {
         struct GameProgress:Codable {
             private var _player:PlayerStepModel = .init(playerPosition: .go)
             private var _enemy: PlayerStepModel = .init(playerPosition: .go)
+            var round:GameRound = .init()
+            
+            public static func with(
+                _ populator: (inout Self) throws -> ()
+            ) rethrows -> Self {
+                var message = Self()
+                try populator(&message)
+                return message
+            }
             var player:PlayerStepModel {
                 get {
 //                    var value = PlayerStepModel.init(playerPosition: .blue1)
@@ -195,16 +204,19 @@ class AppData:ObservableObject {
             }
             var enemy: PlayerStepModel {
                 get {
-//                    var value = PlayerStepModel.init(playerPosition: .jail1)
-//                    value.bought = [
-//                        .blue1:.smallest,
-//                        .blue2:.bought,
-//                        .blue3:.smallest
-//                    ]
-//                    value.inJail = true
-//                    value.balance = -2000
-//                    return value
-                    return _enemy
+                    var value = PlayerStepModel.init(playerPosition: .jail1)
+                    value.bought = [
+                        .blue1:.smallest,
+                        .blue2:.bought,
+                        .blue3:.smallest,
+                        .green1:.bought,
+                        .green2:.bought,
+                        .green3:.bought
+                    ]
+                    value.inJail = true
+                    value.balance = 20000
+                    return value
+//                    return _enemy
                 }
                 set {
                     _enemy = newValue
