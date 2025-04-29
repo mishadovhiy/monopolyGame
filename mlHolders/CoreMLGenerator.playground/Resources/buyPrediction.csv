@@ -1,0 +1,5 @@
+Table 1
+player_balance;player_properties;player_houses;opponent_balance;opponent_properties;free_properties;action
+1500;3;2;1200;4;5;upgrade
+600;4;1;2000;5;2;auction
+1100;2;0;900;3;6;upgrade

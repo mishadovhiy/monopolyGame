@@ -1,0 +1,13 @@
+opponentBet,playerBet,playerBalance,playerProperties,playerHouses,opponentBalance,opponentProperties,freeProperties,action
+1,2,1500,3,2,1200,4,5,true
+2,3,600,4,1,2000,5,2,skip
+3,4,1500,3,2,1200,4,5,true
+2,3,1500,3,2,1200,4,5,true
+2,3,600,4,1,2000,5,2,skip
+3,4,1500,3,2,1200,4,5,true
+2,3,1500,3,2,1200,4,5,true
+3,4,600,4,1,2000,5,2,true
+3,4,1500,3,2,1200,4,5,skip
+3,4,1500,3,2,1200,4,5,skip
+3,4,600,4,1,2000,5,2,skip
+2,3,1500,3,2,1200,4,5,skip
