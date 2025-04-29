@@ -395,7 +395,19 @@ class GameViewModel:ObservableObject {
     func robotBet() {
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds((250..<3000).randomElement() ?? 0), execute: {
             let last = self.bet.bet.last
-            let difference = self.enemyPosition.balance - (last?.1 ?? 0)
+            let differenceBalance = self.enemyPosition.balance - (last?.1 ?? 0)
+            if differenceBalance <= 2 {
+                self.setBetWone()
+                return
+            }
+            var difference = last?.1 ?? 0 - (self.bet.betProperty?.buyPrice ?? 0)
+            if difference <= 2 {
+                difference = differenceBalance
+                if [false, false, false, false, false, true, false, false, true].randomElement() ?? false {
+                    self.setBetWone()
+                    return
+                }
+            } 
             if difference <= 2 {
                 self.setBetWone()
                 return

@@ -86,6 +86,8 @@ struct GameView: View {
 
                 })
             }
+//            viewModel.bet.betProperty = .orange3
+            
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)

@@ -48,7 +48,14 @@ extension GameViewModel {
             if from >= to {
                 to = from + 1
             }
-            return ((from / 100)...(to / 100))
+            if from <= 100 {
+                from = 150
+                to = from + 300
+            }
+            if to <= 100 {
+                to = 2000
+            }
+            return (1...(3000 + from))
             //        0...10
         }
     }
