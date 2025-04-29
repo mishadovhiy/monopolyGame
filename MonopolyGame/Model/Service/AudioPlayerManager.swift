@@ -111,7 +111,7 @@ class AudioPlayerManager:NSObject, AVAudioPlayerDelegate {
                      completion:@escaping()->() = {}) {
         let action = {
             
-            let sound = db == nil ? self.volume : self.audioType?.volume(db!)
+            let sound = db == nil ? self.volume : self.audioType?.volume(db ?? .init())
             self.volume = sound ?? 0.5
             DispatchQueue.main.async {
                 self.player?.volume = sound ?? 0.5

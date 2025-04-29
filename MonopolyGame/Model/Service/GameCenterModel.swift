@@ -24,7 +24,7 @@ class GameCenterModel:NSObject {
         let gameCenterViewController = GKGameCenterViewController()
         gameCenterViewController.gameCenterDelegate = self
         gameCenterViewController.viewState = .leaderboards
-        rootVC!.present(gameCenterViewController, animated: true)
+        rootVC?.present(gameCenterViewController, animated: true)
     }
     
     private var rootVC:UIViewController? {

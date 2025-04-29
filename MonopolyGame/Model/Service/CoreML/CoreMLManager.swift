@@ -30,12 +30,12 @@ struct CoreMLManager {
                 print("Recommended action: \(action)")
                 switch inputData.type {
                 case .upgradeSkip(let upgradeSkip):
-                    return .upgradeSkip(.init(rawValue: action)!)
+                    return .upgradeSkip(.init(rawValue: action) ?? .skip)
                 case .buyAuction(let buyAction):
-                    return .buyAuction(.init(rawValue: action)!)
+                    return .buyAuction(.init(rawValue: action) ?? .skip)
 
                 case .continiueBetting(let continiueBetting):
-                    return .continiueBetting(.init(rawValue: action)!)
+                    return .continiueBetting(.init(rawValue: action) ?? .skip)
 
                 }
             } else {

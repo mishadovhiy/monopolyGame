@@ -9,7 +9,9 @@ import UIKit
 
 struct FileManagerModel {
     func deleteAllFiles(url:URL? = nil) {
-        let url = url ?? icloudDirectoryURL!
+        guard let url = url ?? icloudDirectoryURL else {
+            return
+        }
         let fileManager = FileManager.default
         
         do {
