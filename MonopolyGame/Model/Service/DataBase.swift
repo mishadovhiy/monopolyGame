@@ -10,7 +10,7 @@ import Foundation
 class AppData:ObservableObject {
     let gameCenter:GameCenterModel
     var audioManager:AudioPlayerManagers?
-    private let dbkey = "db13"
+    private let dbkey = "db14"
     @Published var deviceSize:CGSize = .zero
     @Published var db:DataBase = .init() {
         didSet {
@@ -204,19 +204,19 @@ class AppData:ObservableObject {
             }
             var enemy: PlayerStepModel {
                 get {
-                    var value = PlayerStepModel.init(playerPosition: .jail1)
-                    value.bought = [
-                        .blue1:.smallest,
-                        .blue2:.bought,
-                        .blue3:.smallest,
-                        .green1:.bought,
-                        .green2:.bought,
-                        .green3:.bought
-                    ]
-                    value.inJail = true
-                    value.balance = 20000
-                    return value
-//                    return _enemy
+//                    var value = PlayerStepModel.init(playerPosition: .jail1)
+//                    value.bought = [
+//                        .blue1:.smallest,
+//                        .blue2:.bought,
+//                        .blue3:.smallest,
+//                        .green1:.bought,
+//                        .green2:.bought,
+//                        .green3:.bought
+//                    ]
+//                    value.inJail = true
+//                    value.balance = 20000
+//                    return value
+                    return _enemy
                 }
                 set {
                     _enemy = newValue
