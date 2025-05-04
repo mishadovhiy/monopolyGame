@@ -237,7 +237,7 @@ class GameViewModel:ObservableObject {
             if let upgrade = self.myPlayerPosition.bought[step],
                upgrade == .bought,
                self.myPlayerPosition.morgageProperties.contains(step),
-               let price = step.rentTotal(upgrade)
+               let price = step.morgage
             {
                 self.myPlayerPosition.balance -= price
                 self.myPlayerPosition.morgageProperties.removeAll(where: {
