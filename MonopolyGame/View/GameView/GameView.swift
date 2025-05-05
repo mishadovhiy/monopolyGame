@@ -20,6 +20,7 @@ struct GameView: View {
                 boardView
                     .overlay {
                         BoardPopoverView(viewModel: viewModel, isGamePresenting: $isPresenting) {
+                            db.adWatched = false
                             db.db.gameProgress = .init()
                             isPresenting = false
                         }
@@ -38,6 +39,7 @@ struct GameView: View {
                 if !viewModel.dbUpdated {
                     viewModel.dbUpdated = true
                     viewModel.saveProgress(db: &db.db)
+                    db.adWatched = false
                 }
             } else if newValue == .active {
                 viewModel.dbUpdated = false
@@ -67,6 +69,10 @@ struct GameView: View {
             }
         }
         .onAppear {
+            if viewModel.viewAppeared {
+                return
+            }
+            viewModel.viewAppeared = true
             viewModel.enemyLostAction = {
                 db.db.gameProgress = .init()
                 if db.db.settings.usingGameCenter ?? false {
@@ -86,13 +92,36 @@ struct GameView: View {
 
                 })
             }
+            if !db.adWatched && db.db.gamePlayed {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                    viewModel.adPresenting = true
+                })
+            }
+            if !db.db.gamePlayed {
+                db.db.gamePlayed = true
+            }
 //            viewModel.bet.betProperty = .orange3
             
         }
         .overlay {
             PopupView(dataType: $viewModel.message, buttonData: $viewModel.messagePressed, secondaryButton: $viewModel.messagePressedSecondary)
         }
+        .overlay(content: {
+            if viewModel.adPresenting {
+                AdPresenterRepresentable(dismissed:{
+                    print("dismissedsdas")
+                    viewModel.adPresenting = false
+                    db.adWatched = true
+                })
+            } else {
+                VStack {
+                    
+                }
+                .disabled(true)
+            }
+        })
         .navigationBarHidden(true)
+
     }
     
     func chanceCardBackground(_ isOnTop:Bool) -> some View {

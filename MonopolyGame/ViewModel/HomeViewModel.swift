@@ -13,7 +13,6 @@ struct HomeViewModel {
     var profileWidth:CGFloat {
         isNavigationPushed && isGamePresenting ? 0 : (navigationPresenting.profile ? (navigationPresenting.profileProtoPicker ? 0 : 56) : (isNavigationPushed ? 0 : 56))
     }
-    
     var supportRequestCompletion:MessageContent?
     
     func sendSupportRequest(completion:@escaping(_ ok:Bool)->()) {

@@ -73,6 +73,8 @@
 		82C51E622DAF885100EC71F4 /* SuccessNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E5D2DAF885100EC71F4 /* SuccessNode.swift */; };
 		82C51E632DAF885100EC71F4 /* SuccessSKScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C51E602DAF885100EC71F4 /* SuccessSKScene.swift */; };
 		82C51E642DAF885100EC71F4 /* SuccessSKScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 82C51E5F2DAF885100EC71F4 /* SuccessSKScene.sks */; };
+		82CF0E882DC83CB50093C696 /* AdPresenterRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CF0E872DC83CB50093C696 /* AdPresenterRepresentable.swift */; };
+		82CF0E8B2DC83DE50093C696 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 82CF0E8A2DC83DE50093C696 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -144,6 +146,8 @@
 		82C51E5D2DAF885100EC71F4 /* SuccessNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessNode.swift; sourceTree = "<group>"; };
 		82C51E5F2DAF885100EC71F4 /* SuccessSKScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SuccessSKScene.sks; sourceTree = "<group>"; };
 		82C51E602DAF885100EC71F4 /* SuccessSKScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessSKScene.swift; sourceTree = "<group>"; };
+		82CF0E872DC83CB50093C696 /* AdPresenterRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdPresenterRepresentable.swift; sourceTree = "<group>"; };
+		82CF0E8C2DC841100093C696 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +155,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82CF0E8B2DC83DE50093C696 /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -206,6 +211,7 @@
 				82C51E612DAF885100EC71F4 /* SuccessSKScene */,
 				82126EA92DAADA360081983A /* PropertyListView.swift */,
 				82126F262DACC35F0081983A /* PhotoLibraryView.swift */,
+				82CF0E872DC83CB50093C696 /* AdPresenterRepresentable.swift */,
 				820679B82DB65D2F00B8DEF6 /* DiceSceneView.swift */,
 				82126F0F2DAC3FED0081983A /* BaseView */,
 				82126EAA2DAADA360081983A /* PropertyView.swift */,
@@ -256,6 +262,7 @@
 		82126EB82DAADA360081983A /* MonopolyGame */ = {
 			isa = PBXGroup;
 			children = (
+				82CF0E8C2DC841100093C696 /* Info.plist */,
 				82126EA82DAADA360081983A /* Model */,
 				82126EB22DAADA360081983A /* View */,
 				82126EB42DAADA360081983A /* ViewModel */,
@@ -408,6 +415,7 @@
 			);
 			name = MonopolyGame;
 			packageProductDependencies = (
+				82CF0E8A2DC83DE50093C696 /* GoogleMobileAds */,
 			);
 			productName = MonopolyGame;
 			productReference = 82C290092D9EEDD100E6EC40 /* MonopolyGame.app */;
@@ -437,6 +445,9 @@
 			);
 			mainGroup = 82C290002D9EEDD100E6EC40;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				82CF0E892DC83DE50093C696 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 82C2900A2D9EEDD100E6EC40 /* Products */;
 			projectDirPath = "";
@@ -475,6 +486,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82CF0E882DC83CB50093C696 /* AdPresenterRepresentable.swift in Sources */,
 				82126EBA2DAADA360081983A /* Codable+Decodable.swift in Sources */,
 				82126F2D2DACDBBC0081983A /* Keys.swift in Sources */,
 				82126EBB2DAADA360081983A /* String.swift in Sources */,
@@ -657,11 +669,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MonopolyGame/MonopolyGame.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = FQA2XH9ZUM;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MonopolyGame/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MonoFusion;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
 				INFOPLIST_KEY_NSCameraUsageDescription = "To set profile image, we need access to your camera";
@@ -701,11 +714,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MonopolyGame/MonopolyGame.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = FQA2XH9ZUM;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MonopolyGame/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MonoFusion;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
 				INFOPLIST_KEY_NSCameraUsageDescription = "To set profile image, we need access to your camera";
@@ -760,6 +774,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		82CF0E892DC83DE50093C696 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		82CF0E8A2DC83DE50093C696 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82CF0E892DC83DE50093C696 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 82C290012D9EEDD100E6EC40 /* Project object */;
 }

@@ -14,7 +14,8 @@ class GameViewModel:ObservableObject {
     var chances:[BoardCard] = .chance.shuffled()
     var round:GameRound = .init()
     var coreMLModel:CoreMLManager = .init()
-    
+    @Published var adPresenting = false
+
     #warning("declare bancopcy - save to db")
     #warning("if morgage - show morgage icon")//!!
     #warning("buy transport")//!!

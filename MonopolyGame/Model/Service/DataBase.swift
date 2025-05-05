@@ -10,6 +10,7 @@ import Foundation
 class AppData:ObservableObject {
     let gameCenter:GameCenterModel
     var audioManager:AudioPlayerManagers?
+    var adWatched = false
     private let dbkey = "db14"
     @Published var deviceSize:CGSize = .zero
     @Published var db:DataBase = .init() {
@@ -67,6 +68,7 @@ class AppData:ObservableObject {
         var settings:Settings = .init()
         var profile:Profile = .init()
         var gameCompletions:GameCompletions = .init()
+        var gamePlayed = false
         
         struct Settings:Codable {
             var sound:Sound = .init()
