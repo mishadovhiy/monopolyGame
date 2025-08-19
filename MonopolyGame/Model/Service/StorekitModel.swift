@@ -14,4 +14,16 @@ struct StorekitModel {
             SKStoreReviewController.requestReview(in: windowScene)
         }
     }
+
+    static func needAdd(db: inout AppData.DataBase) -> Bool {
+        let max = min(db.playDateCount, 25)
+        let divider = max > 10 ? (10 - (max - 10)) : 25
+        if db.adScore >= Int(Double(max / divider) + 3) {
+            db.adScore = 0
+            return true
+        } else {
+            db.adScore += Int(1 + Double(max / 100))
+            return false
+        }
+    }
 }

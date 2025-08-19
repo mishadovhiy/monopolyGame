@@ -10,7 +10,6 @@ import Foundation
 class AppData:ObservableObject {
     let gameCenter:GameCenterModel
     var audioManager:AudioPlayerManagers?
-    var adWatched = false
     private let dbkey = "db14"
     @Published var deviceSize:CGSize = .zero
     @Published var db:DataBase = .init() {
@@ -69,6 +68,18 @@ class AppData:ObservableObject {
         var profile:Profile = .init()
         var gameCompletions:GameCompletions = .init()
         var gamePlayed = false
+        var adScore: Int = 0
+        var installDate: Date = .init()
+        private var lastPlayDay: Date = .init()
+        /// total amount of days when app was openned
+        var playDateCount: Int = 0
+        mutating func savePlayDate() {
+            if !Calendar.current.isDate(.now, inSameDayAs: installDate) {
+                playDateCount += 1
+            } else {
+                lastPlayDay = .now
+            }
+        }
         
         struct Settings:Codable {
             var sound:Sound = .init()

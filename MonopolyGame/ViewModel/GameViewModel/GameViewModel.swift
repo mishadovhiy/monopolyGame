@@ -135,6 +135,7 @@ class GameViewModel:ObservableObject {
             $0.enemy = enemyPosition
             $0.round = round
         })
+        db.savePlayDate()
     }
     
     func fetchGame(db: AppData.DataBase) {

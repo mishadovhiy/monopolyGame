@@ -20,7 +20,6 @@ struct GameView: View {
                 boardView
                     .overlay {
                         BoardPopoverView(viewModel: viewModel, isGamePresenting: $isPresenting) {
-                            db.adWatched = false
                             db.db.gameProgress = .init()
                             isPresenting = false
                         }
@@ -39,7 +38,6 @@ struct GameView: View {
                 if !viewModel.dbUpdated {
                     viewModel.dbUpdated = true
                     viewModel.saveProgress(db: &db.db)
-                    db.adWatched = false
                 }
             } else if newValue == .active {
                 viewModel.dbUpdated = false
@@ -69,37 +67,7 @@ struct GameView: View {
             }
         }
         .onAppear {
-            if viewModel.viewAppeared {
-                return
-            }
-            viewModel.viewAppeared = true
-            viewModel.enemyLostAction = {
-                db.db.gameProgress = .init()
-                if db.db.settings.usingGameCenter ?? false {
-                    db.gameCenter.addGameCompletionScore(viewModel.myPlayerPosition)
-                }
-                db.db.gameCompletions.completionList.append(.init(balance: viewModel.myPlayerPosition.balance, time: .init(), upgrades: viewModel.myPlayerPosition.bought))
-                db.audioManager?.play(.wone)
-            }
-            viewModel.fetchGame(db: db.db)
-            if db.db.settings.usingGameCenter == nil {
-                viewModel.message = .custom(MessageContent(title: "Game center score usage",description:"Would you like to upload scores into the Game Center Leadership board? \n\nUpon successful completion levels, we will upload your level score into the Leadership board\nThis will include - your balance for the level, and total property price, that you own"))
-                viewModel.messagePressed = .init(title: "OK", pressed: {
-                    db.db.settings.usingGameCenter = true
-                })
-                viewModel.messagePressedSecondary = .init(title: "Decline", pressed:{
-                    db.db.settings.usingGameCenter = false
-
-                })
-            }
-            if !db.adWatched && db.db.gamePlayed {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                    viewModel.adPresenting = true
-                })
-            }
-            if !db.db.gamePlayed {
-                db.db.gamePlayed = true
-            }
+            viewAppeared()
 //            viewModel.bet.betProperty = .orange3
             
         }
@@ -111,7 +79,6 @@ struct GameView: View {
                 AdPresenterRepresentable(dismissed:{
                     print("dismissedsdas")
                     viewModel.adPresenting = false
-                    db.adWatched = true
                 })
             } else {
                 VStack {
@@ -123,7 +90,43 @@ struct GameView: View {
         .navigationBarHidden(true)
 
     }
-    
+
+    func viewAppeared() {
+        if viewModel.viewAppeared {
+            return
+        }
+        viewModel.viewAppeared = true
+        viewModel.enemyLostAction = {
+            db.db.gameProgress = .init()
+            if db.db.settings.usingGameCenter ?? false {
+                db.gameCenter.addGameCompletionScore(viewModel.myPlayerPosition)
+            }
+            db.db.gameCompletions.completionList.append(.init(balance: viewModel.myPlayerPosition.balance, time: .init(), upgrades: viewModel.myPlayerPosition.bought))
+            db.audioManager?.play(.wone)
+        }
+        viewModel.fetchGame(db: db.db)
+        if db.db.settings.usingGameCenter == nil {
+            viewModel.message = .custom(MessageContent(title: "Game center score usage",description:"Would you like to upload scores into the Game Center Leadership board? \n\nUpon successful completion levels, we will upload your level score into the Leadership board\nThis will include - your balance for the level, and total property price, that you own"))
+            viewModel.messagePressed = .init(title: "OK", pressed: {
+                db.db.settings.usingGameCenter = true
+            })
+            viewModel.messagePressedSecondary = .init(title: "Decline", pressed:{
+                db.db.settings.usingGameCenter = false
+
+            })
+        }
+        Task(priority: .low) {
+            if StorekitModel.needAdd(db: &db.db) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                    viewModel.adPresenting = true
+                })
+            }
+        }
+        if !db.db.gamePlayed {
+            db.db.gamePlayed = true
+        }
+    }
+
     func chanceCardBackground(_ isOnTop:Bool) -> some View {
         RoundedRectangle(cornerRadius: 6)
             .fill(Color(isOnTop ? .blue : .orange))

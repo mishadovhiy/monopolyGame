@@ -75,6 +75,7 @@
 		82C51E642DAF885100EC71F4 /* SuccessSKScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 82C51E5F2DAF885100EC71F4 /* SuccessSKScene.sks */; };
 		82CF0E882DC83CB50093C696 /* AdPresenterRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CF0E872DC83CB50093C696 /* AdPresenterRepresentable.swift */; };
 		82CF0E8B2DC83DE50093C696 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 82CF0E8A2DC83DE50093C696 /* GoogleMobileAds */; };
+		82FDA7672DDFD42D00723F68 /* sendEmail.php in Resources */ = {isa = PBXBuildFile; fileRef = 82FDA7662DDFD42D00723F68 /* sendEmail.php */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -148,6 +149,7 @@
 		82C51E602DAF885100EC71F4 /* SuccessSKScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessSKScene.swift; sourceTree = "<group>"; };
 		82CF0E872DC83CB50093C696 /* AdPresenterRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdPresenterRepresentable.swift; sourceTree = "<group>"; };
 		82CF0E8C2DC841100093C696 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		82FDA7662DDFD42D00723F68 /* sendEmail.php */ = {isa = PBXFileReference; lastKnownFileType = text.script.php; path = sendEmail.php; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -334,6 +336,7 @@
 		825AE4592DB3A0960075B26B /* Mics */ = {
 			isa = PBXGroup;
 			children = (
+				82FDA7662DDFD42D00723F68 /* sendEmail.php */,
 				825AE4582DB3A08E0075B26B /* Sound */,
 			);
 			path = Mics;
@@ -470,6 +473,7 @@
 				820679C02DB6878E00B8DEF6 /* menu.wav in Resources */,
 				820679C32DB687E400B8DEF6 /* money.m4a in Resources */,
 				825AE4552DB3A0890075B26B /* background5.mp3 in Resources */,
+				82FDA7672DDFD42D00723F68 /* sendEmail.php in Resources */,
 				825AE4562DB3A0890075B26B /* background3.mp3 in Resources */,
 				825AE4572DB3A0890075B26B /* background4.mp3 in Resources */,
 				820679C62DB68BD300B8DEF6 /* menuPlay.m4a in Resources */,
