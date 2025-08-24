@@ -17,7 +17,7 @@ struct StorekitModel {
 
     static func needAdd(db: inout AppData.DataBase) -> Bool {
         let max = min(db.playDateCount, 25)
-        let divider = max > 10 ? (10 - (max - 10)) : 25
+        let divider = 25//max > //10 ? (10 - (max - 10)) : 25
         if db.adScore >= Int(Double(max / divider) + 3) {
             db.adScore = 0
             return true
