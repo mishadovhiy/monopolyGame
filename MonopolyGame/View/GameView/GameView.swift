@@ -8,10 +8,18 @@
 import SwiftUI
 
 struct GameView: View {
-    @StateObject var viewModel:GameViewModel = .init()
+    @StateObject var viewModel:GameViewModel
     @EnvironmentObject var db: AppData
     @Environment(\.scenePhase) private var scenePhase
-    @Binding var isPresenting:Bool
+    @Binding var isPresenting: Bool
+    
+    init(
+        isPresenting: Binding<Bool>,
+        enemyConnectionType: MultiplierManager.ConnectionType
+    ) {
+        _viewModel = StateObject(wrappedValue: .init(enemyConnectionType: enemyConnectionType))
+        self._isPresenting = Binding(projectedValue: isPresenting)
+    }
     
     var body: some View {
         VStack(spacing:0) {
@@ -87,10 +95,40 @@ struct GameView: View {
                 .disabled(true)
             }
         })
+        .overlay(content: {
+            if !(viewModel.multiplierModel.isConnected ?? true) {
+                deviceListView
+            }
+        })
         .navigationBarHidden(true)
-
     }
 
+    
+    var deviceListView: some View {
+        VStack {
+            Spacer().frame(maxHeight: .infinity)
+
+            VStack {
+                Text(viewModel.multiplierModel.test ?? false ? "ok" : "false")
+                    .foregroundColor(.black)
+
+                List(viewModel.multiplierModel.deviceList ?? [], id: \.identifier) { device in
+                    Button {
+                        viewModel.multiplierModel.connectToUser(deviceID: device.identifier)
+                    } label: {
+                        Text(device.deviceName)
+                    }
+
+                }
+            }
+            .background(.white)
+            Spacer().frame(maxHeight: .infinity)
+        }
+        .onChange(of: viewModel.multiplierModel.deviceList.count) { newValue in
+            print(newValue, " yrgtefredasz ")
+        }
+    }
+    
     func viewAppeared() {
         if viewModel.viewAppeared {
             return
@@ -104,7 +142,7 @@ struct GameView: View {
             db.db.gameCompletions.completionList.append(.init(balance: viewModel.myPlayerPosition.balance, time: .init(), upgrades: viewModel.myPlayerPosition.bought))
             db.audioManager?.play(.wone)
         }
-        viewModel.fetchGame(db: db.db)
+        viewModel.dbHolder = db.db
         if db.db.settings.usingGameCenter == nil {
             viewModel.message = .custom(MessageContent(title: "Game center score usage",description:"Would you like to upload scores into the Game Center Leadership board? \n\nUpon successful completion levels, we will upload your level score into the Leadership board\nThis will include - your balance for the level, and total property price, that you own"))
             viewModel.messagePressed = .init(title: "OK", pressed: {
@@ -117,9 +155,9 @@ struct GameView: View {
         }
         Task(priority: .low) {
             if StorekitModel.needAdd(db: &db.db) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                    viewModel.adPresenting = true
-                })
+//                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+//                    viewModel.adPresenting = true
+//                })
             }
         }
         if !db.db.gamePlayed {
@@ -315,6 +353,7 @@ struct GameView: View {
                         }
                         viewModel.dicePressed = false
                         viewModel.diceDestination = diceResult
+                        viewModel.multiplierModel.action(.init(value: "\(diceResult)", key: .newDestination))
                         viewModel.move()
                     }
 //                    .opacity((viewModel.chestPresenting != nil || viewModel.chancePresenting != nil) ? 0 : 1)
@@ -406,15 +445,21 @@ struct GameView: View {
     var panelView: some View {
         VStack(spacing:-27) {
             VStack {
-                Button(viewModel.playerPosition.id != viewModel.myPlayerPosition.id ? "Dice" : "Done") {
+                Button(!viewModel.didFinishMoving ? "Dice" : "Done") {
                     db.audioManager?.play(.menu)
-                    viewModel.moveCompleted = false
-//                    viewModel.dicePressed = true
-                    if viewModel.usingDice {
-                        viewModel.performNextPlayer()
+                    if !viewModel.didFinishMoving {
+                        self.viewModel.performDice()
                     } else {
-                        viewModel.resumeNextPlayer(forceMove: true)
+                        self.viewModel.performNextPlayer()
                     }
+//                    viewModel.dicePressed = true
+                    #warning("before multiplayer")
+//                    if viewModel.usingDice {
+//                        viewModel.performNextPlayer()
+//                    } else {
+//                        viewModel.resumeNextPlayer(forceMove: true)
+//                    }
+                    #warning("before end")
 //                    viewModel.performNextPlayer()
                 }
                 .tint(.primaryBackground)
@@ -427,7 +472,8 @@ struct GameView: View {
             }
             .frame(maxWidth: .infinity)
             .background(.primaryBackground)
-            .disabled(viewModel.updateBalancePresenting)
+            .opacity(viewModel.updateBalancePresenting || viewModel.playerPosition.id != viewModel.myPlayerPosition.id ? 0 : 1)
+            .disabled(viewModel.updateBalancePresenting || viewModel.playerPosition.id != viewModel.myPlayerPosition.id)
             HStack() {
                 ForEach(GameViewModel.PanelType.allCases, id:\.rawValue) { type in
                     Button {
@@ -789,9 +835,3 @@ struct GameView: View {
         }
     }
 }
-
-
-#Preview {
-    GameView(isPresenting: .constant(true))
-}
-

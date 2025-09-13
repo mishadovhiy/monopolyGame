@@ -63,7 +63,7 @@ class AppData:ObservableObject {
     }
 
     struct DataBase:Codable {
-        var gameProgress:GameProgress = .init()
+        var gameProgress:[String: GameProgress] = [:]
         var settings:Settings = .init()
         var profile:Profile = .init()
         var gameCompletions:GameCompletions = .init()

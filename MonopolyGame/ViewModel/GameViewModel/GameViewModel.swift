@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
+import Combine
 
-class GameViewModel:ObservableObject {
+class GameViewModel: ObservableObject {
     @Published var diceDestination:Int = 0
     private var balanceChangeHolder:Int = 0
     var chests:[BoardCard] = .chest.shuffled()
@@ -15,7 +16,20 @@ class GameViewModel:ObservableObject {
     var round:GameRound = .init()
     var coreMLModel:CoreMLManager = .init()
     @Published var adPresenting = false
+    let multiplierModel: MultiplierManager
+    
+    private var cancellables = Set<AnyCancellable>()
 
+    init(enemyConnectionType: MultiplierManager.ConnectionType) {
+        multiplierModel = .init(type: .bluetooth)
+        multiplierModel.delegate = self
+        
+        multiplierModel.objectWillChange
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+    }
     #warning("declare bancopcy - save to db")
     #warning("if morgage - show morgage icon")//!!
     #warning("buy transport")//!!
@@ -84,13 +98,21 @@ class GameViewModel:ObservableObject {
     var selectingProperty:BoardCard.Action.PropertySelectionAction?
     
     func playerCompletedMoving() {
+        self.didFinishMoving = true
         self.moveCompleted = true
+        if self.multiplierModel.type != .robot && playerPosition.id != myPlayerPosition.id {
+            return
+        }
         let property = playerPosition.playerPosition
         payRent(property: property)
         if playerPosition.id == myPlayerPosition.id {
             askPlayerToBuy(property: property)
         } else {
-            enemyCompletedMooving(property: property)
+            if self.multiplierModel.type == .robot {
+                enemyCompletedMooving(property: property)
+            } else {
+                
+            }
         }
         movingCompletedCheckProperty(property)
     }
@@ -98,6 +120,7 @@ class GameViewModel:ObservableObject {
     @Published var dicePressed:Bool = false
     
     func performDice() {
+        moveCompleted = false
         if !usingDice {
             diceDestination = (2..<12).randomElement() ?? 0
             isEquelDices = diceDestination % 2 == 0
@@ -106,8 +129,9 @@ class GameViewModel:ObservableObject {
         }
     }
     
-    func performNextPlayer() {
+    private func setNextPlayer() {
         let array = playersArray
+
         if !isEquelDices {
             currentPlayerIndex += 1
         } else {
@@ -116,8 +140,20 @@ class GameViewModel:ObservableObject {
         if currentPlayerIndex > array.count - 1 {
             currentPlayerIndex = 0
         }
-        if self.myPlayerPosition.id != self.playerPosition.id && self.playerPosition.inJail {
-            self.enemyInJail()
+    }
+    
+    func performNextPlayer(force: Bool = false) {
+        print("performNextPlayerperformNextPlayer ", self.myPlayerPosition.id == self.playerPosition.id)
+        let array = playersArray
+        if self.myPlayerPosition.id == self.playerPosition.id {
+            self.multiplierModel.action(.init(value: playerPosition.specialCards.contains(.outOfJail) && self.playerPosition.inJail ? "outOfJail" : (self.playerPosition.inJail ? "jail" : ""), key: .okPressed))
+        }
+        
+        self.setNextPlayer()
+        print("performNextPlayerperformNextPlayer2 ", self.myPlayerPosition.id == self.playerPosition.id)
+
+        if self.myPlayerPosition.id != self.playerPosition.id {
+
         } else {
             self.performDice()
         }
@@ -130,23 +166,44 @@ class GameViewModel:ObservableObject {
     @Published var activePanelType:PanelType?
     
     func saveProgress(db:inout AppData.DataBase) {
-        db.gameProgress = .with({
+        db.gameProgress.updateValue(.with({
             $0.player = myPlayerPosition
             $0.enemy = enemyPosition
             $0.round = round
-        })
+        }), forKey: multiplierModel.type.rawValue ?? "")
         db.savePlayDate()
     }
     
-    func fetchGame(db: AppData.DataBase) {
+    var dbHolder: AppData.DataBase?
+    private var isGameStarted: Bool {
+        dbHolder == nil
+    }
+    
+    func fetchGame() {
+        guard let db = dbHolder else {
+            return
+        }
         self.usingDice = db.settings.game.usingDice
-        if db.gameProgress.player.playerPosition == .go && db.gameProgress.enemy.playerPosition == .go {
+        let progress = db.gameProgress[multiplierModel.type.rawValue ?? ""] ?? .init()
+        if progress.player.playerPosition == .go && progress.enemy.playerPosition == .go {
             self.myPlayerPosition.balance = db.settings.game.balance
             self.enemyPosition.balance = db.settings.game.balance
         } else {
-            self.myPlayerPosition = db.gameProgress.player
-            self.enemyPosition = db.gameProgress.enemy
+            self.myPlayerPosition = progress.player
+            self.enemyPosition = progress.enemy
         }
+        if multiplierModel.bluetoothManager?.test != nil {
+            setNextPlayer()
+        } else {
+            let enemyID = self.enemyPosition.id
+            self.enemyPosition.id = myPlayerPosition.id
+            self.myPlayerPosition.id = enemyID
+        }
+        print(self.playerPosition.id.uuidString, " hyrgterfwedas")
+        print(self.myPlayerPosition.id.uuidString, " hyrgterfwedas 2")
+        print(self.enemyPosition.id.uuidString, " hyrgterfwedas 3")
+
+        self.dbHolder = nil
     }
     
     func propertySelected(_ step: Step) {
@@ -212,11 +269,13 @@ class GameViewModel:ObservableObject {
     func boardActionPropertySelected(_ step: Step) {
         switch activePanelType {
         case .trade:
+            self.multiplierModel.action(.init(value: step.rawValue, key: .tradeProposal))
             break
         case .build:
             if self.myPlayerPosition.canUpdateProperty(step)
             {
                 self.myPlayerPosition.upgradePropertyIfCan(step)
+                self.multiplierModel.action(.init(value: step.rawValue, key: .upgradeProperty))
             }
         case .sell:
             if let upgrade = self.myPlayerPosition.bought[step],
@@ -225,6 +284,8 @@ class GameViewModel:ObservableObject {
             {
                 self.myPlayerPosition.balance += price
                 self.myPlayerPosition.bought.updateValue(newValue, forKey: step)
+                self.multiplierModel.action(.init(value: step.rawValue, key: .sellProperty))
+
             }
             
         case .morgage:
@@ -234,6 +295,7 @@ class GameViewModel:ObservableObject {
             {
                 self.myPlayerPosition.balance += price
                 self.myPlayerPosition.morgageProperties.append(step)
+                self.multiplierModel.action(.init(value: step.rawValue, key: .morgageProperty))
             }
         case .redeem:
             if let upgrade = self.myPlayerPosition.bought[step],
@@ -245,12 +307,13 @@ class GameViewModel:ObservableObject {
                 self.myPlayerPosition.morgageProperties.removeAll(where: {
                     $0 == step
                 })
+                self.multiplierModel.action(.init(value: step.rawValue, key: .redeemProperty))
             }
         case nil:
             break
         }
     }
-    var currentPlayerIndex:Int = 0
+    @Published var currentPlayerIndex:Int = 0
     var myPlayerInJail:Bool {
         myPlayerPosition.inJail
     }
@@ -267,6 +330,8 @@ class GameViewModel:ObservableObject {
         return !array.contains(false)
     }
     
+    @Published var didFinishMoving:Bool = false
+
     @Published var moveCompleted:Bool = true
     var playerPosition:PlayerStepModel {
         get {
@@ -332,7 +397,7 @@ class GameViewModel:ObservableObject {
         }
     }
     
-    
+    //move to robot manager
     func enemySellAll(minMorgage:Int = 0) {
         if enemyPosition.balance >= 0 && minMorgage == 0 {
             return
@@ -547,6 +612,7 @@ class GameViewModel:ObservableObject {
             self.messagePressedSecondary = .init(title: "auction", pressed: {
                 self.bet.playerPalance = self.myPlayerPosition.balance
                 self.bet.betProperty = property
+                self.multiplierModel.action(.init(value: property.rawValue, key: .auctionStart))
             })
             self.message = .property(.init(property: property))
         }
@@ -830,6 +896,60 @@ extension GameViewModel {
     }
 }
 
+extension GameViewModel: MultiplierManagerDelegate {
+    func didReciveAction(_ action: MultiplierManager.ActionUnparcer?) {
+        print(action, " ygterfwdas ")
+        switch action?.key {
+        case .none:
+            break
+        case .some(let type):
+            switch type {
+            case .addBalance:
+              break
+            case .upgradeProperty:
+                break
+            case .morgageProperty:
+                break
+            case .redeemProperty:
+                break
+            case .sellProperty:
+                break
+            case .okPressed:
+                self.didFinishMoving = false
+                self.setNextPlayer()
+
+            case .auctionStart:
+                break
+            case .auctionBetValue:
+                break
+            case .tradeProposal:
+                break
+            case .tradeResponse:
+                break
+            case .newDestination:
+                self.diceDestination = Int(action?.value ?? "") ?? 0
+                self.move()
+            case .topCard:
+                break
+            case .bottomCard:
+                break
+            case .loosePressed:
+                break
+            }
+        }
+    }
+    
+    func didConnect() {
+        print("connecteddd")
+        if !isGameStarted {
+            self.fetchGame()
+        }
+    }
+    
+    func didDisconnect() {
+        print("disconnecteddd")
+    }
+}
 
 extension GameViewModel {
     enum PanelType:String, CaseIterable {

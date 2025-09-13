@@ -8,20 +8,25 @@
 import Foundation
 
 extension Decodable {
-    static func configure(_ from:Data?) -> Self? {
-        guard let from else {
+    static func configure(_ data: Data?) -> Self? {
+        guard let data else {
             return nil
         }
         do {
             let decoder = PropertyListDecoder()
-            let decodedData = try decoder.decode(Self.self, from: from)
+            let decodedData = try decoder.decode(Self.self, from: data)
             return decodedData
         } catch {
 #if DEBUG
             print("error decoding db data ", error)
 #endif
-            return nil
+            let decoderr = JSONDecoder()
+            return try? decoderr.decode(Self.self, from: data)
         }
+    }
+    
+    static func configure(dict: [String: Any]) -> Self? {
+        return .configure(try? JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted))
     }
 }
 

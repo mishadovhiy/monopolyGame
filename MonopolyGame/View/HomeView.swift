@@ -50,9 +50,8 @@ struct HomeView: View {
                         }
                         .frame(maxHeight: .infinity)
                     }
-                    NavigationLink("", destination: GameView(isPresenting: $viewModel.isGamePresenting), isActive: $viewModel.isGamePresenting)
+                    NavigationLink("", destination: GameView(isPresenting: $viewModel.isGamePresenting, enemyConnectionType: .bluetooth), isActive: $viewModel.isGamePresenting)
                         .hidden()
-                    
                 }
                 
                 .navigationViewStyle(StackNavigationViewStyle())
