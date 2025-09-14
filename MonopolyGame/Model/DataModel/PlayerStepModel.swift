@@ -70,6 +70,24 @@ struct PlayerStepModel:Codable {
         (balance >= (price ?? (step.buyPrice ?? 0))) && bought[step] == nil
     }
     
+    mutating func forceUpgradeProperty(_ property:Step) {
+        if let next = self.bought[property]?.nextValue {
+            bought.updateValue(next, forKey: property)
+        } else {
+            bought.updateValue(.bought, forKey: property)
+        }
+    }
+    
+    mutating func forceDowngradeProperty(_ property:Step) {
+        if let current = self.bought[property] {
+            if current == .bought {
+                bought.removeValue(forKey: property)
+            }
+        } else {
+            fatalError("property not found")
+        }
+    }
+    
     mutating func upgradePropertyIfCan(_ property:Step) {
         if canUpdateProperty(property) {
             if let next = self.bought[property]?.nextValue {

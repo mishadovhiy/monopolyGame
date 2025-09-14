@@ -353,7 +353,7 @@ struct GameView: View {
                         }
                         viewModel.dicePressed = false
                         viewModel.diceDestination = diceResult
-                        viewModel.multiplierModel.action(.init(value: "\(diceResult)", key: .newDestination))
+//                        viewModel.multiplierModel.action(.init(value: "\(diceResult)", key: .newDestination))
                         viewModel.move()
                     }
 //                    .opacity((viewModel.chestPresenting != nil || viewModel.chancePresenting != nil) ? 0 : 1)
@@ -564,7 +564,7 @@ struct GameView: View {
                 .overlay {
                     if let occupied = viewModel.occupiedByPlayer(step) {
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(occupied.id == viewModel.myPlayerPosition.id ? .red : .blue)
+                            .fill(viewModel.myPlayerPosition.bought.keys.contains(step) ? .red : .blue)
                             .frame(width:20, height: 20)
                             .offset(y:[0, 3].contains(section) ? 20 : -20)
                     }

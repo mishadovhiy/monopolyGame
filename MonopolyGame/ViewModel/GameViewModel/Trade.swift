@@ -8,7 +8,7 @@
 import Foundation
 
 extension GameViewModel {
-    struct Trade {
+    struct Trade: Codable {
         var myPlayerProperties:[Step] = []
         var enemyProperties:[Step] = []
         var tradeAmount:Float = 0

@@ -106,29 +106,30 @@ extension MultiplierManager {
         let value: String
         let key: ActionKey
         let additionalValue: String?
+        let data: Data?
         
         init(value: String,
              key: ActionKey,
-             additionalValue: String? = nil) {
+             additionalValue: String? = nil,
+             data: Data? = nil
+        ) {
             self.value = value
             self.key = key
             self.additionalValue = additionalValue
+            self.data = data
         }
         
         enum ActionKey: String, CaseIterable, Codable {
             // -/+/toUser - adds oposite value to the currentUser's balance
-            case addBalance
-            case upgradeProperty
-            case morgageProperty
-            case redeemProperty
-            case sellProperty
             case okPressed
+            case dbLoad
+            case playerUpdated
             // property name
             case auctionStart
             case auctionBetValue
             case tradeProposal
             case tradeResponse
-            case newDestination
+//            case newDestination
             
             case topCard
             case bottomCard

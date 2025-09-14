@@ -89,6 +89,7 @@ struct BoardPopoverView: View {
                 viewModel.myPlayerPosition.inJail = false
                 viewModel.myPlayerPosition.balance -= 100
                 viewModel.performDice()
+//                self.viewModel.multiplierModel.action(.init(value: "\(viewModel.playerPosition.balance)", key: .addBalance))
                 
             }), viewModel.myPlayerPosition.balance < 100)
         ])
@@ -123,7 +124,9 @@ struct BoardPopoverView: View {
         HStack(spacing:20) {
             if viewModel.trade.tradingByEnemy {
                 Button("Decline") {
+                    viewModel.activePanelType = nil
                     viewModel.trade = .init(isPresenting: false)
+                    self.viewModel.multiplierModel.action(.init(value: "0", key: .tradeResponse))
                 }
                 .padding(.vertical, 3)
                 .padding(.horizontal, 5)
@@ -136,7 +139,12 @@ struct BoardPopoverView: View {
             
             Button("OK") {
                 db.audioManager?.play(.menu)
-                viewModel.enemyTrade()
+                if !viewModel.trade.tradingByEnemy {
+                    self.viewModel.multiplierModel.action(.init(value: "", key: .tradeProposal, data: viewModel.trade.encode))
+                } else {
+                    viewModel.enemyTrade(trading: viewModel.trade.tradingByEnemy ? true : nil)
+
+                }
             }
             .tint(.black)
             .padding(.vertical, 3)
