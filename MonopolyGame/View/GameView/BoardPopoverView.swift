@@ -99,6 +99,7 @@ struct BoardPopoverView: View {
     var sellToPlayView: some View {
         messageOverlayView(.init(title: "Negative Balance", description: "To continue playing, please, select properties to sell or morgage"), titleColor: .red, buttons: [
             (.init(title: "Declare bancropcy", backgroundColor: .red, pressed: {
+                viewModel.multiplierModel.action(.init(value: "", key: .loosePressed))
                 gameLost()
             }), false),
             (.init(title: "Close", backgroundColor: .lightsecondaryBackground, pressed: {

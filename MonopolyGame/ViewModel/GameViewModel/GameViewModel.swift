@@ -206,7 +206,7 @@ class GameViewModel: ObservableObject {
             return
         }
         self.usingDice = db.settings.game.usingDice
-        let progress = db.gameProgress[multiplierModel.type.rawValue ?? ""] ?? .init()
+        let progress = db.gameProgress[multiplierModel.type == .bluetooth ? "" : multiplierModel.type.rawValue ?? ""] ?? .init()
         if progress.player.playerPosition == .go && progress.enemy.playerPosition == .go {
             self.myPlayerPosition.balance = db.settings.game.balance
             self.enemyPosition.balance = db.settings.game.balance
@@ -476,6 +476,7 @@ class GameViewModel: ObservableObject {
     }
     private var canFetchDB = true
     func setBetWone() {
+        multiplierModel.action(.init(value: "", key: .auctionBetValue))
         if let property = bet.betProperty {
             if bet.bet.last?.0.id == myPlayerPosition.id {
                 myPlayerPosition.buyIfCan(property, price: bet.bet.last?.1 ?? 1)
@@ -489,6 +490,10 @@ class GameViewModel: ObservableObject {
     }
     
     func robotBet() {
+        if multiplierModel.type != .robot {
+            multiplierModel.action(.init(value: self.bet.betProperty?.rawValue ?? "", key: .auctionBetValue, additionalValue: "\(self.bet.bet.last?.1 ?? 0)"))
+            return
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds((250..<3000).randomElement() ?? 0), execute: {
             let last = self.bet.bet.last
             let differenceBalance = self.enemyPosition.balance - (last?.1 ?? 0)
@@ -965,10 +970,18 @@ extension GameViewModel: MultiplierManagerDelegate {
                 self.didFinishMoving = false
                 self.setNextPlayer()
 
-            case .auctionStart:
-                break
             case .auctionBetValue:
-                break
+                /**
+                 multiplierModel.action(.init(value: self.bet.betProperty?.rawValue ?? "", key: .auctionBetValue, additionalValue: "\(self.bet.bet.last?.1 ?? 0)"))
+
+                 */
+                if let step: Step = .init(rawValue: action?.value ?? "") {
+                    self.bet.betProperty = .init(rawValue: action?.value ?? "") ?? .go
+                    self.bet.bet.append((enemyPosition, Int(action?.additionalValue ?? "") ?? 0))
+                } else {
+                    self.bet = .init()
+                }
+                
             case .tradeProposal:
                 trade = .configure(action?.data) ?? .init()
                 trade.isPresenting = true
@@ -997,7 +1010,7 @@ extension GameViewModel: MultiplierManagerDelegate {
                     chestPresenting = nil
                 }
             case .loosePressed:
-                break
+                enemyLost()
             case .dbLoad:
                 break
 //                canFetchDB = false

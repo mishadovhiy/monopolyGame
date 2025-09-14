@@ -125,7 +125,6 @@ extension MultiplierManager {
             case dbLoad
             case playerUpdated
             // property name
-            case auctionStart
             case auctionBetValue
             case tradeProposal
             case tradeResponse
