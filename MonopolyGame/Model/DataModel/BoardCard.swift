@@ -8,10 +8,11 @@
 import Foundation
 
 /// data model for Chance and Chest board cards
-struct BoardCard {
+struct BoardCard: Codable {
     let title:String
     var text:String = ""
     var action:Action
+    var canPressOk: Bool = true
     
     enum PlayerSpecialCard:Codable {
         case outOfJail
@@ -19,15 +20,20 @@ struct BoardCard {
     }
         
     var canClose:Bool {
-        ![
-            action.properySelection != nil
-        ].contains(true)
+        if canPressOk {
+            return ![
+                action.properySelection != nil
+            ].contains(true)
+        } else {
+            return false
+        }
+        
     }
 }
 
 
 extension BoardCard {
-    enum Action {
+    enum Action: Codable {
         case goTo(Step)
         case moveIncrement(Int)
         case specialCard(PlayerSpecialCard)
@@ -65,9 +71,9 @@ extension BoardCard {
             }
         }
         
-        struct BalanceIncrement {
+        struct BalanceIncrement: Codable {
             var from:BalanceFrom? = nil
-            enum BalanceFrom {
+            enum BalanceFrom: Codable {
                 //oposite balance would be Incremented to other players
                 case otherPlayers
                 case houses
@@ -75,7 +81,7 @@ extension BoardCard {
             var amount:Int
         }
             
-        enum PropertySelectionAction {
+        enum PropertySelectionAction: Codable {
             case decrementUpgrade
             case firstRent50PercentDecrees
             var performOnMoved:Bool {

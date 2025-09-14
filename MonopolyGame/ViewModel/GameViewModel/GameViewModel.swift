@@ -38,16 +38,34 @@ class GameViewModel: ObservableObject {
 #warning("implement: special card: lose move")
 #warning("player moved to example decreese rent")
     @Published var chestPresenting:BoardCard? = nil {
+        willSet {
+            if chestPresenting != nil && newValue == nil {
+                multiplierModel.action(.init(value: "", key: .bottomCard))
+            }
+        }
         didSet {
             if chestPresenting != nil {
                 chestChanceDidSet()
+                if chestPresenting?.canPressOk ?? false {
+                    multiplierModel.action(.init(value: "", key: .bottomCard, data: chestPresenting?.encode))
+
+                }
+
             }
         }
     }
     @Published var chancePresenting:BoardCard? = nil {
+        willSet {
+            if chancePresenting != nil && newValue == nil {
+                multiplierModel.action(.init(value: "", key: .topCard))
+            }
+        }
         didSet {
             if chancePresenting != nil {
                 chestChanceDidSet()
+                if chestPresenting?.canPressOk ?? false {
+                    multiplierModel.action(.init(value: "", key: .topCard, data: chancePresenting?.encode))
+                }
             }
         }
     }
@@ -963,9 +981,21 @@ extension GameViewModel: MultiplierManagerDelegate {
 //                self.diceDestination = Int(action?.value ?? "") ?? 0
 //                self.move()
             case .topCard:
-                break
+                var data: BoardCard? = .configure(action?.data ?? .init())
+                if data != nil {
+                    data?.canPressOk = false
+                    self.chancePresenting = data
+                } else {
+                    chancePresenting = nil
+                }
             case .bottomCard:
-                break
+                var data: BoardCard? = .configure(action?.data ?? .init())
+                if data != nil {
+                    data?.canPressOk = false
+                    self.chestPresenting = data
+                } else {
+                    chestPresenting = nil
+                }
             case .loosePressed:
                 break
             case .dbLoad:
