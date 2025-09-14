@@ -275,7 +275,7 @@ struct BoardPopoverView: View {
                 Button("Decline") {
                     print(viewModel.bet.bet.last?.1, " robotWin ")
                     db.audioManager?.play(.menu)
-                    self.viewModel.setBetWone()
+                    self.viewModel.setBetDeclined()
                 }
                 .tint(.red)
                     Slider(value: $viewModel.bet.betValue, in: viewModel.bet.betSliderRange, step: 0.01)

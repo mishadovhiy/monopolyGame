@@ -475,7 +475,7 @@ class GameViewModel: ObservableObject {
         
     }
     private var canFetchDB = true
-    func setBetWone() {
+    func setBetDeclined() {
         multiplierModel.action(.init(value: "", key: .auctionBetValue))
         if let property = bet.betProperty {
             if bet.bet.last?.0.id == myPlayerPosition.id {
@@ -498,19 +498,19 @@ class GameViewModel: ObservableObject {
             let last = self.bet.bet.last
             let differenceBalance = self.enemyPosition.balance - (last?.1 ?? 0)
             if differenceBalance <= 2 {
-                self.setBetWone()
+                self.setBetDeclined()
                 return
             }
             var difference = last?.1 ?? 0 - (self.bet.betProperty?.buyPrice ?? 0)
             if difference <= 2 {
                 difference = differenceBalance
                 if [false, false, false, false, false, true, false, false, true].randomElement() ?? false {
-                    self.setBetWone()
+                    self.setBetDeclined()
                     return
                 }
             } 
             if difference <= 2 {
-                self.setBetWone()
+                self.setBetDeclined()
                 return
             }
             let newBet = (last?.1 ?? 0) + Int.random(in: 1..<difference)
@@ -522,13 +522,13 @@ class GameViewModel: ObservableObject {
                         self.bet.bet.append((self.enemyPosition, newBet))
 
                     } else {
-                        self.setBetWone()
+                        self.setBetDeclined()
                     }
                 default:
-                    self.setBetWone()
+                    self.setBetDeclined()
                 }
             } else {
-                self.setBetWone()
+                self.setBetDeclined()
             }
 
         })
@@ -648,7 +648,6 @@ class GameViewModel: ObservableObject {
             self.messagePressedSecondary = .init(title: "auction", pressed: {
                 self.bet.playerPalance = self.myPlayerPosition.balance
                 self.bet.betProperty = property
-                self.multiplierModel.action(.init(value: property.rawValue, key: .auctionStart))
             })
             self.message = .property(.init(property: property))
         }
@@ -979,7 +978,11 @@ extension GameViewModel: MultiplierManagerDelegate {
                     self.bet.betProperty = .init(rawValue: action?.value ?? "") ?? .go
                     self.bet.bet.append((enemyPosition, Int(action?.additionalValue ?? "") ?? 0))
                 } else {
-                    self.bet = .init()
+                    if let property = bet.betProperty {
+                        myPlayerPosition.buyIfCan(property, price: bet.bet.last?.1 ?? 1)
+                        
+                    }
+                    bet = .init()
                 }
                 
             case .tradeProposal:
