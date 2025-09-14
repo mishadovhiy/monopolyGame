@@ -231,9 +231,8 @@ class GameViewModel: ObservableObject {
         if multiplierModel.bluetoothManager?.test != nil {
             setNextPlayer()
         } else {
-            let enemyID = self.enemyPosition.id
-            self.enemyPosition.id = myPlayerPosition.id
-            self.myPlayerPosition.id = enemyID
+            self.enemyPosition.id = .init()
+            self.myPlayerPosition.id = .init()
             self.multiplierModel.action(.init(value: "", key: .dbLoad, data: enemyPosition.decode))
         }
         print(self.playerPosition.id.uuidString, " hyrgterfwedas")
@@ -1030,12 +1029,8 @@ extension GameViewModel: MultiplierManagerDelegate {
             case .loosePressed:
                 enemyLost()
             case .dbLoad:
-                if let newData: PlayerStepModel = .configure(action?.data ?? .init()) {
-                    self.enemyPosition = newData
-                }
-//                canFetchDB = false
-//                self.myPlayerPosition = .configure(action?.value.data(using: .utf8)) ?? .init()
-//                self.enemyPosition = .configure(action?.additionalValue?.data(using: .utf8)) ?? .init()
+                let newData: PlayerStepModel = .configure(action?.data ?? .init()) ?? self.myPlayerPosition
+                self.myPlayerPosition = newData
 
             case .playerUpdated:
                 let data = action?.data
