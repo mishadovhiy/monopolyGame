@@ -17,7 +17,6 @@ class GameViewModel: ObservableObject {
     var coreMLModel:CoreMLManager = .init()
     @Published var adPresenting = false
     let multiplierModel: MultiplierManager
-    
     private var cancellables = Set<AnyCancellable>()
 
     init(enemyConnectionType: MultiplierManager.ConnectionType) {
@@ -47,7 +46,7 @@ class GameViewModel: ObservableObject {
             if chestPresenting != nil {
                 chestChanceDidSet()
                 if chestPresenting?.canPressOk ?? false {
-                    multiplierModel.action(.init(value: "", key: .bottomCard, data: chestPresenting?.encode))
+                    multiplierModel.action(.init(value: "", key: .bottomCard, data: chestPresenting?.decode))
 
                 }
 
@@ -64,7 +63,7 @@ class GameViewModel: ObservableObject {
             if chancePresenting != nil {
                 chestChanceDidSet()
                 if chestPresenting?.canPressOk ?? false {
-                    multiplierModel.action(.init(value: "", key: .topCard, data: chancePresenting?.encode))
+                    multiplierModel.action(.init(value: "", key: .topCard, data: chancePresenting?.decode))
                 }
             }
         }
@@ -187,11 +186,18 @@ class GameViewModel: ObservableObject {
     @Published var activePanelType:PanelType?
     
     func saveProgress(db:inout AppData.DataBase) {
+        let progressKey: String
+        switch multiplierModel.type {
+        case .bluetooth:
+            progressKey = multiplierModel.bluetoothManager?.connectedPeripheral?.identifier.uuidString ?? multiplierModel.type.rawValue
+        default:
+            progressKey = multiplierModel.type.rawValue
+        }
         db.gameProgress.updateValue(.with({
             $0.player = myPlayerPosition
             $0.enemy = enemyPosition
             $0.round = round
-        }), forKey: multiplierModel.type.rawValue ?? "")
+        }), forKey: progressKey)
         db.savePlayDate()
     }
     
@@ -206,7 +212,15 @@ class GameViewModel: ObservableObject {
             return
         }
         self.usingDice = db.settings.game.usingDice
-        let progress = db.gameProgress[multiplierModel.type == .bluetooth ? "" : multiplierModel.type.rawValue ?? ""] ?? .init()
+//        let progress = db.gameProgress[multiplierModel.type == .bluetooth ? "" : multiplierModel.type.rawValue ?? ""] ?? .init()
+        let progressKey: String
+        switch multiplierModel.type {
+        case .bluetooth:
+            progressKey = multiplierModel.bluetoothManager?.connectedPeripheral?.identifier.uuidString ?? multiplierModel.type.rawValue
+        default:
+            progressKey = multiplierModel.type.rawValue
+        }
+        let progress = db.gameProgress[progressKey] ?? .init()
         if progress.player.playerPosition == .go && progress.enemy.playerPosition == .go {
             self.myPlayerPosition.balance = db.settings.game.balance
             self.enemyPosition.balance = db.settings.game.balance
@@ -220,6 +234,7 @@ class GameViewModel: ObservableObject {
             let enemyID = self.enemyPosition.id
             self.enemyPosition.id = myPlayerPosition.id
             self.myPlayerPosition.id = enemyID
+            self.multiplierModel.action(.init(value: "", key: .dbLoad, data: enemyPosition.decode))
         }
         print(self.playerPosition.id.uuidString, " hyrgterfwedas")
         print(self.myPlayerPosition.id.uuidString, " hyrgterfwedas 2")
@@ -1015,7 +1030,9 @@ extension GameViewModel: MultiplierManagerDelegate {
             case .loosePressed:
                 enemyLost()
             case .dbLoad:
-                break
+                if let newData: PlayerStepModel = .configure(action?.data ?? .init()) {
+                    self.enemyPosition = newData
+                }
 //                canFetchDB = false
 //                self.myPlayerPosition = .configure(action?.value.data(using: .utf8)) ?? .init()
 //                self.enemyPosition = .configure(action?.additionalValue?.data(using: .utf8)) ?? .init()

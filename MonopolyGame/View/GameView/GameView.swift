@@ -437,6 +437,11 @@ struct GameView: View {
                 
                 Spacer()
             }
+            .background(content: {
+                if viewModel.multiplierModel.bluetoothManager?.test == nil {
+                    Color.green.opacity(0.15)
+                }
+            })
             .padding(.top, 15)
         }
     }
