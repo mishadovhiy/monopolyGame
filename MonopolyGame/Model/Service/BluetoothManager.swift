@@ -17,6 +17,7 @@ final class BluetoothManager: NSObject, ObservableObject {
 
     @Published var messages:[String:Any] = [:]
     @Published var discoveredPeripherals: [CBPeripheral] = []
+#warning("parent: getter value: connectedDevice:MyModel")
     @Published var connectedPeripheral: CBPeripheral?
     var isConntected: Bool {
         test != nil || connectedPeripheral != nil
@@ -24,6 +25,7 @@ final class BluetoothManager: NSObject, ObservableObject {
 
     private var centralManager: CBCentralManager!
     private var peripheralManager: CBPeripheralManager!
+    #warning("parent: getter value: isPrimaryDevice")
     @Published var test: CBPeripheralManager?
 
     private let serviceUUID = CBUUID(string: "0000FFF0-0000-1000-8000-00805F9B34FB")
