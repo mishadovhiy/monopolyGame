@@ -149,35 +149,47 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    private func setNextPlayer() {
+    private func setNextPlayer(toPlayerID: UUID? = nil) {
         let array = playersArray
 
-        if !isEquelDices {
-            currentPlayerIndex += 1
+        if let toPlayerID,
+            let targetIndex = array.firstIndex(where: {
+            $0.id == toPlayerID
+        }) {
+            currentPlayerIndex = targetIndex
         } else {
-            isEquelDices = false
+            if !isEquelDices {
+                currentPlayerIndex += 1
+            } else {
+                isEquelDices = false
+            }
+            if currentPlayerIndex > array.count - 1 {
+                currentPlayerIndex = 0
+            }
         }
-        if currentPlayerIndex > array.count - 1 {
-            currentPlayerIndex = 0
-        }
+        
     }
     
-    func performNextPlayer(force: Bool = false) {
+    func performNextPlayer(force: Bool = false, isToEnemy: Bool = false) {
         print("performNextPlayerperformNextPlayer ", self.myPlayerPosition.id == self.playerPosition.id)
         let array = playersArray
         if self.myPlayerPosition.id == self.playerPosition.id {
-            self.multiplierModel.action(.init(value: playerPosition.specialCards.contains(.outOfJail) && self.playerPosition.inJail ? "outOfJail" : (self.playerPosition.inJail ? "jail" : ""), key: .okPressed))
+            self.multiplierModel.action(.init(value: playerPosition.specialCards.contains(.outOfJail) && self.playerPosition.inJail ? "outOfJail" : (self.playerPosition.inJail ? "jail" : ""), key: .okPressed, data: enemyPosition.decode))
+            self.multiplierModel.action(.init(value: "", key: .dbLoad, data: enemyPosition.decode))
         }
         
-        self.setNextPlayer()
+        self.setNextPlayer(toPlayerID: isToEnemy ? enemyPosition.id : nil)
         print("performNextPlayerperformNextPlayer2 ", self.myPlayerPosition.id == self.playerPosition.id)
 
-        if self.myPlayerPosition.id != self.playerPosition.id {
-
-        } else {
-            self.performDice()
-        }
+        #warning("blutooth integration commented")
+//        if self.myPlayerPosition.id != self.playerPosition.id {
+//
+//        } else {
+//            self.performDice()
+//        }
 //        dicePressed = true
+#warning("blutooth integration commented end")
+
         //check players special cards, example - move loosed
 #warning("check if player is in jail - show popup")
 
@@ -980,8 +992,10 @@ extension GameViewModel: MultiplierManagerDelegate {
 //            case .sellProperty:
 //                enemyPosition.forceDowngradeProperty(.init(rawValue: action?.value ?? "")!)
             case .okPressed:
+                let newData: PlayerStepModel = .configure(action?.data ?? .init()) ?? self.myPlayerPosition
+                self.myPlayerPosition = newData
                 self.didFinishMoving = false
-                self.setNextPlayer()
+                self.setNextPlayer(toPlayerID: self.myPlayerPosition.id)
 
             case .auctionBetValue:
                 /**
@@ -1028,7 +1042,7 @@ extension GameViewModel: MultiplierManagerDelegate {
                 }
             case .loosePressed:
                 enemyLost()
-            case .dbLoad:
+            case .dbLoad://ranem: enemy update?
                 let newData: PlayerStepModel = .configure(action?.data ?? .init()) ?? self.myPlayerPosition
                 self.myPlayerPosition = newData
 
@@ -1036,7 +1050,13 @@ extension GameViewModel: MultiplierManagerDelegate {
                 let data = action?.data
                     //.init(base64Encoded: action?.additionalValue ?? "")!
                 print(data?.count, " trgerfsed")
+                let holder = enemyPosition
                 self.enemyPosition = .configure(data)!
+                if holder.playerPosition != enemyPosition.playerPosition {
+                    self.currentPlayerIndex = playersArray.firstIndex(where: {
+                        $0.id == enemyPosition.id
+                    }) ?? 0
+                }
             }
         }
     }

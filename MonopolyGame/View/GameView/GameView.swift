@@ -455,7 +455,7 @@ struct GameView: View {
                     if !viewModel.didFinishMoving {
                         self.viewModel.performDice()
                     } else {
-                        self.viewModel.performNextPlayer()
+                        self.viewModel.performNextPlayer(isToEnemy: true)
                     }
 //                    viewModel.dicePressed = true
                     #warning("before multiplayer")
