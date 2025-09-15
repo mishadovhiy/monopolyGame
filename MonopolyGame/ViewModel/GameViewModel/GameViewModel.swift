@@ -74,11 +74,26 @@ class GameViewModel: ObservableObject {
         }
         didSet {
             checkPlayerBalance(false)
-            let data = myPlayerPosition.decode ?? .init()
-            print(data.count, " terfwdas ")
-            multiplierModel.action(.init(value: "", key: .playerUpdated, data: data))
+            sendMyPlayerData()
         }
     }
+    
+    func sendMyPlayerData(positionOnly: Bool = false) {
+        if !positionOnly {
+            multiplierModel.action(.init(value: "\(myPlayerPosition.balance)", key: .playerBalance))
+            multiplierModel.action(.init(value: "", key: .playerMorgage, data: myPlayerPosition.morgageProperties.decode))
+            multiplierModel.action(.init(value: "", key: .boughtPlayerProperties, data: myPlayerPosition.bought.decode))
+
+        }
+        multiplierModel.action(.init(value: myPlayerPosition.playerPosition.rawValue, key: .playerPosition))
+
+    }
+    
+    func sendEnemyData() {
+
+        multiplierModel.action(.init(value: "\(enemyPosition.balance)", key: .enemyBalance))
+    }
+    
     @Published var enemyPosition:PlayerStepModel = .init(playerPosition: .go) {
         willSet {
             balanceChangeHolder = enemyPosition.balance
@@ -173,10 +188,13 @@ class GameViewModel: ObservableObject {
     func performNextPlayer(force: Bool = false, isToEnemy: Bool = false) {
         print("performNextPlayerperformNextPlayer ", self.myPlayerPosition.id == self.playerPosition.id)
         let array = playersArray
-        if self.myPlayerPosition.id == self.playerPosition.id {
-            self.multiplierModel.action(.init(value: playerPosition.specialCards.contains(.outOfJail) && self.playerPosition.inJail ? "outOfJail" : (self.playerPosition.inJail ? "jail" : ""), key: .okPressed, data: enemyPosition.decode))
-            self.multiplierModel.action(.init(value: "", key: .dbLoad, data: enemyPosition.decode))
-        }
+//        if self.myPlayerPosition.id == self.playerPosition.id {
+            self.multiplierModel.action(.init(value: "", key: .okPressed))
+        #warning("todo: test commented bellow")
+        sendMyPlayerData()
+        sendEnemyData()
+//            self.multiplierModel.action(.init(value: "", key: .dbLoad, data: myPlayerPosition.decode))
+//        }
         
         self.setNextPlayer(toPlayerID: isToEnemy ? enemyPosition.id : nil)
         print("performNextPlayerperformNextPlayer2 ", self.myPlayerPosition.id == self.playerPosition.id)
@@ -219,6 +237,7 @@ class GameViewModel: ObservableObject {
     }
     
     func fetchGame() {
+        ///ble type: playerID
         #warning("oponent app reinstalled, when my app has data: wrong data")
         guard let db = dbHolder else {
             return
@@ -245,7 +264,12 @@ class GameViewModel: ObservableObject {
         } else {
             self.enemyPosition.id = .init()
             self.myPlayerPosition.id = .init()
-            self.multiplierModel.action(.init(value: "", key: .dbLoad, data: enemyPosition.decode))
+            self.multiplierModel.action(.init(value: "\(myPlayerPosition.id.uuidString)", key: .enemyID))
+            self.multiplierModel.action(.init(value: "\(enemyPosition.id.uuidString)", key: .playerID))
+            self.multiplierModel.action(.init(value: enemyPosition.playerPosition.rawValue, key: .enemyPosition))
+
+            self.sendEnemyData()
+//            self.multiplierModel.action(.init(value: "", key: .dbLoad, data: myPlayerPosition.decode))
         }
         print(self.playerPosition.id.uuidString, " hyrgterfwedas")
         print(self.myPlayerPosition.id.uuidString, " hyrgterfwedas 2")
@@ -978,12 +1002,34 @@ extension GameViewModel {
 
 extension GameViewModel: MultiplierManagerDelegate {
     func didReciveAction(_ action: MultiplierManager.ActionUnparcer?) {
-        print(action, " ygterfwdas ")
         switch action?.key {
         case .none:
             break
         case .some(let type):
             switch type {
+            case .boughtPlayerProperties:
+                self.enemyPosition.bought = .configure(action?.data) ?? self.enemyPosition.bought
+
+            case .playerPosition:
+                print(action, " ygterfwdas ")
+                self.enemyPosition.playerPosition = .init(rawValue: action?.value ?? "") ?? .go
+            case .enemyPosition:
+                self.myPlayerPosition.playerPosition = .init(rawValue: action?.value ?? "") ?? .go
+
+            case .playerMorgage:
+                self.enemyPosition.morgageProperties = .configure(action?.data) ?? self.enemyPosition.morgageProperties
+                
+            case .enemyID:
+                self.myPlayerPosition.id = .init(uuidString: action?.value ?? "")!
+
+            case .playerID:
+                self.enemyPosition.id = .init(uuidString: action?.value ?? "")!
+                
+            case .playerBalance:
+                self.enemyPosition.balance = Int(action?.value ?? "") ?? self.enemyPosition.balance
+                
+            case .enemyBalance:
+                self.myPlayerPosition.balance = Int(action?.value ?? "") ?? self.myPlayerPosition.balance
 //            case .addBalance:
 //                enemyPosition.balance = Int(action?.value ?? "") ?? 0
 //            case .upgradeProperty:
@@ -998,8 +1044,8 @@ extension GameViewModel: MultiplierManagerDelegate {
 //            case .sellProperty:
 //                enemyPosition.forceDowngradeProperty(.init(rawValue: action?.value ?? "")!)
             case .okPressed:
-                let newData: PlayerStepModel = .configure(action?.data ?? .init()) ?? self.myPlayerPosition
-                self.myPlayerPosition = newData
+//                let newData: PlayerStepModel = .configure(action?.data ?? .init()) ?? self.myPlayerPosition
+//                self.myPlayerPosition = newData
                 self.didFinishMoving = false
                 self.setNextPlayer(toPlayerID: self.myPlayerPosition.id)
 
@@ -1024,9 +1070,11 @@ extension GameViewModel: MultiplierManagerDelegate {
                 trade.isPresenting = true
                 trade.tradingByEnemy = true
                 activePanelType = .trade
+                
             case .tradeResponse:
                 let ok = action?.value == "1"
                 presentTradeProposalResponse(ok: ok)
+                
 //            case .newDestination:
 //                self.diceDestination = Int(action?.value ?? "") ?? 0
 //                self.move()
@@ -1038,6 +1086,7 @@ extension GameViewModel: MultiplierManagerDelegate {
                 } else {
                     chancePresenting = nil
                 }
+                
             case .bottomCard:
                 var data: BoardCard? = .configure(action?.data ?? .init())
                 if data != nil {
@@ -1046,23 +1095,26 @@ extension GameViewModel: MultiplierManagerDelegate {
                 } else {
                     chestPresenting = nil
                 }
+                
             case .loosePressed:
                 enemyLost()
+                
             case .dbLoad://ranem: enemy update?
-                let newData: PlayerStepModel = .configure(action?.data ?? .init()) ?? self.myPlayerPosition
-                self.myPlayerPosition = newData
+                break
+//                let newData: PlayerStepModel = .configure(action?.data ?? .init()) ?? self.myPlayerPosition
+//                self.enemyPosition = newData
 
             case .playerUpdated:
                 let data = action?.data
                     //.init(base64Encoded: action?.additionalValue ?? "")!
                 print(data?.count, " trgerfsed")
-                let holder = enemyPosition
-                self.enemyPosition = .configure(data)!
-                if holder.playerPosition != enemyPosition.playerPosition {
-                    self.currentPlayerIndex = playersArray.firstIndex(where: {
-                        $0.id == enemyPosition.id
-                    }) ?? 0
-                }
+//                let holder = enemyPosition
+//                self.enemyPosition = .configure(data)!
+//                if holder.playerPosition != enemyPosition.playerPosition {
+//                    self.currentPlayerIndex = playersArray.firstIndex(where: {
+//                        $0.id == enemyPosition.id
+//                    }) ?? 0
+//                }
             }
         }
     }

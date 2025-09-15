@@ -75,6 +75,7 @@ class MultiplierManager: ObservableObject {
     
     
     func action(_ data: ActionUnparcer) {
+        print(data.data?.count, " gefwdadcs ", data.key.rawValue)
         bluetoothManager?.send(jsonData: data.dictionary ?? [:])
     }
     
@@ -133,6 +134,15 @@ extension MultiplierManager {
             case topCard
             case bottomCard
             case loosePressed
+            
+            case playerID
+            case enemyID
+            case playerPosition
+            case enemyPosition
+            case playerMorgage
+            case playerBalance
+            case enemyBalance
+            case boughtPlayerProperties
         }
     }
 }

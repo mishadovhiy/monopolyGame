@@ -9,9 +9,10 @@ import Foundation
 
 struct PlayerStepModel:Codable {
     var edited = false
-    var id:UUID = .init()
+    var id:UUID = .init()///ble type: player id
     var specialCards:[BoardCard.PlayerSpecialCard] = []
-    var playerPosition:Step {
+    var playerPosition:Step
+    {///ble type: playerPosition
         didSet {
             edited = true
         }
@@ -29,20 +30,20 @@ struct PlayerStepModel:Codable {
         self.playerPosition = playerPosition
     }
     var morgageProperties:[Step] = []
-    {
+    {///ble type: morgageProperties
         didSet {
             edited = true
         }
     }
     var balance:Int = 1000
-    {
+    {///ble type: balance
         didSet {
             edited = true
         }
     }
     typealias BoughtUpgrades = [Step:Upgrade]
     var bought:BoughtUpgrades {
-        get {
+        get {///ble type: boughtDictionary
             let dict = self.boughtDictionary.map { (key, value) in
                 (Step(rawValue: key) ?? .blue1, value)
             }

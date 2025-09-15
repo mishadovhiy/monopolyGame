@@ -450,35 +450,51 @@ struct GameView: View {
     var panelView: some View {
         VStack(spacing:-27) {
             VStack {
-                Button(!viewModel.didFinishMoving ? "Dice" : "Done") {
-                    db.audioManager?.play(.menu)
-                    if !viewModel.didFinishMoving {
-                        self.viewModel.performDice()
-                    } else {
-                        self.viewModel.performNextPlayer(isToEnemy: true)
+//                HStack {
+                    Button(!viewModel.didFinishMoving ? "Dice" : "Done") {
+                        db.audioManager?.play(.menu)
+                        if !viewModel.didFinishMoving {
+                            self.viewModel.performDice()
+                        } else {
+                            self.viewModel.performNextPlayer(isToEnemy: true)
+                        }
+    //                    viewModel.dicePressed = true
+                        #warning("before multiplayer")
+    //                    if viewModel.usingDice {
+    //                        viewModel.performNextPlayer()
+    //                    } else {
+    //                        viewModel.resumeNextPlayer(forceMove: true)
+    //                    }
+                        #warning("before end")
+    //                    viewModel.performNextPlayer()
                     }
-//                    viewModel.dicePressed = true
-                    #warning("before multiplayer")
-//                    if viewModel.usingDice {
-//                        viewModel.performNextPlayer()
-//                    } else {
-//                        viewModel.resumeNextPlayer(forceMove: true)
-//                    }
-                    #warning("before end")
-//                    viewModel.performNextPlayer()
-                }
-                .tint(.primaryBackground)
-                .font(.system(size: 14, weight:.semibold))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                .background(.light)
-                .cornerRadius(4)
+                    .tint(.primaryBackground)
+                    .font(.system(size: 14, weight:.semibold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(.light)
+                    .cornerRadius(4)
+                    
+
+
+//                }
                 Spacer()
             }
             .frame(maxWidth: .infinity)
             .background(.primaryBackground)
             .opacity(viewModel.updateBalancePresenting || viewModel.playerPosition.id != viewModel.myPlayerPosition.id ? 0 : 1)
             .disabled(viewModel.updateBalancePresenting || viewModel.playerPosition.id != viewModel.myPlayerPosition.id)
+            .overlay {
+                HStack {
+                    Spacer()
+                    Button {
+                        self.viewModel.sendEnemyData()
+                        self.viewModel.sendMyPlayerData()
+                    } label: {
+                        Text("resend")
+                    }
+                }
+            }
             HStack() {
                 ForEach(GameViewModel.PanelType.allCases, id:\.rawValue) { type in
                     Button {
