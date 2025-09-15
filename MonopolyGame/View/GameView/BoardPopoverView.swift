@@ -140,12 +140,8 @@ struct BoardPopoverView: View {
             
             Button("OK") {
                 db.audioManager?.play(.menu)
-                if !viewModel.trade.tradingByEnemy {
-                    self.viewModel.multiplierModel.action(.init(value: "", key: .tradeProposal, data: viewModel.trade.encode))
-                } else {
-                    viewModel.enemyTrade(trading: viewModel.trade.tradingByEnemy ? true : nil)
+                viewModel.enemyTrade(trading: viewModel.trade.tradingByEnemy ? true : nil, didPress: true)
 
-                }
             }
             .tint(.black)
             .padding(.vertical, 3)

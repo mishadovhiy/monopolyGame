@@ -679,7 +679,7 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    func presentTradeProposalResponse(ok: Bool) {
+    func presentTradeProposalResponse(ok: Bool, didPress: Bool = false) {
         trade.tradeResponse = ok
         if trade.tradeResponse ?? false {
             trade.myPlayerProperties.forEach { step in
@@ -694,14 +694,20 @@ class GameViewModel: ObservableObject {
 //        if userCalled {
 //            self.multiplierModel.action(.init(value: .init(data: trade.encode ?? .init(), encoding: .utf8) ?? "", key: .tradeProposal))
 //        } else {
+        if didPress {
+            self.multiplierModel.action(.init(value: "", key: .tradeProposal, data: trade.encode))
+
+        } else {
             self.message = .custom(.init(title: "Robot \(trade.tradeResponse ?? false ? "Accepted" : "Declined") trade proposal", button: .init(title: "OK", pressed: {
                 self.trade = .init()
                 self.activePanelType = nil
             })))
+        }
+            
 //        }
     }
     
-    func enemyTrade(trading: Bool? = nil) {
+    func enemyTrade(trading: Bool? = nil, didPress: Bool) {
         let price = trade.myPlayerProperties.reduce(0) { partialResult, step in
             partialResult + (step.buyPrice ?? 0)
         } + Int(trade.tradeAmount * 100)
@@ -726,7 +732,7 @@ class GameViewModel: ObservableObject {
         if canUpdateCount >= colors.count {
             
         }
-        self.presentTradeProposalResponse(ok: trading ?? (canUpdateCount >= colors.count))
+        self.presentTradeProposalResponse(ok: trading ?? (canUpdateCount >= colors.count), didPress: didPress)
     }
     
     func occupiedByPlayer(_ property:Step) -> PlayerStepModel? {
