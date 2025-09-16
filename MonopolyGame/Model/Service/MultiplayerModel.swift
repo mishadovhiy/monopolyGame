@@ -123,13 +123,10 @@ extension MultiplierManager {
         enum ActionKey: String, CaseIterable, Codable {
             // -/+/toUser - adds oposite value to the currentUser's balance
             case okPressed
-            case dbLoad
-            case playerUpdated
-            // property name
+
             case auctionBetValue
             case tradeProposal
             case tradeResponse
-//            case newDestination
             
             case topCard
             case bottomCard

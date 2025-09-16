@@ -11,8 +11,7 @@ import Foundation
 struct BoardCard: Codable {
     let title:String
     var text:String = ""
-    var action:Action
-    var canPressOk: Bool = true
+    var action:Action?
     
     enum PlayerSpecialCard:Codable {
         case outOfJail
@@ -20,7 +19,7 @@ struct BoardCard: Codable {
     }
         
     var canClose:Bool {
-        if canPressOk {
+        if let action {
             return ![
                 action.properySelection != nil
             ].contains(true)
@@ -130,9 +129,6 @@ extension [BoardCard] {
             .init(title: "Your business gets a boost: Collect $150", text: "Collect $150 due to a boost in your business.", action: .balanceIncrement(.init(amount: 150))),
             .init(title: "Advance to the nearest Green property", text: "Move to the nearest Green property and pay rent.", action: .goTo(.green1)),
             .init(title: "Lose a turn due to illness", text: "Miss your next turn due to illness.", action: .specialCard(.looseMove))
-//            .init(title: "You have won a crossword competition.", text: "Collect $100.", action: .balanceIncrement(.init(amount: 100))),
-//            .init(title: "Pay hospital fees of $100.", action: .balanceIncrement(.init(amount: -100))),
-//            .init(title: "You inherit $100.", action: .balanceIncrement(.init(amount: 100)))
         ]
     }
     
@@ -144,7 +140,7 @@ extension [BoardCard] {
             .init(title: "Advance to Go.", text: "Collect $200.", action: .goTo(.go)),
             .init(title: "You have been elected Chairman of the Board.", text: "Pay each player $50.", action: .balanceIncrement(.init(from: .otherPlayers, amount: -50))),
             .init(title: "Collect $20 for your birthday.", action: .balanceIncrement(.init(from: .otherPlayers, amount: 20))),
-            .init(title: "Collect $20 for your birthday.", action: .balanceIncrement(.init(from: .otherPlayers, amount: 20))),
+            .init(title: "Collect $25 for your birthday.", action: .balanceIncrement(.init(from: .otherPlayers, amount: 25))),
             .init(title: "Bank error in your favor.", text: "Collect $200.", action: .balanceIncrement(.init(amount: 200))),
             .init(title: "Pay a $50 fine for not following the rules.", action: .balanceIncrement(.init(amount: -50))),
             .init(title: "Go directly to Jail.", action: .goTo(.jail1)),

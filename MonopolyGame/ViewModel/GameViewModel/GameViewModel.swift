@@ -43,10 +43,11 @@ class GameViewModel: ObservableObject {
             }
         }
         didSet {
+            print(chestPresenting, " htgsrgre ")
             if chestPresenting != nil {
                 chestChanceDidSet()
-                if chestPresenting?.canPressOk ?? false {
-                    multiplierModel.action(.init(value: "", key: .bottomCard, data: chestPresenting?.decode))
+                if chestPresenting?.action != nil {
+                    multiplierModel.action(.init(value: chestPresenting?.title ?? "", key: .bottomCard))
 
                 }
 
@@ -60,10 +61,12 @@ class GameViewModel: ObservableObject {
             }
         }
         didSet {
+            print(chancePresenting, " juhgjhjfg ")
+
             if chancePresenting != nil {
                 chestChanceDidSet()
-                if chestPresenting?.canPressOk ?? false {
-                    multiplierModel.action(.init(value: "", key: .topCard, data: chancePresenting?.decode))
+                if chancePresenting?.action != nil {
+                    multiplierModel.action(.init(value: chancePresenting?.title ?? "", key: .topCard))
                 }
             }
         }
@@ -1002,6 +1005,7 @@ extension GameViewModel {
 
 extension GameViewModel: MultiplierManagerDelegate {
     func didReciveAction(_ action: MultiplierManager.ActionUnparcer?) {
+        print(action?.key)
         switch action?.key {
         case .none:
             break
@@ -1011,8 +1015,8 @@ extension GameViewModel: MultiplierManagerDelegate {
                 self.enemyPosition.bought = .configure(action?.data) ?? self.enemyPosition.bought
 
             case .playerPosition:
-                print(action, " ygterfwdas ")
                 self.enemyPosition.playerPosition = .init(rawValue: action?.value ?? "") ?? .go
+                
             case .enemyPosition:
                 self.myPlayerPosition.playerPosition = .init(rawValue: action?.value ?? "") ?? .go
 
@@ -1030,30 +1034,12 @@ extension GameViewModel: MultiplierManagerDelegate {
                 
             case .enemyBalance:
                 self.myPlayerPosition.balance = Int(action?.value ?? "") ?? self.myPlayerPosition.balance
-//            case .addBalance:
-//                enemyPosition.balance = Int(action?.value ?? "") ?? 0
-//            case .upgradeProperty:
-//                enemyPosition.forceUpgradeProperty(.init(rawValue: action?.value ?? "")!)
-//            case .morgageProperty:
-//                enemyPosition.morgageProperties.append(.init(rawValue: action?.value ?? "")!)
-//            case .redeemProperty:
-//                enemyPosition.morgageProperties.removeAll(where: {
-//                    $0.rawValue == action?.value
-//                })
 
-//            case .sellProperty:
-//                enemyPosition.forceDowngradeProperty(.init(rawValue: action?.value ?? "")!)
             case .okPressed:
-//                let newData: PlayerStepModel = .configure(action?.data ?? .init()) ?? self.myPlayerPosition
-//                self.myPlayerPosition = newData
                 self.didFinishMoving = false
                 self.setNextPlayer(toPlayerID: self.myPlayerPosition.id)
 
             case .auctionBetValue:
-                /**
-                 multiplierModel.action(.init(value: self.bet.betProperty?.rawValue ?? "", key: .auctionBetValue, additionalValue: "\(self.bet.bet.last?.1 ?? 0)"))
-
-                 */
                 if let step: Step = .init(rawValue: action?.value ?? "") {
                     self.bet.betProperty = .init(rawValue: action?.value ?? "") ?? .go
                     self.bet.bet.append((enemyPosition, Int(action?.additionalValue ?? "") ?? 0))
@@ -1074,23 +1060,22 @@ extension GameViewModel: MultiplierManagerDelegate {
             case .tradeResponse:
                 let ok = action?.value == "1"
                 presentTradeProposalResponse(ok: ok)
-                
-//            case .newDestination:
-//                self.diceDestination = Int(action?.value ?? "") ?? 0
-//                self.move()
+
             case .topCard:
-                var data: BoardCard? = .configure(action?.data ?? .init())
-                if data != nil {
-                    data?.canPressOk = false
+                if !(action?.value.isEmpty ?? false) {
+                    let data: BoardCard = .init(title: action?.value ?? "", text: [BoardCard].chance.first(where: {
+                        $0.title == action?.value
+                    })?.text ?? "", action: nil)
                     self.chancePresenting = data
                 } else {
                     chancePresenting = nil
                 }
                 
             case .bottomCard:
-                var data: BoardCard? = .configure(action?.data ?? .init())
-                if data != nil {
-                    data?.canPressOk = false
+                if !(action?.value.isEmpty ?? false) {
+                    let data: BoardCard = .init(title: action?.value ?? "", text: [BoardCard].chest.first(where: {
+                        $0.title == action?.value
+                    })?.text ?? "", action: nil)
                     self.chestPresenting = data
                 } else {
                     chestPresenting = nil
@@ -1098,23 +1083,7 @@ extension GameViewModel: MultiplierManagerDelegate {
                 
             case .loosePressed:
                 enemyLost()
-                
-            case .dbLoad://ranem: enemy update?
-                break
-//                let newData: PlayerStepModel = .configure(action?.data ?? .init()) ?? self.myPlayerPosition
-//                self.enemyPosition = newData
 
-            case .playerUpdated:
-                let data = action?.data
-                    //.init(base64Encoded: action?.additionalValue ?? "")!
-                print(data?.count, " trgerfsed")
-//                let holder = enemyPosition
-//                self.enemyPosition = .configure(data)!
-//                if holder.playerPosition != enemyPosition.playerPosition {
-//                    self.currentPlayerIndex = playersArray.firstIndex(where: {
-//                        $0.id == enemyPosition.id
-//                    }) ?? 0
-//                }
             }
         }
     }
