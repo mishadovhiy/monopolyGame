@@ -30,10 +30,9 @@ struct SuccessSceneView: UIViewRepresentable {
 class SuccessSKScene: SKScene {
     
     var scsType:ObjectsType = .coloredConfety
-    static var shared:SuccessSKScene?
+
     override func didMove(to view: SKView) {
         super.didMove(to: view)
-        SuccessSKScene.shared = self
         physicsWorld.contactDelegate = self
         physicsWorld.speed = 0.23
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
@@ -67,22 +66,8 @@ class SuccessSKScene: SKScene {
     
     var addedCount = 0
     func addManyNodes() {
-        /*  if addedCount <= 40 {
-         self.addSCSNodes()
-         addedCount += 1
-         DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(self.addedCount <= 10 ? 900000 : 900000), execute: {
-         if self.addedCount <= 10 {
-         for _ in 0..<2 {
-         self.addManyNodes()
-         }
-         } else {
-         self.addManyNodes()
-         }
-         
-         })
-         }*/
         
-        for _ in 0..<(addedCount <= 10 ? 10 : 3) {
+        for _ in 0..<(addedCount <= 2 ? 10 : 3) {
             self.addSCSNodes()
         }
         addedCount += 1
@@ -90,16 +75,13 @@ class SuccessSKScene: SKScene {
             self.addManyNodes()
         })
         
-        /*for _ in 0..<count {
-         for _ in 0..<Int(horizontalCount) {
-         self.addSCSNodes(position: height)
-         }
-         height -= step
-         }*/
         
     }
     
     func addSCSNodes(position:CGFloat? = nil) {
+        if self.children.count >= 100 {
+            return
+        }
         let scsNodes:[SuccessNode] = scsType == .coloredConfety ? [
             .init(type: .Oval), .init(type: .YellowLine), .init(type: .RedLine), .init(type: .Oval), .init(type: .Oval), .init(type: .Oval)
         ] : [.init(type: .greenTriggles)]

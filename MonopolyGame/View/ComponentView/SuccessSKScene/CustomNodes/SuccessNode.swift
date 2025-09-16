@@ -34,7 +34,7 @@ class SuccessNode:SKSpriteNode {
                 self.removeAllChildren()
                 self.removeAllActions()
                 self.removeFromParent()
-                SuccessSKScene.shared?.addSCSNodes()
+                (self.scene as? SuccessSKScene)?.addSCSNodes()
             })
             
         }
@@ -67,16 +67,16 @@ extension SuccessNode {
             switch self {
                 
             case .Oval:
-                let ovals = [15, 25, 40, 60, 40, 30, 10, 30, 35, 30].randomElement() ?? 0
+                let ovals = [5, 10, 15, 20, 15, 12, 5, 15, 13, 13].randomElement() ?? 0
                 return .init(width: ovals, height: ovals / 2)
             case .YellowLine:
-                let vals = [(80, 80), (60, 60), (40, 40), (20, 20)].randomElement() ?? (0,0)
+                let vals = [(40, 40), (15, 15), (10, 10), (8, 8)].randomElement() ?? (0,0)
                 return .init(width: vals.0, height: vals.1)
             case .RedLine:
-                let vals = [(30, 30), (40, 40), (60, 60), (20, 62)].randomElement() ?? (0,0)
+                let vals = [(44, 44), (15, 15), (10, 10), (12, 12)].randomElement() ?? (0,0)
                 return .init(width: vals.0, height: vals.1)
             case .greenTriggles:
-                let vals = [(80, 80), (60, 60), (40, 40), (20, 20)].randomElement() ?? (0,0)
+                let vals = [(40, 40), (15, 15), (10, 10), (8, 8)].randomElement() ?? (0,0)
                 return .init(width: vals.0, height: vals.1 / 2)
             }
         }
