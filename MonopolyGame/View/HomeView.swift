@@ -17,7 +17,7 @@ struct HomeView: View {
                 VStack(spacing:30) {
                     Spacer()
                         .frame(maxHeight: .infinity)
-                    VStack(spacing: 20) {
+                    VStack(spacing: 10) {
                         playButton
                         leaderBoardButtonView
                     }
@@ -65,46 +65,33 @@ struct HomeView: View {
             viewModel.popToRootView(force: true)
             viewModel.isGamePresenting = true
         } label: {
-            ZStack(alignment: .center) {
-
-                Text("Play")
-                    .font(.system(size: 36, weight: .black))
-                    .kerning(5)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.red)
-                    .padding(.leading, -3)
-                    .shadow(radius: 10)
-                HStack(content: {
-                    Spacer()
-                        .frame(maxWidth: animate ? .infinity : .zero)
-                    Color.black.frame(width: 30)
-                        .blur(radius: 20)
-                    Spacer()
-                        .frame(maxWidth: !animate ? .infinity : .zero)
-                })
-                .animation(.smooth(duration: 3).repeatForever(), value: animate)
-
-                .padding(.horizontal, -20)
-                .background(.yellow)
-                .frame(height: 50)
-                .frame(maxWidth: 180)
-                .mask {
-                    Text("Play")
-                        .font(.system(size: 32, weight: .regular))
-                        .kerning(10)
-                        .multilineTextAlignment(.center)
-                }
-            }
-            .padding(.vertical, 3)
+            Text("Play")
+                .font(.system(size: 32, weight: .bold))
+                .kerning(2)
+                .multilineTextAlignment(.center)
+                .blendMode(.destinationOut)
+                .padding(.horizontal, 50)
+                .padding(.vertical, 8)
         }
         .tint(.white)
-        .background(.green.opacity(0.85))
-        .cornerRadius(50)
-        .overlay(content: {
-            RoundedRectangle(cornerRadius: 50)
-                .stroke(.red, lineWidth: 2)
-                .shadow(radius: 10)
+        .background(content: {
+            ZStack {
+                Color(.green).opacity(0.85)
+
+                HStack {
+                    Spacer().frame(maxWidth: animate ? .infinity : .zero)
+                    Color(.white)
+                        .frame(width: 10)
+                        .blur(radius: 10)
+                    
+                    Spacer().frame(maxWidth: !animate ? .infinity : .zero)
+                }
+                .padding(.horizontal, -15)
+            }
+            .animation(.smooth(duration: 1.5).repeatForever(autoreverses: false), value: animate)
         })
+        .compositingGroup()
+        .cornerRadius(50)
         .shadow(radius: 15)
         .onAppear {
                 animate.toggle()
@@ -116,15 +103,37 @@ struct HomeView: View {
         VStack {
             HStack {
                 Spacer()
-                Button("Leaderboard") {
+                Button(action: {
                     withAnimation {
                         viewModel.popToRootView(force: true)
                         viewModel.navigationPresenting.leaderBoard = true
                     }
-                }
-                
-                .font(.system(size: 18, weight:.bold))
-                .tint(.light)
+                }, label: {
+                    ZStack(content: {
+                        BlurView()
+                        Color.white.opacity(0.5)
+                        VStack {
+                            Spacer().frame(maxHeight: animate ? .infinity : .zero)
+                            Color(.white)
+                                .frame(height: 5)
+                                .blur(radius: 5)
+                            
+                            Spacer().frame(maxHeight: !animate ? .infinity : .zero)
+                        }
+                        .padding(.vertical, -15)
+                        .animation(.easeInOut(duration: 3.5).repeatForever(), value: animate)
+
+                    })
+                        .frame(height: 45)
+                        .mask {
+                            Text("Leaderboard")
+                                .kerning(2)
+
+                        }
+
+                })
+                .font(.system(size: 28, weight: .bold))
+                .shadow(radius: 10)
                 .padding(10)
                 Spacer()
             }

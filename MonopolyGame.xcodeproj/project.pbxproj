@@ -77,6 +77,9 @@
 		82C51E642DAF885100EC71F4 /* SuccessSKScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 82C51E5F2DAF885100EC71F4 /* SuccessSKScene.sks */; };
 		82CF0E882DC83CB50093C696 /* AdPresenterRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CF0E872DC83CB50093C696 /* AdPresenterRepresentable.swift */; };
 		82CF0E8B2DC83DE50093C696 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 82CF0E8A2DC83DE50093C696 /* GoogleMobileAds */; };
+		82E3A4FC2E7A07E6003A4C9A /* ComicRelief-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 82E3A4FB2E7A07E6003A4C9A /* ComicRelief-Regular.otf */; };
+		82E3A4FD2E7A07E6003A4C9A /* ComicRelief-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 82E3A4FA2E7A07E6003A4C9A /* ComicRelief-Bold.otf */; };
+		82E3A5002E7A0DD4003A4C9A /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E3A4FF2E7A0DD4003A4C9A /* Font.swift */; };
 		82FDA7672DDFD42D00723F68 /* sendEmail.php in Resources */ = {isa = PBXBuildFile; fileRef = 82FDA7662DDFD42D00723F68 /* sendEmail.php */; };
 /* End PBXBuildFile section */
 
@@ -153,6 +156,9 @@
 		82C51E602DAF885100EC71F4 /* SuccessSKScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessSKScene.swift; sourceTree = "<group>"; };
 		82CF0E872DC83CB50093C696 /* AdPresenterRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdPresenterRepresentable.swift; sourceTree = "<group>"; };
 		82CF0E8C2DC841100093C696 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		82E3A4FA2E7A07E6003A4C9A /* ComicRelief-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ComicRelief-Bold.otf"; sourceTree = "<group>"; };
+		82E3A4FB2E7A07E6003A4C9A /* ComicRelief-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ComicRelief-Regular.otf"; sourceTree = "<group>"; };
+		82E3A4FF2E7A0DD4003A4C9A /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		82FDA7662DDFD42D00723F68 /* sendEmail.php */ = {isa = PBXFileReference; lastKnownFileType = text.script.php; path = sendEmail.php; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -183,6 +189,7 @@
 			children = (
 				82126EA02DAADA360081983A /* Codable+Decodable.swift */,
 				82126F2A2DACD7FA0081983A /* UIImage.swift */,
+				82E3A4FF2E7A0DD4003A4C9A /* Font.swift */,
 				82126EA12DAADA360081983A /* String.swift */,
 			);
 			path = Extension;
@@ -340,6 +347,7 @@
 		825AE4592DB3A0960075B26B /* Mics */ = {
 			isa = PBXGroup;
 			children = (
+				82E3A4FE2E7A07EF003A4C9A /* Font */,
 				82FDA7662DDFD42D00723F68 /* sendEmail.php */,
 				825AE4582DB3A08E0075B26B /* Sound */,
 			);
@@ -405,6 +413,15 @@
 				82C51E602DAF885100EC71F4 /* SuccessSKScene.swift */,
 			);
 			path = SuccessSKScene;
+			sourceTree = "<group>";
+		};
+		82E3A4FE2E7A07EF003A4C9A /* Font */ = {
+			isa = PBXGroup;
+			children = (
+				82E3A4FA2E7A07E6003A4C9A /* ComicRelief-Bold.otf */,
+				82E3A4FB2E7A07E6003A4C9A /* ComicRelief-Regular.otf */,
+			);
+			path = Font;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -477,6 +494,8 @@
 				820679BE2DB6878E00B8DEF6 /* wone.wav in Resources */,
 				820679BF2DB6878E00B8DEF6 /* loose.wav in Resources */,
 				820679C02DB6878E00B8DEF6 /* menu.wav in Resources */,
+				82E3A4FC2E7A07E6003A4C9A /* ComicRelief-Regular.otf in Resources */,
+				82E3A4FD2E7A07E6003A4C9A /* ComicRelief-Bold.otf in Resources */,
 				820679C32DB687E400B8DEF6 /* money.m4a in Resources */,
 				825AE4552DB3A0890075B26B /* background5.mp3 in Resources */,
 				82FDA7672DDFD42D00723F68 /* sendEmail.php in Resources */,
@@ -519,6 +538,7 @@
 				82AB64432DC0ED5B00BAC72A /* BuyAuctionModel.mlmodel in Sources */,
 				820679A52DB6192600B8DEF6 /* Trade.swift in Sources */,
 				827CD0682DC0DFD4006F6BFB /* GameRound.swift in Sources */,
+				82E3A5002E7A0DD4003A4C9A /* Font.swift in Sources */,
 				82126EBF2DAADA360081983A /* DataBase.swift in Sources */,
 				82126EC02DAADA360081983A /* PropertyListView.swift in Sources */,
 				82126F112DAC48BC0081983A /* MenuView.swift in Sources */,
