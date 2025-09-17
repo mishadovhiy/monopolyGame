@@ -37,7 +37,7 @@ class MultiplierManager: ObservableObject {
             self.messagesCancellable = bluetoothManager?.$messages.sink(receiveValue: { newValue in
                 self.delegate?.didReciveAction(.configure(dict: newValue))
             })
-        case .robot:
+        case .AiRobot:
             self.bluetoothManager = nil
             self.messagesCancellable = nil
 //            delegate.didConnect()
@@ -63,7 +63,7 @@ class MultiplierManager: ObservableObject {
     
     var deviceList: [UserDevice] {
         switch type {
-        case .robot:
+        case .AiRobot:
             []
         case .bluetooth:
             bluetoothManager?.discoveredPeripherals.compactMap({
@@ -81,7 +81,7 @@ class MultiplierManager: ObservableObject {
     
     func connectToUser(deviceID: String) {
         switch self.type {
-        case .robot:
+        case .AiRobot:
             break
         case .bluetooth:
             if let device = bluetoothManager?.discoveredPeripherals.first(where: {
@@ -94,8 +94,17 @@ class MultiplierManager: ObservableObject {
 }
 
 extension MultiplierManager {
-    enum ConnectionType: String {
-        case robot, bluetooth
+    enum ConnectionType: String, CaseIterable {
+        case AiRobot, bluetooth
+        
+        var iconName: String {
+            switch self {
+            case .AiRobot:
+                "brain"
+            case .bluetooth:
+                "bluetooth"
+            }
+        }
     }
     
     struct UserDevice {

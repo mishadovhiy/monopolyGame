@@ -57,4 +57,10 @@ extension String {
             return [:]
         }
     }
+    
+    var addSpaceBeforeCapitalizedLetters: String {
+        let regex = try? NSRegularExpression(pattern: "(?<=\\w)(?=[A-Z])", options: [])
+        let result = regex?.stringByReplacingMatches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count), withTemplate: " $0")
+        return result ?? self
+    }
 }

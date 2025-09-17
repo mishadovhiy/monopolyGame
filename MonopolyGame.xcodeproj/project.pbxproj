@@ -80,6 +80,7 @@
 		82E3A4FC2E7A07E6003A4C9A /* ComicRelief-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 82E3A4FB2E7A07E6003A4C9A /* ComicRelief-Regular.otf */; };
 		82E3A4FD2E7A07E6003A4C9A /* ComicRelief-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 82E3A4FA2E7A07E6003A4C9A /* ComicRelief-Bold.otf */; };
 		82E3A5002E7A0DD4003A4C9A /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E3A4FF2E7A0DD4003A4C9A /* Font.swift */; };
+		82E3A5082E7A3CBB003A4C9A /* CloseIconPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E3A5072E7A3CBB003A4C9A /* CloseIconPath.swift */; };
 		82FDA7672DDFD42D00723F68 /* sendEmail.php in Resources */ = {isa = PBXBuildFile; fileRef = 82FDA7662DDFD42D00723F68 /* sendEmail.php */; };
 /* End PBXBuildFile section */
 
@@ -159,6 +160,7 @@
 		82E3A4FA2E7A07E6003A4C9A /* ComicRelief-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ComicRelief-Bold.otf"; sourceTree = "<group>"; };
 		82E3A4FB2E7A07E6003A4C9A /* ComicRelief-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ComicRelief-Regular.otf"; sourceTree = "<group>"; };
 		82E3A4FF2E7A0DD4003A4C9A /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
+		82E3A5072E7A3CBB003A4C9A /* CloseIconPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseIconPath.swift; sourceTree = "<group>"; };
 		82FDA7662DDFD42D00723F68 /* sendEmail.php */ = {isa = PBXFileReference; lastKnownFileType = text.script.php; path = sendEmail.php; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -281,6 +283,7 @@
 				82126EB42DAADA360081983A /* ViewModel */,
 				82126EB52DAADA360081983A /* Assets.xcassets */,
 				82126F2C2DACDBBC0081983A /* Keys.swift */,
+				82E3A5092E7A3CC2003A4C9A /* Path */,
 				825AE4592DB3A0960075B26B /* Mics */,
 				82126EA22DAADA360081983A /* Extension */,
 				82126EB62DAADA360081983A /* MonopolyGame.entitlements */,
@@ -422,6 +425,14 @@
 				82E3A4FB2E7A07E6003A4C9A /* ComicRelief-Regular.otf */,
 			);
 			path = Font;
+			sourceTree = "<group>";
+		};
+		82E3A5092E7A3CC2003A4C9A /* Path */ = {
+			isa = PBXGroup;
+			children = (
+				82E3A5072E7A3CBB003A4C9A /* CloseIconPath.swift */,
+			);
+			path = Path;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -569,6 +580,7 @@
 				82126EC52DAADA360081983A /* TradePopupContentView.swift in Sources */,
 				82A7F8702DB8CEB900048BD7 /* UpdateView.swift in Sources */,
 				82126EC62DAADA360081983A /* GameViewModel.swift in Sources */,
+				82E3A5082E7A3CBB003A4C9A /* CloseIconPath.swift in Sources */,
 				82126EC72DAADA360081983A /* MonopolyGameApp.swift in Sources */,
 				82126EFC2DABF88F0081983A /* GameSettingsView.swift in Sources */,
 				82C51E2C2DAD6B7000EC71F4 /* StorekitModel.swift in Sources */,

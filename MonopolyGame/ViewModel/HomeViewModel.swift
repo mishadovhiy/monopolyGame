@@ -13,6 +13,8 @@ struct HomeViewModel {
     var profileWidth:CGFloat {
         isNavigationPushed && isGamePresenting ? 0 : (navigationPresenting.profile ? (navigationPresenting.profileProtoPicker ? 0 : 56) : (isNavigationPushed ? 0 : 56))
     }
+    var gameConnectionPresenting: Bool = false
+    var selectedGameConnectionType: MultiplierManager.ConnectionType?
     var supportRequestCompletion:MessageContent?
     
     func sendSupportRequest(completion:@escaping(_ ok:Bool)->()) {
@@ -45,8 +47,19 @@ return
         let dict = navigationPresenting.dict
         return dict?.values.contains(true) ?? false
     }
-    
-    var isGamePresenting:Bool = false
+    var animate: Bool = false
+
+    var isGamePresenting:Bool {
+        get {
+            selectedGameConnectionType != nil
+        }
+        set {
+            if !newValue {
+                gameConnectionPresenting = false
+                selectedGameConnectionType = nil
+            }
+        }
+    }
     var navigationPresenting:NavigationPresenting = .init()
     struct NavigationPresenting:Codable {
         var menu = false

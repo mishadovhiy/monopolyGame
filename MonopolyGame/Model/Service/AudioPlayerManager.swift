@@ -6,6 +6,7 @@
 //
 
 import AVFoundation
+import UIKit
 
 struct AudioPlayerManagers {
     fileprivate var audioPlayers:[AudioPlayerManager] = []
@@ -63,6 +64,11 @@ class AudioPlayerManager:NSObject, AVAudioPlayerDelegate {
     }
     
     func play() {
+        if let haptic = self.audioType?.needHaptic,
+           (self.player?.volume ?? 0) >= 0.1 {
+            let generator = UIImpactFeedbackGenerator(style: haptic)
+            generator.impactOccurred()
+        }
         print(audioType?.rawValue, " playingg")
         self.player?.play()
     }
@@ -132,6 +138,16 @@ enum AudioType: String, CaseIterable {
     case background1, background2, background3, background4, background5
     case money, loose, menu, wone
     case menuRegular, menuPlay
+    
+    var needHaptic: UIImpactFeedbackGenerator.FeedbackStyle? {
+        switch self {
+        case .menu, .menuRegular: .light
+        case .menuPlay, .loose, .wone: .heavy
+            
+        default: nil
+        }
+    }
+    
     static var `default`:AudioType { .menu}
     static var randomBackground:AudioType {
         allCases.filter({$0.isBackground}).randomElement() ?? .background1

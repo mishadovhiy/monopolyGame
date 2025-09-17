@@ -138,7 +138,7 @@ class GameViewModel: ObservableObject {
     func playerCompletedMoving() {
         self.didFinishMoving = true
         self.moveCompleted = true
-        if self.multiplierModel.type != .robot && playerPosition.id != myPlayerPosition.id {
+        if self.multiplierModel.type != .AiRobot && playerPosition.id != myPlayerPosition.id {
             return
         }
         let property = playerPosition.playerPosition
@@ -146,7 +146,7 @@ class GameViewModel: ObservableObject {
         if playerPosition.id == myPlayerPosition.id {
             askPlayerToBuy(property: property)
         } else {
-            if self.multiplierModel.type == .robot {
+            if self.multiplierModel.type == .AiRobot {
                 enemyCompletedMooving(property: property)
             } else {
                 
@@ -543,7 +543,7 @@ class GameViewModel: ObservableObject {
     }
     
     func robotBet() {
-        if multiplierModel.type != .robot {
+        if multiplierModel.type != .AiRobot {
             multiplierModel.action(.init(value: self.bet.betProperty?.rawValue ?? "", key: .auctionBetValue, additionalValue: "\(self.bet.bet.last?.1 ?? 0)"))
             return
         }

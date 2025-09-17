@@ -10,7 +10,8 @@ import UIKit
 
 struct HomeView: View {
     @State var viewModel:HomeViewModel = .init()
-    
+    @EnvironmentObject var db: AppData
+
     var body: some View {
         NavigationView(content: {
             GeometryReader(content: { proxy in
@@ -21,7 +22,7 @@ struct HomeView: View {
                         playButton
                         leaderBoardButtonView
                     }
-                    NavigationLink("", destination: GameView(isPresenting: $viewModel.isGamePresenting, enemyConnectionType: .bluetooth), isActive: $viewModel.isGamePresenting)
+                    NavigationLink("", destination: GameView(isPresenting: $viewModel.isGamePresenting, enemyConnectionType: viewModel.selectedGameConnectionType ?? .bluetooth), isActive: $viewModel.isGamePresenting)
                         .hidden()
                 }
                 
@@ -57,47 +58,120 @@ struct HomeView: View {
         }
     }
     
+    var connectionTypePicker: some View {
+        HStack(spacing: viewModel.gameConnectionPresenting ? 10 : 0) {
+            ForEach(MultiplierManager.ConnectionType.allCases, id: \.rawValue) { type in
+                Button {
+                    db.audioManager?.play(.menuPlay)
+                    viewModel.popToRootView(force: true)
+                    withAnimation {
+                        viewModel.selectedGameConnectionType = type
+                    }
+                } label: {
+                    HStack(content: {
+                        Image(.init(name: type.iconName, bundle: .main))
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 15)
+                        Text(type.rawValue.addSpaceBeforeCapitalizedLetters.capitalized)
+                            .font(.system(size: 12))
+                            .opacity(viewModel.gameConnectionPresenting ? 1 : 0)
+                    })
+                    .padding(.horizontal, viewModel.gameConnectionPresenting ? 15 : -50)
+                        .padding(.vertical, 7)
+                        .foregroundColor(.black)
+                        .background(.light)
+                        .cornerRadius(4)
+                    
+                        .shadow(radius: 6)
+                }
+
+            }
+        }
+        .frame(maxHeight: viewModel.gameConnectionPresenting ? 35 : 0)
+        .clipped()
+        .animation(.bouncy, value: viewModel.gameConnectionPresenting)
+    }
     
-    @State var animate: Bool = false
     @ViewBuilder
     var playButton: some View {
-        Button {
-            viewModel.popToRootView(force: true)
-            viewModel.isGamePresenting = true
-        } label: {
-            Text("Play")
-                .font(.system(size: 32, weight: .bold))
-                .kerning(2)
-                .multilineTextAlignment(.center)
-                .blendMode(.destinationOut)
+        VStack(spacing: viewModel.gameConnectionPresenting ? 10 : -15) {
+            connectionTypePicker
+            Button {
+                db.audioManager?.play(!viewModel.gameConnectionPresenting ? .menuRegular : .menu)
+                viewModel.popToRootView(force: true)
+                withAnimation {
+                    viewModel.gameConnectionPresenting.toggle()
+                }
+            } label: {
+                VStack(spacing: 0, content: {
+                    CloseIconPath()
+                        .trim(to: viewModel.gameConnectionPresenting ? 1 : 0)
+                        .stroke(.black, lineWidth: 2)
+                        .blendMode(.destinationOut)
+
+                        .frame(width: viewModel.gameConnectionPresenting ? 40 : 0, height: viewModel.gameConnectionPresenting ?  40 : 0)
+                        .animation(.smooth, value: viewModel.gameConnectionPresenting)
+                        
+                    Text("Play")
+                        
+                        .font(.system(size: 32, weight: .bold))
+                        .kerning(2)
+                        .frame(height: viewModel.gameConnectionPresenting ? 0 : 35)
+                        .multilineTextAlignment(.center)
+                        .blendMode(.destinationOut)
+                        .clipped()
+                        .animation(.smooth, value: viewModel.gameConnectionPresenting)
+
+
+                })
                 .padding(.horizontal, 50)
                 .padding(.vertical, 8)
-        }
-        .tint(.white)
-        .background(content: {
-            ZStack {
-                Color(.green).opacity(0.85)
-
-                HStack {
-                    Spacer().frame(maxWidth: animate ? .infinity : .zero)
-                    Color(.white)
-                        .frame(width: 10)
-                        .blur(radius: 10)
-                    
-                    Spacer().frame(maxWidth: !animate ? .infinity : .zero)
-                }
-                .padding(.horizontal, -15)
             }
-            .animation(.smooth(duration: 1.5).repeatForever(autoreverses: false), value: animate)
-        })
-        .compositingGroup()
-        .cornerRadius(50)
-        .shadow(radius: 15)
-        .onAppear {
-                animate.toggle()
+            .tint(.white)
+            .background(content: {
+                ZStack {
+                    Color(.green).opacity(0.85)
+                    animatedBackground(isHorizontal: true)
+                }
+            })
+            .compositingGroup()
+            .cornerRadius(50)
+            .shadow(radius: 15)
+            .onAppear {
+                viewModel.animate.toggle()
+            }
+            .zIndex(2)
+        }
+        .animation(.bouncy, value: viewModel.gameConnectionPresenting)
+    }
+    
+    @ViewBuilder
+    func animatedBackground(isHorizontal: Bool) -> some View {
+        if !isHorizontal {
+            VStack {
+                Spacer().frame(maxHeight: viewModel.animate ? .infinity : .zero)
+                Color(.white)
+                    .frame(height: 5)
+                    .blur(radius: 5)
+                
+                Spacer().frame(maxHeight: !viewModel.animate ? .infinity : .zero)
+            }
+            .padding(.vertical, -15)
+            .animation(.easeInOut(duration: 3.5).repeatForever(), value: viewModel.animate)
+        } else {
+            HStack {
+                Spacer().frame(maxWidth: viewModel.animate ? .infinity : .zero)
+                Color(.white)
+                    .frame(width: 10)
+                    .blur(radius: 10)
+                
+                Spacer().frame(maxWidth: !viewModel.animate ? .infinity : .zero)
+            }
+            .padding(.horizontal, -15)
+            .animation(.smooth(duration: 1.5).repeatForever(autoreverses: false), value: viewModel.animate)
         }
     }
-
     
     var leaderBoardButtonView: some View {
         VStack {
@@ -112,16 +186,7 @@ struct HomeView: View {
                     ZStack(content: {
                         BlurView()
                         Color.white.opacity(0.5)
-                        VStack {
-                            Spacer().frame(maxHeight: animate ? .infinity : .zero)
-                            Color(.white)
-                                .frame(height: 5)
-                                .blur(radius: 5)
-                            
-                            Spacer().frame(maxHeight: !animate ? .infinity : .zero)
-                        }
-                        .padding(.vertical, -15)
-                        .animation(.easeInOut(duration: 3.5).repeatForever(), value: animate)
+                        animatedBackground(isHorizontal: false)
 
                     })
                         .frame(height: 45)
