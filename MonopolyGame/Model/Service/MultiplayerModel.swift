@@ -178,6 +178,7 @@ extension MultiplierManager {
             case robotUpgradePropertiesPrediction
             case robotLostGame
             case roboBuyOrAuctionPrediction
+            case robotCompletedPredictions
         }
     }
 }

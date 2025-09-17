@@ -166,7 +166,7 @@ struct GameView: View {
                         .font(.system(size: 12, weight:.medium))
                         .foregroundColor(.primaryBackground.opacity(0.8))
                     Spacer()
-                    if data?.canClose ?? false {
+                    if data?.canClose ?? false || (!viewModel.multiplierModel.type.canConnect && viewModel.myPlayerPosition.id == viewModel.enemyPosition.id) {
                         HStack {
                             Spacer()
                             Button {
@@ -362,7 +362,7 @@ struct GameView: View {
                 HStack {
                     Spacer().frame(width:65)
                     VStack(alignment:.leading) {
-                        Text("Your Balance " + ((self.viewModel.playerPosition.id == self.viewModel.myPlayerPosition.id) ? " + " : ""))
+                        Text("Your Balance ")
                             .font(.system(size: 12))
                             .foregroundColor(.secondaryText)
                             .frame(alignment: .leading)
@@ -374,6 +374,13 @@ struct GameView: View {
                     }
                     .padding(.top, 13)
                     .padding(.bottom, 15)
+                    .overlay {
+                        if self.viewModel.playerPosition.id == self.viewModel.myPlayerPosition.id {
+                            Color.red.frame(width: 10, height: 10)
+                                .opacity(0.4)
+                        }
+                        
+                    }
                 }
                 .padding(.trailing, 13)
                 .background(viewModel.myPlayerBalanceHiglightingPositive ? .green : (viewModel.myPlayerBalanceHiglightingNegative ? .red : .secondaryBackground))
@@ -391,6 +398,7 @@ struct GameView: View {
                         .scaledToFit()
                         .frame(width: 45, height: 45)
                         .cornerRadius(40)
+
                     VStack(alignment:.leading) {
                         Text("Enemy balance")
                             .font(.system(size: 12))
@@ -400,6 +408,14 @@ struct GameView: View {
                             .font(.system(size: 18, weight:.bold))
                             .foregroundColor(.white)
                             .frame(alignment: .leading)
+                        
+                    }
+                    .overlay {
+                        if self.viewModel.playerPosition.id == self.viewModel.enemyPosition.id {
+                            Color.red.frame(width: 10, height: 10)
+                                .opacity(0.4)
+                        }
+                        
                     }
                 }
                 .padding(.horizontal, 10)

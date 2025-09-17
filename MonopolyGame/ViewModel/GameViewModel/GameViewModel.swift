@@ -53,6 +53,8 @@ class GameViewModel: ObservableObject {
         }
         didSet {
             boardCardDidUpdate(false)
+            sendMyPlayerData()
+
         }
     }
     
@@ -64,6 +66,7 @@ class GameViewModel: ObservableObject {
         }
         didSet {
             boardCardDidUpdate(true)
+            sendMyPlayerData()
         }
     }
     @Published var myPlayerPosition: PlayerStepModel = .init(playerPosition: .go) {
@@ -159,11 +162,16 @@ class GameViewModel: ObservableObject {
     }
     
     private func setNextPlayer(toPlayerID: UUID? = nil, canMove: Bool = true) {
+        print(myPlayerPosition.id == self.playerPosition.id, " gterfwedaws ")
         didFinishMoving = false
-        let array = playersArray
-        if !self.multiplierModel.type.canConnect && (chestPresenting != nil || chancePresenting != nil) && self.enemyPosition.id == self.playerPosition.id {
-            return
+        if !self.multiplierModel.type.canConnect && self.enemyPosition.id == self.playerPosition.id && self.playerPosition.inJail {
+            self.enemyInJail()
         }
+        let array = playersArray
+        //test bellow when no chance
+//        if !self.multiplierModel.type.canConnect && (chestPresenting != nil || chancePresenting != nil) && self.enemyPosition.id == self.playerPosition.id {
+//            return
+//        }
         if let toPlayerID,
             let targetIndex = array.firstIndex(where: {
             $0.id == toPlayerID
@@ -199,7 +207,9 @@ class GameViewModel: ObservableObject {
         sendEnemyData()
 
         if !multiplierModel.type.canConnect {
-
+            if self.enemyPosition.id == self.playerPosition.id && self.playerPosition.inJail {
+                self.enemyInJail()
+            }
         } else {
             self.setNextPlayer(toPlayerID: isToEnemy ? enemyPosition.id : nil)
         }
@@ -483,9 +493,6 @@ class GameViewModel: ObservableObject {
     
     private func checkEnemyCanUpgradeProperties() {
         self.multiplierModel.action(.init(value: "", key: .robotUpgradePropertiesPrediction, data: [enemyPosition, myPlayerPosition].decode))
-        DispatchQueue.main.async {
-            self.setNextPlayer()
-        }
     }
 
     func move() {
@@ -622,7 +629,9 @@ class GameViewModel: ObservableObject {
 //MARK: completed mooving
 fileprivate extension GameViewModel {
     
+    #warning("after moving completed from bottom cards: next player not called")
     private func enemyCompletedMooving(property:Step) {
+        print("enemyCompletedMoovingenemyCompletedMooving")
         if property.buyPrice == nil {
             checkEnemyCanUpgradeProperties()
             return
@@ -637,7 +646,7 @@ fileprivate extension GameViewModel {
     private func payRent(property:Step) {
         if let occupiedBy = occupiedByPlayer(property) {
             if let upgrade = occupiedBy.bought[property],
-               occupiedBy.id != playerPosition.id {
+               occupiedBy.id != playerPosition.id, !occupiedBy.inJail {
                 let amount = occupiedBy.morgageProperties.contains(property) ? 0 : (property.rentTotal(upgrade) ?? 0)
                 playerPosition.balance -= amount
                 playersArray.forEach { model in
@@ -673,6 +682,7 @@ fileprivate extension GameViewModel {
     
     #warning("move to robot manager")
     private func enemyInJail() {
+        print("enemyInJailenemyInJail")
         if playerPosition.specialCards.contains(.outOfJail) {
             playerPosition.inJail = false
             var removed = false
@@ -717,9 +727,11 @@ extension GameViewModel {
             self.movingCompletedCheckChance(property)
         }
     }
-    
+    //here
+    //after chest/chance - player not setted to next if current player is enemy
     private func chestChanceDidSet() {
         guard let type = chestPresenting ?? chancePresenting else {
+            
             return
         }
         switch type.action {
@@ -730,10 +742,16 @@ extension GameViewModel {
                 selectingProperty = nil
                 if chestPresenting != nil {
                     chestPresenting = nil
+                    if self.playerPosition.id == enemyPosition.id {
+                        self.performNextPlayer()
+                    }
                 }
                 
                 if chancePresenting != nil {
                     chancePresenting = nil
+                    if self.playerPosition.id == enemyPosition.id {
+                        self.performNextPlayer()
+                    }
                 }
             }
         default:break
@@ -755,9 +773,7 @@ extension GameViewModel {
             }
 
         } else {
-            if self.enemyPosition.id == self.playerPosition.id && !self.multiplierModel.type.canConnect {
-                self.performNextPlayer()
-            }
+            
         }
     }
     
@@ -942,6 +958,13 @@ extension GameViewModel: MultiplierManagerDelegate {
                 
             case .loosePressed:
                 enemyLost()
+            case .robotCompletedPredictions:
+                
+                //check presenting boardCard, change player
+//                if self.chestPresenting == nil && chancePresenting == nil {
+//                    
+                    self.setNextPlayer()
+//                }
             }
         }
     }

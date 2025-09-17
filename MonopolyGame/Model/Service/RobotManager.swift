@@ -12,17 +12,33 @@ class RobotManager: ObservableObject {
     @Published var messages: MultiplierManager.ActionUnparcer?
     private let coreMLModel: CoreMLManager = .init()
     private var enemyMorgagedBalance = false
-
+    private var delayedAction: [DelayedAction] = [] {
+        didSet {
+            print(delayedAction, " yh5tgerfwdas ")
+            if delayedAction.isEmpty {
+                self.messages = .init(value: "", key: .robotCompletedPredictions)
+            }
+        }
+    }
+        
     func action(action: MultiplierManager.ActionUnparcer) {
         switch action.key {
         case .robotIncreesBalancePrediction:
-            increeseBalance(action: action)
+            delayedAction.append(.increesBalance)
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(randomDelayList.randomElement()!), execute: { [weak self] in
+                self?.increeseBalance(action: action)
+            })
             
         case .roboBuyOrAuctionPrediction:
-            self.buyOrAuctionPrediction(action: action)
-            
+            delayedAction.append(.buyOrAuction)
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(randomDelayList.randomElement()!), execute: { [weak self] in
+                self?.buyOrAuctionPrediction(action: action)
+            })
         case .robotUpgradePropertiesPrediction:
-            self.canUpgradeProperties(action)
+            delayedAction.append(.upgradeProperty)
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(randomDelayList.randomElement()!), execute: { [weak self] in
+                self?.canUpgradeProperties(action)
+            })
             
         case .auctionBetValue:
             self.placeBet(action: action)
@@ -37,6 +53,9 @@ class RobotManager: ObservableObject {
             enemyMorgagedBalance = true
             sellOrMorgagePrediction(minMorgage: 250, enemyPosition: &data)
         } else {
+            self.delayedAction.removeAll(where: {
+                $0 == .increesBalance
+            })
             enemyMorgagedBalance = false
         }
         if data.balance <= 0 {
@@ -46,11 +65,12 @@ class RobotManager: ObservableObject {
     }
     
     private func sellOrMorgagePrediction(minMorgage:Int = 0, enemyPosition: inout PlayerStepModel) {
-        print("gterfwda")
         if enemyPosition.balance >= 0 && minMorgage == 0 {
+            self.delayedAction.removeAll(where: {
+                $0 == .increesBalance
+            })
             return
         }
-        print("rtgerfwedas")
         enemyPosition.bought.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
             if enemyPosition.balance < minMorgage {
                 if let price = key.morgage,
@@ -95,8 +115,9 @@ class RobotManager: ObservableObject {
         } else {
             sendRobotUpdate(enemyPosition)
         }
-        
-        
+        self.delayedAction.removeAll(where: {
+            $0 == .increesBalance
+        })
     }
     
     private func sendRobotUpdate(_ enemyPosition: PlayerStepModel) {
@@ -104,7 +125,7 @@ class RobotManager: ObservableObject {
         self.messages = .init(value: "", key: .playerMorgage, data: enemyPosition.morgageProperties.decode)
         self.messages = .init(value: "", key: .boughtPlayerProperties, data: enemyPosition.bought.decode)
     }
-
+    
     private func setBetDeclined() {
         self.messages = .init(value: "", key: .auctionBetValue)
     }
@@ -138,8 +159,17 @@ class RobotManager: ObservableObject {
                 }
             }
         }
-        if upgraded {
-            self.sendRobotUpdate(enemy)
+        DispatchQueue.main.async {
+            if upgraded {
+                self.sendRobotUpdate(enemy)
+                self.delayedAction.removeAll(where: {
+                    $0 == .upgradeProperty
+                })
+            } else {
+                self.delayedAction.removeAll(where: {
+                    $0 == .upgradeProperty
+                })
+            }
         }
     }
     
@@ -155,23 +185,26 @@ class RobotManager: ObservableObject {
                 if results == .upgrade {
                     enemy.buyIfCan(property)
                     self.sendRobotUpdate(enemy)
-//                        self.multiplierModel.action(.init(value: "\(myPlayerPosition.balance)", key: .addBalance))
+                    self.delayedAction.removeAll(where: {
+                        $0 == .buyOrAuction
+                    })
                 } else {
-//                    self.bet.playerPalance = self.myPlayerPosition.balance
                     self.messages = .init(value: property.rawValue, key: .auctionBetValue, additionalValue: "100")
-//                    self.bet.betProperty = property
+                    self.delayedAction.removeAll(where: {
+                        $0 == .buyOrAuction
+                    })
                 }
             default:
                 self.messages = .init(value: property.rawValue, key: .auctionBetValue, additionalValue: "100")
-
-//                self.bet.playerPalance = self.myPlayerPosition.balance
-//                self.bet.betProperty = property
+                self.delayedAction.removeAll(where: {
+                    $0 == .buyOrAuction
+                })
             }
         } else {
             self.messages = .init(value: property.rawValue, key: .auctionBetValue, additionalValue: "100")
-
-//            self.bet.playerPalance = self.myPlayerPosition.balance
-//            self.bet.betProperty = property
+            self.delayedAction.removeAll(where: {
+                $0 == .buyOrAuction
+            })
         }
     }
     
@@ -216,8 +249,18 @@ class RobotManager: ObservableObject {
             } else {
                 self.setBetDeclined()
             }
-
+            
         })
     }
+    
+    private var randomDelayList: [Int] = [300, 350, 500, 400, 450, 1000, 1300, 1200, 800, 700, 4000, 3000, 500, 900, 1500, 1500, 1800, 1900]
 
+}
+
+extension RobotManager {
+    fileprivate enum DelayedAction: CaseIterable {
+        case buyOrAuction
+        case upgradeProperty
+        case increesBalance
+    }
 }
