@@ -17,29 +17,18 @@ protocol MultiplierManagerDelegate {
 class MultiplierManager: ObservableObject {
     
     @Published private var bluetoothManager: BluetoothManager?
+    @Published private var robotManager: RobotManager?
     let type: ConnectionType
     var delegate: MultiplierManagerDelegate? {
         didSet {
-            if !type.canConnect {
+            if isConnected {
                 delegate?.didConnect()
             }
         }
     }
     private var messagesCancellable: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
-    var isPrimaryDevice: Bool {
-        self.bluetoothManager?.test == nil
-    }
-    var connectedDeviceID: String? {
-        bluetoothManager?.connectedPeripheral?.identifier.uuidString
-    }
-    var isConnected: Bool {
-        if type.canConnect {
-            return bluetoothManager?.isConntected ?? false
-        } else {
-            return true
-        }
-    }
+    
     init(
         type: ConnectionType
     ) {
@@ -51,13 +40,15 @@ class MultiplierManager: ObservableObject {
             self.messagesCancellable = bluetoothManager?.$messages.sink(receiveValue: { newValue in
                 self.delegate?.didReciveAction(.configure(dict: newValue))
             })
+            self.robotManager = nil
         case .AiRobot:
             self.bluetoothManager = nil
-            self.messagesCancellable = nil
+            self.robotManager = .init()
+            self.messagesCancellable = robotManager?.$messages.sink(receiveValue: { newValue in
+                self.delegate?.didReciveAction(newValue)
+            })
         }
         
-
-//
         bluetoothManager?.objectWillChange
             .sink { [weak self] _ in
                 self?.objectWillChange.send()
@@ -71,6 +62,22 @@ class MultiplierManager: ObservableObject {
         
     }
     
+    var isPrimaryDevice: Bool {
+        self.bluetoothManager?.test == nil
+    }
+    
+    var connectedDeviceID: String? {
+        bluetoothManager?.connectedPeripheral?.identifier.uuidString
+    }
+    
+    var isConnected: Bool {
+        if type.canConnect {
+            return bluetoothManager?.isConntected ?? false
+        } else {
+            return true
+        }
+    }
+    
     var deviceList: [UserDevice] {
         switch type {
         case .AiRobot:
@@ -81,12 +88,11 @@ class MultiplierManager: ObservableObject {
             }) ?? []
         }
     }
-
-    
     
     func action(_ data: ActionUnparcer) {
         print(data.data?.count, " gefwdadcs ", data.key.rawValue)
         bluetoothManager?.send(jsonData: data.dictionary ?? [:])
+        robotManager?.action(action: data)
     }
     
     func connectToUser(deviceID: String) {
@@ -166,6 +172,12 @@ extension MultiplierManager {
             case playerBalance
             case enemyBalance
             case boughtPlayerProperties
+            
+            /// morgage, sell, when minimum balance
+            case robotIncreesBalancePrediction
+            case robotUpgradePropertiesPrediction
+            case robotLostGame
+            case roboBuyOrAuctionPrediction
         }
     }
 }

@@ -9,16 +9,22 @@ import SwiftUI
 import Combine
 
 class GameViewModel: ObservableObject {
-    @Published var diceDestination:Int = 0
+    
     private var balanceChangeHolder:Int = 0
     var chests:[BoardCard] = .chest.shuffled()
     var chances:[BoardCard] = .chance.shuffled()
     var round:GameRound = .init()
-    var coreMLModel:CoreMLManager = .init()
     @Published var adPresenting = false
+    @Published var activePanelType:PanelType?
+    @Published var diceDestination:Int = 0
+    @Published var updateBalancePresenting:Bool = false
+    @Published var currentPlayerIndex:Int = 0
+    @Published var didFinishMoving:Bool = false
+    @Published var moveCompleted:Bool = true
+
     let multiplierModel: MultiplierManager
     private var cancellables = Set<AnyCancellable>()
-
+    
     init(enemyConnectionType: MultiplierManager.ConnectionType) {
         multiplierModel = .init(type: enemyConnectionType)
         multiplierModel.delegate = self
@@ -29,6 +35,9 @@ class GameViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+    private var canFetchDB = true
+    var enemyLostAction:(()->())?
+    var isEquelDices = false
     #warning("declare bancopcy - save to db")
     #warning("if morgage - show morgage icon")//!!
     #warning("buy transport")//!!
@@ -43,21 +52,10 @@ class GameViewModel: ObservableObject {
             }
         }
         didSet {
-            print(chestPresenting, " htgsrgre ")
-            if chestPresenting != nil {
-                chestChanceDidSet()
-                if chestPresenting?.action != nil {
-                    multiplierModel.action(.init(value: chestPresenting?.title ?? "", key: .bottomCard))
-
-                }
-
-            } else {
-                if self.enemyPosition.id == self.playerPosition.id && !self.multiplierModel.type.canConnect {
-                    self.performNextPlayer()
-                }
-            }
+            boardCardDidUpdate(false)
         }
     }
+    
     @Published var chancePresenting:BoardCard? = nil {
         willSet {
             if chancePresenting != nil && newValue == nil {
@@ -65,18 +63,7 @@ class GameViewModel: ObservableObject {
             }
         }
         didSet {
-            print(chancePresenting, " juhgjhjfg ")
-
-            if chancePresenting != nil {
-                chestChanceDidSet()
-                if chancePresenting?.action != nil {
-                    multiplierModel.action(.init(value: chancePresenting?.title ?? "", key: .topCard))
-                }
-            } else {
-                if self.enemyPosition.id == self.playerPosition.id && !self.multiplierModel.type.canConnect {
-                    self.performNextPlayer()
-                }
-            }
+            boardCardDidUpdate(true)
         }
     }
     @Published var myPlayerPosition: PlayerStepModel = .init(playerPosition: .go) {
@@ -87,22 +74,6 @@ class GameViewModel: ObservableObject {
             checkPlayerBalance(false)
             sendMyPlayerData()
         }
-    }
-    
-    func sendMyPlayerData(positionOnly: Bool = false) {
-        if !positionOnly {
-            multiplierModel.action(.init(value: "\(myPlayerPosition.balance)", key: .playerBalance))
-            multiplierModel.action(.init(value: "", key: .playerMorgage, data: myPlayerPosition.morgageProperties.decode))
-            multiplierModel.action(.init(value: "", key: .boughtPlayerProperties, data: myPlayerPosition.bought.decode))
-
-        }
-        multiplierModel.action(.init(value: myPlayerPosition.playerPosition.rawValue, key: .playerPosition))
-
-    }
-    
-    func sendEnemyData() {
-
-        multiplierModel.action(.init(value: "\(enemyPosition.balance)", key: .enemyBalance))
     }
     
     @Published var enemyPosition:PlayerStepModel = .init(playerPosition: .go) {
@@ -136,12 +107,13 @@ class GameViewModel: ObservableObject {
             }
         }
     }
-    
-    @Published var gameCompleted:Bool = false
-    @Published var deviceWidth:CGFloat = 0
-    var itemWidth:CGFloat = 60
-    var moovingBack:Bool = false
-    var selectingProperty:BoardCard.Action.PropertySelectionAction?
+    @Published var gameCompleted: Bool = false
+    @Published var deviceWidth: CGFloat = 0
+    @Published var usingDice = false
+    @Published var dicePressed: Bool = false
+    var itemWidth: CGFloat = 60
+    var moovingBack: Bool = false
+    @Published var selectingProperty:BoardCard.Action.PropertySelectionAction?
     
     func playerCompletedMoving() {
         self.didFinishMoving = true
@@ -162,9 +134,7 @@ class GameViewModel: ObservableObject {
         }
         movingCompletedCheckProperty(property)
     }
-    @Published var usingDice = false
-    @Published var dicePressed:Bool = false
-    //here
+
     func diceDidPress() {
         if multiplierModel.type.canConnect {
             if !didFinishMoving {
@@ -180,7 +150,6 @@ class GameViewModel: ObservableObject {
                 self.setNextPlayer()
 
             }
-            
         }
     }
     
@@ -215,39 +184,26 @@ class GameViewModel: ObservableObject {
                 currentPlayerIndex = 0
             }
         }
-        print(myPlayerPosition.id == self.playerPosition
-            .id, " ytgerfwdawrget4red ")
+
         if myPlayerPosition.id != self.playerPosition
             .id && !self.multiplierModel.type.canConnect {
             
             performDice()
-            
         }
     }
     
     func performNextPlayer(force: Bool = false, isToEnemy: Bool = false) {
-        print("performNextPlayerperformNextPlayer ", self.myPlayerPosition.id == self.playerPosition.id)
-        let array = playersArray
-//        if self.myPlayerPosition.id == self.playerPosition.id {
+        let _ = playersArray
             self.multiplierModel.action(.init(value: "", key: .okPressed))
-        #warning("todo: test commented bellow")
         sendMyPlayerData()
         sendEnemyData()
-//            self.multiplierModel.action(.init(value: "", key: .dbLoad, data: myPlayerPosition.decode))
-//        }
-        
-
 
         if !multiplierModel.type.canConnect {
 
         } else {
             self.setNextPlayer(toPlayerID: isToEnemy ? enemyPosition.id : nil)
-            print("performNextPlayerperformNextPlayer2 ", self.myPlayerPosition.id == self.playerPosition.id)
         }
-
     }
-    
-    @Published var activePanelType:PanelType?
     
     func saveProgress(db:inout AppData.DataBase) {
         let progressKey: String
@@ -265,6 +221,7 @@ class GameViewModel: ObservableObject {
         db.savePlayDate()
     }
     
+    /// sets game progress, after multiplayer device connected. parameter sets to nil after progress setted
     var dbHolder: AppData.DataBase? {
         didSet {
             if !multiplierModel.type.canConnect {
@@ -272,18 +229,17 @@ class GameViewModel: ObservableObject {
             }
         }
     }
+    
     private var isGameStarted: Bool {
         dbHolder == nil
     }
     
-    func fetchGame() {
-        ///ble type: playerID
-        #warning("oponent app reinstalled, when my app has data: wrong data")
+    private func fetchGame() {
         guard let db = dbHolder else {
             return
         }
         self.usingDice = db.settings.game.usingDice
-//        let progress = db.gameProgress[multiplierModel.type == .bluetooth ? "" : multiplierModel.type.rawValue ?? ""] ?? .init()
+
         let progressKey: String
         switch multiplierModel.type {
         case .bluetooth:
@@ -310,16 +266,11 @@ class GameViewModel: ObservableObject {
 
             self.sendEnemyData()
         }
-        print(self.playerPosition.id.uuidString, " hyrgterfwedas")
-        print(self.myPlayerPosition.id.uuidString, " hyrgterfwedas 2")
-        print(self.enemyPosition.id.uuidString, " hyrgterfwedas 3")
-
         self.dbHolder = nil
     }
     
     func propertySelected(_ step: Step) {
-        if let holder = selectingProperty {
-            onPropertyMoved.updateValue(holder, forKey: step)
+        if let _ = selectingProperty {
             withAnimation {
                 selectingProperty = nil
                 chancePresenting = nil
@@ -374,20 +325,15 @@ class GameViewModel: ObservableObject {
             return true
         }
     }
-    
-    var onPropertyMoved:[Step:BoardCard.Action.PropertySelectionAction] = [:]
-    
+        
     func boardActionPropertySelected(_ step: Step) {
         switch activePanelType {
         case .trade:
-//            self.multiplierModel.action(.init(value: step.rawValue, key: .tradeProposal))
             break
         case .build:
             if self.myPlayerPosition.canUpdateProperty(step)
             {
                 self.myPlayerPosition.upgradePropertyIfCan(step)
-//                self.multiplierModel.action(.init(value: step.rawValue, key: .upgradeProperty))
-//                self.multiplierModel.action(.init(value: "\(playerPosition.balance)", key: .addBalance))
             }
         case .sell:
             if let upgrade = self.myPlayerPosition.bought[step],
@@ -396,20 +342,15 @@ class GameViewModel: ObservableObject {
             {
                 self.myPlayerPosition.balance += price
                 self.myPlayerPosition.bought.updateValue(newValue, forKey: step)
-//                self.multiplierModel.action(.init(value: step.rawValue, key: .sellProperty))
-//                self.multiplierModel.action(.init(value: "\(playerPosition.balance)", key: .addBalance))
-
             }
             
         case .morgage:
-            if let upgrade = self.myPlayerPosition.bought[step],
+            if let _ = self.myPlayerPosition.bought[step],
                let price = step.morgage,
                !self.myPlayerPosition.morgageProperties.contains(step)
             {
                 self.myPlayerPosition.balance += price
                 self.myPlayerPosition.morgageProperties.append(step)
-//                self.multiplierModel.action(.init(value: step.rawValue, key: .morgageProperty))
-//                self.multiplierModel.action(.init(value: "\(playerPosition.balance)", key: .addBalance))
             }
         case .redeem:
             if let upgrade = self.myPlayerPosition.bought[step],
@@ -421,17 +362,16 @@ class GameViewModel: ObservableObject {
                 self.myPlayerPosition.morgageProperties.removeAll(where: {
                     $0 == step
                 })
-//                self.multiplierModel.action(.init(value: step.rawValue, key: .redeemProperty))
-//                self.multiplierModel.action(.init(value: "\(playerPosition.balance)", key: .addBalance))
             }
         case nil:
             break
         }
     }
-    @Published var currentPlayerIndex:Int = 0
+    
     var myPlayerInJail:Bool {
         myPlayerPosition.inJail
     }
+    
     var canDice:Bool {
         let array = [moveCompleted,
                      bet.betProperty == nil,
@@ -445,15 +385,11 @@ class GameViewModel: ObservableObject {
         return !array.contains(false)
     }
     
-    @Published var didFinishMoving:Bool = false
-
-    @Published var moveCompleted:Bool = true
     var playerPosition:PlayerStepModel {
         get {
             return playersArray[currentPlayerIndex]
         }
         set {
-            print(currentPlayerIndex, " y5terfwd ")
             playersArray[currentPlayerIndex] = newValue
         }
     }
@@ -467,14 +403,11 @@ class GameViewModel: ObservableObject {
             enemyPosition = newValue[playersArray.firstIndex(where: {$0.id == enemyPosition.id}) ?? 0]
         }
     }
-    var enemyLostAction:(()->())?
+
     func enemyLost() {
         gameCompleted = true
         enemyLostAction?()
-        
     }
-    var enemyMorgagedBalance = false
-    @Published var updateBalancePresenting:Bool = false
     
     func checkPlayerBalance(_ isEnemy:Bool) {
         let player = isEnemy ? enemyPosition : myPlayerPosition
@@ -514,62 +447,13 @@ class GameViewModel: ObservableObject {
     }
     
     //move to robot manager
-    func enemySellAll(minMorgage:Int = 0) {
-        if enemyPosition.balance >= 0 && minMorgage == 0 {
-            return
-        }
-        enemyPosition.bought.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
-            if enemyPosition.balance < minMorgage {
-                if let price = key.morgage,
-                   value == .bought,
-                   !enemyPosition.morgageProperties.contains(key) {
-                    if minMorgage == 0 {
-                        enemyPosition.morgageProperties.append(key)
-                        enemyPosition.balance += price
-                    } else if self.enemyPosition.canUpdateProperty(key, balance: minMorgage != 0 ? minMorgage : nil) {
-                        enemyPosition.morgageProperties.append(key)
-                        enemyPosition.balance += price
-                    }
-                    
-                }
-            }
-        }
-        var canRepeat = false
-        if enemyPosition.balance < 0 {
-            enemyPosition.bought.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
-                if enemyPosition.balance < 0 && !enemyPosition.morgageProperties.contains(key) {
-                    if let price = key.buyPrice,
-                       let prev = value.previousValue,
-                       value != .bought {
-                        enemyPosition.balance += (price / 2)
-                        enemyPosition.bought.updateValue(prev, forKey: key)
-                        canRepeat = true
-                    }
-                    if value == .bought {
-                        canRepeat = true
-                    }
-                }
-            }
-        }
-        if minMorgage == 0 {
-            DispatchQueue.main.async {
-                if self.enemyPosition.balance < 0 && !canRepeat {
-                    self.enemyLost()
-                } else if self.enemyPosition.balance <= 0 && canRepeat {
-                    self.enemySellAll()
-                }
-            }
-        }
-        
-        
-    }
-    private var canFetchDB = true
     func setBetDeclined() {
-        multiplierModel.action(.init(value: "", key: .auctionBetValue))
+        if multiplierModel.type.canConnect {
+            multiplierModel.action(.init(value: "", key: .auctionBetValue))
+        }
         if let property = bet.betProperty {
             if bet.bet.last?.0.id == myPlayerPosition.id {
                 myPlayerPosition.buyIfCan(property, price: bet.bet.last?.1 ?? 1)
-//                self.multiplierModel.action(.init(value: "\(myPlayerPosition.balance)", key: .addBalance))
 
             } else {
                 enemyPosition.buyIfCan(property, price: bet.bet.last?.1 ?? 1)
@@ -579,104 +463,32 @@ class GameViewModel: ObservableObject {
     }
     
     func robotBet() {
-        if multiplierModel.type != .AiRobot {
-            multiplierModel.action(.init(value: self.bet.betProperty?.rawValue ?? "", key: .auctionBetValue, additionalValue: "\(self.bet.bet.last?.1 ?? 0)"))
-            return
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds((250..<3000).randomElement() ?? 0), execute: {
-            let last = self.bet.bet.last
-            let differenceBalance = self.enemyPosition.balance - (last?.1 ?? 0)
-            if differenceBalance <= 2 {
-                self.setBetDeclined()
-                return
-            }
-            var difference = last?.1 ?? 0 - (self.bet.betProperty?.buyPrice ?? 0)
-            if difference <= 2 {
-                difference = differenceBalance
-                if [false, false, false, false, false, true, false, false, true].randomElement() ?? false {
-                    self.setBetDeclined()
-                    return
-                }
-            } 
-            if difference <= 2 {
-                self.setBetDeclined()
-                return
-            }
-            let newBet = (last?.1 ?? 0) + Int.random(in: 1..<difference)
-            if newBet <= self.enemyPosition.balance {
-                let results = self.coreMLModel.predictAction(.init(type: .continiueBetting(.init(opponentBet: Double(last?.1 ?? 0), playerBet: Double(newBet))), base: .configure(self.enemyPosition, self.playerPosition)))
-                switch results {
-                case .continiueBetting(let response):
-                    if response == .true {
-                        self.bet.bet.append((self.enemyPosition, newBet))
-
-                    } else {
-                        self.setBetDeclined()
-                    }
-                default:
-                    self.setBetDeclined()
-                }
-            } else {
-                self.setBetDeclined()
-            }
-
-        })
+        multiplierModel.action(
+            .init(value: self.bet.betProperty?.rawValue ?? "",
+                  key: .auctionBetValue,
+                  additionalValue: "\(self.bet.bet.last?.1 ?? 0)",
+                  data: !self.multiplierModel.type.canConnect ? [
+                    self.enemyPosition, self.playerPosition
+                  ].decode : nil))
     }
     
-    func checkPlayersBalance() {
+    private func checkPlayersBalance() {
         if myPlayerPosition.id == self.playerPosition.id {
             if myPlayerPosition.balance <= 0 {
                 updateBalancePresenting = true
             }
         } else {
-            if enemyPosition.balance <= 250 && !enemyMorgagedBalance {
-                enemyMorgagedBalance = true
-                enemySellAll(minMorgage: 250)
-            } else {
-                enemyMorgagedBalance = false
-            }
-            if enemyPosition.balance <= 0 {
-                self.enemySellAll()
-            }
+            self.multiplierModel.action(.init(value: "", key: .robotIncreesBalancePrediction, data: enemyPosition.decode))
         }
     }
     
     private func checkEnemyCanUpgradeProperties() {
-        let upgrades = enemyPosition.bought.filter {
-            enemyPosition.canUpdateProperty($0.key)
-        }.sorted(by: {$0.key.upgradePrice($0.value) >= $1.key.upgradePrice($1.value)})
-        let maxUpgradeCountPerMove = 4
-        var upgradedCount = 0
-        upgrades.forEach { (key: Step, value: PlayerStepModel.Upgrade) in
-            if let next = value.nextValue,
-               self.enemyPosition.balance >= key.upgradePrice(next),
-               maxUpgradeCountPerMove >= upgradedCount
-            {
-                let mlResponse = coreMLModel.predictAction(.init(type: .upgradeSkip(.configure(self.playerPosition, self.enemyPosition, step: key)), base: .configure(self.enemyPosition, self.playerPosition)))
-                switch mlResponse {
-                case .upgradeSkip(let skip):
-                    if skip == .upgrade {
-                        upgradedCount += 1
-                        self.enemyPosition.upgradePropertyIfCan(key)
-                        print("enemy upgrading property")
-                    }
-                default:break
-                }
-            }
-        }
-        
+        self.multiplierModel.action(.init(value: "", key: .robotUpgradePropertiesPrediction, data: [enemyPosition, myPlayerPosition].decode))
         DispatchQueue.main.async {
             self.setNextPlayer()
         }
     }
-    
-    func resumeNextPlayer(forceMove:Bool = false) {
-        self.performNextPlayer()
-        if self.myPlayerPosition.id != self.playerPosition.id || forceMove {
-            self.move()
-        }
-    }
-    var isEquelDices = false
+
     func move() {
         moveCompleted = false
         let moveDisabled = playerPosition.inJail && !isEquelDices
@@ -714,14 +526,13 @@ class GameViewModel: ObservableObject {
         }
         diceDestination -= 1
         if diceDestination >= 1 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300), execute: {
                 self.move()
             })
         } else {
             self.playerCompletedMoving()
             self.checkPlayersBalance()
             moovingBack = false
-            //check card holder actions
         }
     }
     
@@ -733,8 +544,6 @@ class GameViewModel: ObservableObject {
                     self.bet.betProperty = property
                 } else {
                     self.myPlayerPosition.buyIfCan(property)
-//                    self.multiplierModel.action(.init(value: "\(self.myPlayerPosition.balance)", key: .addBalance))
-//                    self.multiplierModel.action(.init(value: property.rawValue, key: .upgradeProperty))
                 }
                 
             })
@@ -758,9 +567,6 @@ class GameViewModel: ObservableObject {
                 self.enemyPosition.bought.removeValue(forKey: step)
             }
         }
-//        if userCalled {
-//            self.multiplierModel.action(.init(value: .init(data: trade.encode ?? .init(), encoding: .utf8) ?? "", key: .tradeProposal))
-//        } else {
         if didPress {
             self.multiplierModel.action(.init(value: "", key: .tradeProposal, data: trade.encode))
 
@@ -770,17 +576,10 @@ class GameViewModel: ObservableObject {
                 self.activePanelType = nil
             })))
         }
-            
-//        }
     }
     
+    #warning("move to robot manager")
     func enemyTrade(trading: Bool? = nil, didPress: Bool) {
-        let price = trade.myPlayerProperties.reduce(0) { partialResult, step in
-            partialResult + (step.buyPrice ?? 0)
-        } + Int(trade.tradeAmount * 100)
-        let pricePlayer = trade.enemyProperties.reduce(0) { partialResult, step in
-            partialResult + (step.buyPrice ?? 0)
-        }
         var test = self.enemyPosition
         test.balance = 9999
         trade.myPlayerProperties.forEach { step in
@@ -807,6 +606,21 @@ class GameViewModel: ObservableObject {
             player.bought[property] != nil
         })
     }
+    
+    private func sendMyPlayerData(positionOnly: Bool = false) {
+        if !positionOnly {
+            multiplierModel.action(.init(value: "\(myPlayerPosition.balance)", key: .playerBalance))
+            multiplierModel.action(.init(value: "", key: .playerMorgage, data: myPlayerPosition.morgageProperties.decode))
+            multiplierModel.action(.init(value: "", key: .boughtPlayerProperties, data: myPlayerPosition.bought.decode))
+
+        }
+        multiplierModel.action(.init(value: myPlayerPosition.playerPosition.rawValue, key: .playerPosition))
+
+    }
+    
+    private func sendEnemyData() {
+        multiplierModel.action(.init(value: "\(enemyPosition.balance)", key: .enemyBalance))
+    }
 }
 
 
@@ -814,31 +628,12 @@ class GameViewModel: ObservableObject {
 fileprivate extension GameViewModel {
     
     private func enemyCompletedMooving(property:Step) {
-        print("enemymovingCompletedd")
         if property.buyPrice == nil {
             checkEnemyCanUpgradeProperties()
             return
         }
         if occupiedByPlayer(property) == nil {
-            if enemyPosition.canBuy(property) {
-                let request = coreMLModel.predictAction(.init(type: .buyAuction(.configure(property)), base: .configure(enemyPosition, playerPosition)))
-                switch request {
-                case .buyAuction(let results):
-                    if results == .upgrade {
-                        self.enemyPosition.buyIfCan(property)
-//                        self.multiplierModel.action(.init(value: "\(myPlayerPosition.balance)", key: .addBalance))
-                    } else {
-                        self.bet.playerPalance = self.myPlayerPosition.balance
-                        self.bet.betProperty = property
-                    }
-                default:
-                    self.bet.playerPalance = self.myPlayerPosition.balance
-                    self.bet.betProperty = property
-                }
-            } else {
-                self.bet.playerPalance = self.myPlayerPosition.balance
-                self.bet.betProperty = property
-            }
+            self.multiplierModel.action(.init(value: property.rawValue, key: .roboBuyOrAuctionPrediction, data: [self.enemyPosition, self.myPlayerPosition].decode))
         }
         
         checkEnemyCanUpgradeProperties()
@@ -850,7 +645,6 @@ fileprivate extension GameViewModel {
                occupiedBy.id != playerPosition.id {
                 let amount = occupiedBy.morgageProperties.contains(property) ? 0 : (property.rentTotal(upgrade) ?? 0)
                 playerPosition.balance -= amount
-//                self.multiplierModel.action(.init(value: "\(playerPosition.balance)", key: .addBalance))
                 playersArray.forEach { model in
                     if model.id == occupiedBy.id {
                         playersArray[playersArray.firstIndex(where: {$0.id == occupiedBy.id}) ?? 0].balance += amount
@@ -861,37 +655,15 @@ fileprivate extension GameViewModel {
         }
     }
     
-    func movingCompletedCheckChance(_ property:Step) {
-        if let first = (property.isChest ? chests.first : chances.first) {
-            if property.isChest {
-                chestPresenting = first
-                chests.removeFirst()
-            } else {
-                chancePresenting = first
-                chances.removeFirst()
-            }
-            
-        } else {
-            if property.isChest {
-                chests = .chest
-            } else if property.isChance {
-                chances = .chance
-            }
-            self.movingCompletedCheckChance(property)
-        }
-    }
-    
-    func movingCompletedCheckProperty(_ property:Step) {
+    private func movingCompletedCheckProperty(_ property:Step) {
         if property.isChest || property.isChance {
             movingCompletedCheckChance(property)
         } else  {
             switch property {
             case .tax1:
                 playerPosition.balance -= Int(CGFloat(playerPosition.bought.totalPrice.price + playerPosition.balance) / 10)
-//                self.multiplierModel.action(.init(value: "\(playerPosition.balance)", key: .addBalance))
             case .tax2:
                 playerPosition.balance -= 100
-//                self.multiplierModel.action(.init(value: "\(playerPosition.balance)", key: .addBalance))
             case .jail1:
                 playerPosition.inJail = true
             case .jail2:
@@ -899,13 +671,13 @@ fileprivate extension GameViewModel {
                 self.playerPosition.inJail = true
             case .win1:
                 self.playerPosition.balance += 100
-//                self.multiplierModel.action(.init(value: "\(playerPosition.balance)", key: .addBalance))
             default:break
             }
         }
     }
     
-    func enemyInJail() {
+    #warning("move to robot manager")
+    private func enemyInJail() {
         if playerPosition.specialCards.contains(.outOfJail) {
             playerPosition.inJail = false
             var removed = false
@@ -931,7 +703,27 @@ fileprivate extension GameViewModel {
 
 // MARK: chestChance
 extension GameViewModel {
-    func chestChanceDidSet() {
+    private func movingCompletedCheckChance(_ property:Step) {
+        if let first = (property.isChest ? chests.first : chances.first) {
+            if property.isChest {
+                chestPresenting = first
+                chests.removeFirst()
+            } else {
+                chancePresenting = first
+                chances.removeFirst()
+            }
+            
+        } else {
+            if property.isChest {
+                chests = .chest
+            } else if property.isChance {
+                chances = .chance
+            }
+            self.movingCompletedCheckChance(property)
+        }
+    }
+    
+    private func chestChanceDidSet() {
         guard let type = chestPresenting ?? chancePresenting else {
             return
         }
@@ -953,7 +745,28 @@ extension GameViewModel {
         }
     }
     
-    func chestChanceOkPressed(_ action:BoardCard.Action?) {
+    private func boardCardDidUpdate(
+        _ isTopCardList: Bool)
+    {
+        let presentingCard = !isTopCardList ? chestPresenting : chancePresenting
+        if presentingCard != nil {
+            if !isTopCardList {
+                chestChanceDidSet()
+
+            }
+            if presentingCard?.action != nil {
+                multiplierModel.action(.init(value: presentingCard?.title ?? "", key: isTopCardList ? .topCard : .bottomCard))
+
+            }
+
+        } else {
+            if self.enemyPosition.id == self.playerPosition.id && !self.multiplierModel.type.canConnect {
+                self.performNextPlayer()
+            }
+        }
+    }
+    
+    private func chestChanceOkPressed(_ action:BoardCard.Action?) {
         switch action {
         case .goTo(let step):
             self.chestOkPressedGoTo(step)
@@ -981,7 +794,7 @@ extension GameViewModel {
         chestChanceOkPressed(holder?.action)
     }
     
-    func chestOkPressedGoTo(_ step:Step) {
+    private func chestOkPressedGoTo(_ step:Step) {
         if step == .jail1 {
             playerPosition.inJail = true
             playerPosition.playerPosition = .jail1
@@ -991,7 +804,6 @@ extension GameViewModel {
         if step.color == nil {
             let number = "\(step.rawValue.number ?? 0)"
             let rawValue = step.rawValue.replacingOccurrences(of: number, with: "")
-//            let steps = Step.allCases[playerPosition.playerPosition.index...Step.allCases.count]
             let playerPositionIndex = playerPosition.playerPosition.index
             let property = Step.allCases.first {
                 if playerPositionIndex >= $0.index {
@@ -1031,7 +843,6 @@ extension GameViewModel {
             
         default:
             break
-            //                playerPosition.balance += balanceIncrement.amount
         }
         playerPosition.balance += (balanceIncrement.amount * i)
     }
@@ -1046,12 +857,18 @@ extension GameViewModel {
 
 extension GameViewModel: MultiplierManagerDelegate {
     func didReciveAction(_ action: MultiplierManager.ActionUnparcer?) {
-        print(action?.key)
+        print(action?.key, " gterfwdasf")
         switch action?.key {
         case .none:
             break
         case .some(let type):
             switch type {
+            case .robotLostGame:
+                self.enemyLost()
+                
+            case .robotIncreesBalancePrediction, .roboBuyOrAuctionPrediction, .robotUpgradePropertiesPrediction:
+                break //send only properties
+                
             case .boughtPlayerProperties:
                 self.enemyPosition.bought = .configure(action?.data) ?? self.enemyPosition.bought
 
@@ -1081,14 +898,20 @@ extension GameViewModel: MultiplierManagerDelegate {
                 self.setNextPlayer(toPlayerID: self.myPlayerPosition.id)
 
             case .auctionBetValue:
-                if let step: Step = .init(rawValue: action?.value ?? "") {
+                if let _: Step = .init(rawValue: action?.value ?? "") {
                     self.bet.betProperty = .init(rawValue: action?.value ?? "") ?? .go
                     self.bet.bet.append((enemyPosition, Int(action?.additionalValue ?? "") ?? 0))
                 } else {
-                    if let property = bet.betProperty {
-                        myPlayerPosition.buyIfCan(property, price: bet.bet.last?.1 ?? 1)
-                        
+                    if self.multiplierModel.type.canConnect {
+                        if let property = bet.betProperty {
+                            myPlayerPosition.buyIfCan(property, price: bet.bet.last?.1 ?? 1)
+                            
+                        }
+                    } else {
+                        //later: test only: setBetDeclined() can be called without checking self.multiplierModel.type.canConnect
+                        self.setBetDeclined()
                     }
+                    
                     bet = .init()
                 }
                 
@@ -1124,7 +947,6 @@ extension GameViewModel: MultiplierManagerDelegate {
                 
             case .loosePressed:
                 enemyLost()
-
             }
         }
     }
