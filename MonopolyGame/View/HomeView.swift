@@ -22,7 +22,7 @@ struct HomeView: View {
                         playButton
                         leaderBoardButtonView
                     }
-                    NavigationLink("", destination: GameView(isPresenting: $viewModel.isGamePresenting, enemyConnectionType: viewModel.selectedGameConnectionType ?? .bluetooth), isActive: $viewModel.isGamePresenting)
+                    NavigationLink("", destination: GameView(isPresenting: $viewModel.isGamePresenting, enemyConnectionType: viewModel.selectedGameConnectionType ?? .AiRobot), isActive: $viewModel.isGamePresenting)
                         .hidden()
                 }
                 

@@ -20,7 +20,7 @@ class GameViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init(enemyConnectionType: MultiplierManager.ConnectionType) {
-        multiplierModel = .init(type: .bluetooth)
+        multiplierModel = .init(type: enemyConnectionType)
         multiplierModel.delegate = self
         
         multiplierModel.objectWillChange
@@ -51,6 +51,10 @@ class GameViewModel: ObservableObject {
 
                 }
 
+            } else {
+                if self.enemyPosition.id == self.playerPosition.id && !self.multiplierModel.type.canConnect {
+                    self.performNextPlayer()
+                }
             }
         }
     }
@@ -67,6 +71,10 @@ class GameViewModel: ObservableObject {
                 chestChanceDidSet()
                 if chancePresenting?.action != nil {
                     multiplierModel.action(.init(value: chancePresenting?.title ?? "", key: .topCard))
+                }
+            } else {
+                if self.enemyPosition.id == self.playerPosition.id && !self.multiplierModel.type.canConnect {
+                    self.performNextPlayer()
                 }
             }
         }
@@ -156,25 +164,47 @@ class GameViewModel: ObservableObject {
     }
     @Published var usingDice = false
     @Published var dicePressed:Bool = false
-    
-    func performDice() {
-        moveCompleted = false
-        if !usingDice {
-            diceDestination = (2..<12).randomElement() ?? 0
-            isEquelDices = diceDestination % 2 == 0
+    //here
+    func diceDidPress() {
+        if multiplierModel.type.canConnect {
+            if !didFinishMoving {
+                performDice()
+            } else {
+                self.performNextPlayer(isToEnemy: true)
+            }
         } else {
-            dicePressed = true
+            if !didFinishMoving {
+                performDice()
+            } else {
+                self.didFinishMoving = false
+                self.setNextPlayer()
+
+            }
+            
         }
     }
     
-    private func setNextPlayer(toPlayerID: UUID? = nil) {
+    func performDice() {
+        self.moveCompleted = false
+        dicePressed = true
+    }
+    
+    private func setNextPlayer(toPlayerID: UUID? = nil, canMove: Bool = true) {
+        didFinishMoving = false
         let array = playersArray
-
+        if !self.multiplierModel.type.canConnect && (chestPresenting != nil || chancePresenting != nil) && self.enemyPosition.id == self.playerPosition.id {
+            return
+        }
         if let toPlayerID,
             let targetIndex = array.firstIndex(where: {
             $0.id == toPlayerID
         }) {
-            currentPlayerIndex = targetIndex
+            if isEquelDices {
+                isEquelDices = false
+
+            } else {
+                currentPlayerIndex = targetIndex
+            }
         } else {
             if !isEquelDices {
                 currentPlayerIndex += 1
@@ -185,7 +215,14 @@ class GameViewModel: ObservableObject {
                 currentPlayerIndex = 0
             }
         }
-        
+        print(myPlayerPosition.id == self.playerPosition
+            .id, " ytgerfwdawrget4red ")
+        if myPlayerPosition.id != self.playerPosition
+            .id && !self.multiplierModel.type.canConnect {
+            
+            performDice()
+            
+        }
     }
     
     func performNextPlayer(force: Bool = false, isToEnemy: Bool = false) {
@@ -199,20 +236,14 @@ class GameViewModel: ObservableObject {
 //            self.multiplierModel.action(.init(value: "", key: .dbLoad, data: myPlayerPosition.decode))
 //        }
         
-        self.setNextPlayer(toPlayerID: isToEnemy ? enemyPosition.id : nil)
-        print("performNextPlayerperformNextPlayer2 ", self.myPlayerPosition.id == self.playerPosition.id)
 
-        #warning("blutooth integration commented")
-//        if self.myPlayerPosition.id != self.playerPosition.id {
-//
-//        } else {
-//            self.performDice()
-//        }
-//        dicePressed = true
-#warning("blutooth integration commented end")
 
-        //check players special cards, example - move loosed
-#warning("check if player is in jail - show popup")
+        if !multiplierModel.type.canConnect {
+
+        } else {
+            self.setNextPlayer(toPlayerID: isToEnemy ? enemyPosition.id : nil)
+            print("performNextPlayerperformNextPlayer2 ", self.myPlayerPosition.id == self.playerPosition.id)
+        }
 
     }
     
@@ -222,7 +253,7 @@ class GameViewModel: ObservableObject {
         let progressKey: String
         switch multiplierModel.type {
         case .bluetooth:
-            progressKey = multiplierModel.bluetoothManager?.connectedPeripheral?.identifier.uuidString ?? multiplierModel.type.rawValue
+            progressKey = multiplierModel.connectedDeviceID ?? multiplierModel.type.rawValue
         default:
             progressKey = multiplierModel.type.rawValue
         }
@@ -234,7 +265,13 @@ class GameViewModel: ObservableObject {
         db.savePlayDate()
     }
     
-    var dbHolder: AppData.DataBase?
+    var dbHolder: AppData.DataBase? {
+        didSet {
+            if !multiplierModel.type.canConnect {
+                fetchGame()
+            }
+        }
+    }
     private var isGameStarted: Bool {
         dbHolder == nil
     }
@@ -250,7 +287,7 @@ class GameViewModel: ObservableObject {
         let progressKey: String
         switch multiplierModel.type {
         case .bluetooth:
-            progressKey = multiplierModel.bluetoothManager?.connectedPeripheral?.identifier.uuidString ?? multiplierModel.type.rawValue
+            progressKey = multiplierModel.connectedDeviceID ?? multiplierModel.type.rawValue
         default:
             progressKey = multiplierModel.type.rawValue
         }
@@ -262,7 +299,7 @@ class GameViewModel: ObservableObject {
             self.myPlayerPosition = progress.player
             self.enemyPosition = progress.enemy
         }
-        if multiplierModel.bluetoothManager?.test != nil {
+        if !multiplierModel.isPrimaryDevice {
             setNextPlayer()
         } else {
             self.enemyPosition.id = .init()
@@ -272,7 +309,6 @@ class GameViewModel: ObservableObject {
             self.multiplierModel.action(.init(value: enemyPosition.playerPosition.rawValue, key: .enemyPosition))
 
             self.sendEnemyData()
-//            self.multiplierModel.action(.init(value: "", key: .dbLoad, data: myPlayerPosition.decode))
         }
         print(self.playerPosition.id.uuidString, " hyrgterfwedas")
         print(self.myPlayerPosition.id.uuidString, " hyrgterfwedas 2")
@@ -628,6 +664,10 @@ class GameViewModel: ObservableObject {
                 }
             }
         }
+        
+        DispatchQueue.main.async {
+            self.setNextPlayer()
+        }
     }
     
     func resumeNextPlayer(forceMove:Bool = false) {
@@ -774,6 +814,7 @@ class GameViewModel: ObservableObject {
 fileprivate extension GameViewModel {
     
     private func enemyCompletedMooving(property:Step) {
+        print("enemymovingCompletedd")
         if property.buyPrice == nil {
             checkEnemyCanUpgradeProperties()
             return
@@ -1089,7 +1130,7 @@ extension GameViewModel: MultiplierManagerDelegate {
     }
     
     func didConnect() {
-        print("connecteddd")
+        print("connecteddd ", isGameStarted)
         if !isGameStarted {
             self.fetchGame()
         }

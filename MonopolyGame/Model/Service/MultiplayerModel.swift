@@ -16,15 +16,29 @@ protocol MultiplierManagerDelegate {
 
 class MultiplierManager: ObservableObject {
     
-    @Published var bluetoothManager: BluetoothManager?
+    @Published private var bluetoothManager: BluetoothManager?
     let type: ConnectionType
-    var delegate: MultiplierManagerDelegate?
+    var delegate: MultiplierManagerDelegate? {
+        didSet {
+            if !type.canConnect {
+                delegate?.didConnect()
+            }
+        }
+    }
     private var messagesCancellable: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
-    @Published var test: Bool = false
-    
+    var isPrimaryDevice: Bool {
+        self.bluetoothManager?.test == nil
+    }
+    var connectedDeviceID: String? {
+        bluetoothManager?.connectedPeripheral?.identifier.uuidString
+    }
     var isConnected: Bool {
-        bluetoothManager?.isConntected ?? false
+        if type.canConnect {
+            return bluetoothManager?.isConntected ?? false
+        } else {
+            return true
+        }
     }
     init(
         type: ConnectionType
@@ -40,13 +54,9 @@ class MultiplierManager: ObservableObject {
         case .AiRobot:
             self.bluetoothManager = nil
             self.messagesCancellable = nil
-//            delegate.didConnect()
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-            self.test = true
-            print("changeddd")
-        })
+
 //
         bluetoothManager?.objectWillChange
             .sink { [weak self] _ in
@@ -103,6 +113,13 @@ extension MultiplierManager {
                 "brain"
             case .bluetooth:
                 "bluetooth"
+            }
+        }
+        
+        var canConnect: Bool {
+            switch self {
+            case .bluetooth: true
+            default: false
             }
         }
     }

@@ -20,6 +20,10 @@ struct BoardPopoverView: View {
             tradeView
             gameCompleted
             inJailView
+            
+            if !viewModel.multiplierModel.isConnected {
+                deviceListView
+            }
         }
     }
     
@@ -71,7 +75,11 @@ struct BoardPopoverView: View {
     var inJailView: some View {
         messageOverlayView(.init(title: "You are in jail"), buttons: [
             (.init(title: "skip move", pressed: {
-                viewModel.performDice()
+                if viewModel.multiplierModel.type.canConnect {
+                    self.viewModel.performNextPlayer(isToEnemy: true)
+                } else {
+                    viewModel.performDice()
+                }
             }), false),
             (.init(title: "use card", pressed: {
                 var removed = false
@@ -89,7 +97,6 @@ struct BoardPopoverView: View {
                 viewModel.myPlayerPosition.inJail = false
                 viewModel.myPlayerPosition.balance -= 100
                 viewModel.performDice()
-//                self.viewModel.multiplierModel.action(.init(value: "\(viewModel.playerPosition.balance)", key: .addBalance))
                 
             }), viewModel.myPlayerPosition.balance < 100)
         ])
@@ -314,5 +321,23 @@ struct BoardPopoverView: View {
         .shadow(radius: 10)
         .opacity(viewModel.bet.betProperty != nil ? 1 : 0)
     }
+    
+    var deviceListView: some View {
+        VStack {
+            List(viewModel.multiplierModel.deviceList, id: \.identifier) { device in
+                Button {
+                    viewModel.multiplierModel.connectToUser(deviceID: device.identifier)
+                } label: {
+                    Text(device.deviceName)
+                }
+
+            }
+        }
+        .background(.white)
+        .onChange(of: viewModel.multiplierModel.deviceList.count) { newValue in
+            print(newValue, " yrgtefredasz ")
+        }
+    }
+
 }
 

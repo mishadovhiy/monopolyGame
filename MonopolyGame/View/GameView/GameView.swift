@@ -60,13 +60,13 @@ struct GameView: View {
         .onChange(of: viewModel.myPlayerBalanceHiglightingPositive) {  newValue in
             if newValue {
                 db.audioManager?.play(.money)
-
+                
             }
         }
         .onChange(of: viewModel.myPlayerBalanceHiglightingNegative) {  newValue in
             if newValue {
                 db.audioManager?.play(.money)
-
+                
             }
         }
         .onChange(of: viewModel.updateBalancePresenting) { newValue in
@@ -76,7 +76,7 @@ struct GameView: View {
         }
         .onAppear {
             viewAppeared()
-//            viewModel.bet.betProperty = .orange3
+            //            viewModel.bet.betProperty = .orange3
             
         }
         .overlay {
@@ -95,38 +95,7 @@ struct GameView: View {
                 .disabled(true)
             }
         })
-        .overlay(content: {
-            if !(viewModel.multiplierModel.isConnected ?? true) {
-                deviceListView
-            }
-        })
         .navigationBarHidden(true)
-    }
-
-    
-    var deviceListView: some View {
-        VStack {
-            Spacer().frame(maxHeight: .infinity)
-
-            VStack {
-                Text(viewModel.multiplierModel.test ?? false ? "ok" : "false")
-                    .foregroundColor(.black)
-
-                List(viewModel.multiplierModel.deviceList ?? [], id: \.identifier) { device in
-                    Button {
-                        viewModel.multiplierModel.connectToUser(deviceID: device.identifier)
-                    } label: {
-                        Text(device.deviceName)
-                    }
-
-                }
-            }
-            .background(.white)
-            Spacer().frame(maxHeight: .infinity)
-        }
-        .onChange(of: viewModel.multiplierModel.deviceList.count) { newValue in
-            print(newValue, " yrgtefredasz ")
-        }
     }
     
     func viewAppeared() {
@@ -150,21 +119,21 @@ struct GameView: View {
             })
             viewModel.messagePressedSecondary = .init(title: "Decline", pressed:{
                 db.db.settings.usingGameCenter = false
-
+                
             })
         }
         Task(priority: .low) {
             if StorekitModel.needAdd(db: &db.db) {
-//                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-//                    viewModel.adPresenting = true
-//                })
+                //                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                //                    viewModel.adPresenting = true
+                //                })
             }
         }
         if !db.db.gamePlayed {
             db.db.gamePlayed = true
         }
     }
-
+    
     func chanceCardBackground(_ isOnTop:Bool) -> some View {
         RoundedRectangle(cornerRadius: 6)
             .fill(Color(isOnTop ? .blue : .orange))
@@ -202,7 +171,7 @@ struct GameView: View {
                             Spacer()
                             Button {
                                 db.audioManager?.play(.menu)
-
+                                
                                 if isOnTop {
                                     viewModel.chanceOkPressed()
                                 } else {
@@ -219,9 +188,9 @@ struct GameView: View {
                             .background(.secondaryBackground)
                             .cornerRadius(4)
                         }
-
+                        
                     }
-
+                    
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 5)
@@ -331,6 +300,7 @@ struct GameView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             })
             .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
+            .cornerRadius(10)
             .overlay(content: {
                 if !viewModel.usingDice {
                     diceNumberView
@@ -341,27 +311,29 @@ struct GameView: View {
                 boardCardsOverley
             })
             .overlay(content: {
-                if viewModel.usingDice {
-                    DiceSceneView(dicePressed: $viewModel.dicePressed) { diceResult, isEquel in
-                        if isEquel {
-                            viewModel.playerPosition.inJail = false
-                        }
-                        if !isEquel && viewModel.playerPosition.inJail {
-                            
-                        } else {
-                            viewModel.isEquelDices = isEquel
-                        }
-                        viewModel.dicePressed = false
-                        viewModel.diceDestination = diceResult
-//                        viewModel.multiplierModel.action(.init(value: "\(diceResult)", key: .newDestination))
-                        viewModel.move()
-                    }
-//                    .opacity((viewModel.chestPresenting != nil || viewModel.chancePresenting != nil) ? 0 : 1)
-//                    .animation(.smooth, value: viewModel.chestPresenting != nil || viewModel.chancePresenting != nil)
-                }
+                diceSceneView
                 
             })
             .padding(.horizontal, 0)
+        }
+    }
+    
+    @ViewBuilder
+    var diceSceneView: some View {
+        if viewModel.usingDice {
+            DiceSceneView(dicePressed: $viewModel.dicePressed) { diceResult, isEquel in
+                if isEquel {
+                    viewModel.playerPosition.inJail = false
+                }
+                if !isEquel && viewModel.playerPosition.inJail {
+                    
+                } else {
+                    viewModel.isEquelDices = isEquel
+                }
+                viewModel.dicePressed = false
+                viewModel.diceDestination = diceResult
+                viewModel.move()
+            }
         }
     }
     
@@ -390,7 +362,7 @@ struct GameView: View {
                 HStack {
                     Spacer().frame(width:65)
                     VStack(alignment:.leading) {
-                        Text("Your Balance")
+                        Text("Your Balance " + ((self.viewModel.playerPosition.id == self.viewModel.myPlayerPosition.id) ? " + " : ""))
                             .font(.system(size: 12))
                             .foregroundColor(.secondaryText)
                             .frame(alignment: .leading)
@@ -407,11 +379,11 @@ struct GameView: View {
                 .background(viewModel.myPlayerBalanceHiglightingPositive ? .green : (viewModel.myPlayerBalanceHiglightingNegative ? .red : .secondaryBackground))
                 .cornerRadius(13)
                 .padding(.leading, 5)
-//                .onTapGesture {
-//                    viewModel.message = .propertyList(viewModel.myPlayerPosition.bought.compactMap({ (key: Step, value: PlayerStepModel.Upgrade) in
-//                            .init(owner: "You", ownerUpgrade: value, property: key)
-//                    }))
-//                }
+                //                .onTapGesture {
+                //                    viewModel.message = .propertyList(viewModel.myPlayerPosition.bought.compactMap({ (key: Step, value: PlayerStepModel.Upgrade) in
+                //                            .init(owner: "You", ownerUpgrade: value, property: key)
+                //                    }))
+                //                }
                 Spacer()
                 HStack {
                     Image(.robot)
@@ -437,11 +409,6 @@ struct GameView: View {
                 
                 Spacer()
             }
-            .background(content: {
-                if viewModel.multiplierModel.bluetoothManager?.test == nil {
-                    Color.green.opacity(0.15)
-                }
-            })
             .padding(.top, 15)
         }
     }
@@ -450,56 +417,28 @@ struct GameView: View {
     var panelView: some View {
         VStack(spacing:-27) {
             VStack {
-//                HStack {
-                    Button(!viewModel.didFinishMoving ? "Dice" : "Done") {
-                        db.audioManager?.play(.menu)
-                        if !viewModel.didFinishMoving {
-                            self.viewModel.performDice()
-                        } else {
-                            self.viewModel.performNextPlayer(isToEnemy: true)
-                        }
-    //                    viewModel.dicePressed = true
-                        #warning("before multiplayer")
-    //                    if viewModel.usingDice {
-    //                        viewModel.performNextPlayer()
-    //                    } else {
-    //                        viewModel.resumeNextPlayer(forceMove: true)
-    //                    }
-                        #warning("before end")
-    //                    viewModel.performNextPlayer()
-                    }
-                    .tint(.primaryBackground)
-                    .font(.system(size: 14, weight:.semibold))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(.light)
-                    .cornerRadius(4)
+                Button(!viewModel.didFinishMoving ? "Dice" : "Done") {
+                    db.audioManager?.play(.menu)
+                    viewModel.diceDidPress()
                     
-
-
-//                }
+                }
+                .tint(.primaryBackground)
+                .font(.system(size: 14, weight:.semibold))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(.light)
+                .cornerRadius(4)
                 Spacer()
             }
             .frame(maxWidth: .infinity)
             .background(.primaryBackground)
             .opacity(viewModel.updateBalancePresenting || viewModel.playerPosition.id != viewModel.myPlayerPosition.id ? 0 : 1)
             .disabled(viewModel.updateBalancePresenting || viewModel.playerPosition.id != viewModel.myPlayerPosition.id)
-            .overlay {
-                HStack {
-                    Spacer()
-                    Button {
-                        self.viewModel.sendEnemyData()
-                        self.viewModel.sendMyPlayerData()
-                    } label: {
-                        Text("resend")
-                    }
-                }
-            }
             HStack() {
                 ForEach(GameViewModel.PanelType.allCases, id:\.rawValue) { type in
                     Button {
                         db.audioManager?.play(.menuRegular)
-
+                        
                         viewModel.activePanelType = type
                     } label: {
                         VStack {
@@ -628,7 +567,7 @@ struct GameView: View {
                                     propertyName(step, section: section)
                                         .opacity(step.buyPrice == nil ? 0.5 : 1)
                                 }
-    //                            .clipped()
+                            //                            .clipped()
                         }
                         if section != 0 {
                             Spacer()
@@ -650,7 +589,7 @@ struct GameView: View {
                                         .frame(width: viewModel.itemWidth)
                                         .opacity(step.buyPrice == nil ? 0.5 : 1)
                                 }
-    //                            .clipped()
+                            //                            .clipped()
                         }
                         if section != 3 {
                             Spacer()
@@ -779,7 +718,7 @@ struct GameView: View {
                                     .frame(width:20)
                                     .offset(x:player == 0 ? -10 : 10)
                                     .shadow(radius: 5)
-
+                                
                             })
                             .offset(y:CGFloat((30 - viewModel.playersArray[player].playerPosition.index) * -Int((viewModel.itemWidth - 8) - 10)))
                         Spacer()
@@ -801,7 +740,7 @@ struct GameView: View {
                                     .frame(width:20)
                                     .offset(x:player == 0 ? -10 : 10)
                                     .shadow(radius: 5)
-
+                                
                             })
                             .offset(x:CGFloat((0 - viewModel.playersArray[player].playerPosition.index) * Int((viewModel.itemWidth - 8) - 10)))
                         
@@ -823,7 +762,7 @@ struct GameView: View {
                                     .frame(width:20)
                                     .offset(x:player == 0 ? -10 : 10)
                                     .shadow(radius: 5)
-
+                                
                             })
                             .offset(y:CGFloat((10 - viewModel.playersArray[player].playerPosition.index) * Int((viewModel.itemWidth - 8) - 10)))
                         
