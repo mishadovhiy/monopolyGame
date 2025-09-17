@@ -113,7 +113,6 @@ class RobotManager: ObservableObject {
         let players: [PlayerStepModel] = .configure(action.data)!
         var enemy = players.first!
         let player = players.last!
-        let property: Step = .init(rawValue: action.value)!
         
         let upgrades = enemy.bought.filter {
             enemy.canUpdateProperty($0.key)

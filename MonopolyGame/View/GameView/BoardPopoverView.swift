@@ -147,7 +147,7 @@ struct BoardPopoverView: View {
             
             Button("OK") {
                 db.audioManager?.play(.menu)
-                viewModel.enemyTrade(trading: viewModel.trade.tradingByEnemy ? true : nil, didPress: true)
+                viewModel.acceptTradePressed(trading: viewModel.trade.tradingByEnemy ? true : nil, didPress: true)
 
             }
             .tint(.black)

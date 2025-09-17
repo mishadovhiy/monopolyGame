@@ -446,7 +446,6 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    //move to robot manager
     func setBetDeclined() {
         if multiplierModel.type.canConnect {
             multiplierModel.action(.init(value: "", key: .auctionBetValue))
@@ -578,8 +577,7 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    #warning("move to robot manager")
-    func enemyTrade(trading: Bool? = nil, didPress: Bool) {
+    func acceptTradePressed(trading: Bool? = nil, didPress: Bool) {
         var test = self.enemyPosition
         test.balance = 9999
         trade.myPlayerProperties.forEach { step in
@@ -594,9 +592,6 @@ class GameViewModel: ObservableObject {
                     canUpdateCount += 1
                 }
             }
-        }
-        if canUpdateCount >= colors.count {
-            
         }
         self.presentTradeProposalResponse(ok: trading ?? (canUpdateCount >= colors.count), didPress: didPress)
     }
