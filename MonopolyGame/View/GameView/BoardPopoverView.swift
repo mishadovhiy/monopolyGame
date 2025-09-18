@@ -325,11 +325,21 @@ struct BoardPopoverView: View {
     var deviceListView: some View {
         ScrollView(.vertical) {
             VStack(spacing: 10) {
+                Text("Found devices: ")
+                    .padding(.top, 10)
+                    .font(.system(size: 18))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.leading)
+                Text("Select device from the list bellow")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.white.opacity(0.5))
+                Spacer().frame(height: 5)
                 if viewModel.multiplierModel.deviceList.isEmpty {
                     Text("Devices not found")
                         .font(.system(size: 18))
                         .foregroundColor(.white)
-                        .padding(.top, 10)
                     Text("Turn on bluetooth on other device, and try again")
                         .font(.system(size: 14))
                         .foregroundColor(.white.opacity(0.5))
@@ -342,6 +352,10 @@ struct BoardPopoverView: View {
                         Text(device.deviceName)
                             .font(.system(size: 14))
                     }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(.lightsecondaryBackground)
+                    .cornerRadius(6)
                     .tint(.white)
                 }
                 

@@ -184,5 +184,10 @@
 	<array>
 		<string>bluetooth-central</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>primaryBackground</string>
+	</dict>
 </dict>
 </plist>

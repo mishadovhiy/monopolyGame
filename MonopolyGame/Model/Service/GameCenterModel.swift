@@ -23,6 +23,7 @@ class GameCenterModel:NSObject {
     func presentAchievements() {
         let gameCenterViewController = GKGameCenterViewController()
         gameCenterViewController.gameCenterDelegate = self
+        gameCenterViewController.modalPresentationStyle = .automatic
         gameCenterViewController.viewState = .leaderboards
         rootVC?.present(gameCenterViewController, animated: true)
     }
@@ -57,8 +58,6 @@ class GameCenterModel:NSObject {
 
 extension GameCenterModel: GKGameCenterControllerDelegate {
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
-        if let vc = rootVC?.presentedViewController as? GKGameCenterViewController {
-            vc.dismiss(animated: true)
-        }
+        gameCenterViewController.dismiss(animated: true)
     }
 }

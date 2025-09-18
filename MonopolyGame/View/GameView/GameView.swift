@@ -124,9 +124,9 @@ struct GameView: View {
         }
         Task(priority: .low) {
             if StorekitModel.needAdd(db: &db.db) {
-                //                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                //                    viewModel.adPresenting = true
-                //                })
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+                    viewModel.adPresenting = true
+                })
             }
         }
         if !db.db.gamePlayed {
