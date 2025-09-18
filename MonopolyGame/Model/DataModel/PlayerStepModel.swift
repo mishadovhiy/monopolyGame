@@ -9,7 +9,7 @@ import Foundation
 
 struct PlayerStepModel:Codable {
     var edited = false
-    var id:UUID = .init()///ble type: player id
+    var id:UUID = .init()
     var specialCards:[BoardCard.PlayerSpecialCard] = []
     var playerPosition:Step
     {///ble type: playerPosition
@@ -24,26 +24,25 @@ struct PlayerStepModel:Codable {
             edited = true
         }
     }
-    //[brawn1:none] //test brawn1, then:brawn2 (brawn1 should be false)
-    //[brawn2:brawn1]
+
     init(playerPosition: Step = .go) {
         self.playerPosition = playerPosition
     }
     var morgageProperties:[Step] = []
-    {///ble type: morgageProperties
+    {
         didSet {
             edited = true
         }
     }
     var balance:Int = 1000
-    {///ble type: balance
+    {
         didSet {
             edited = true
         }
     }
     typealias BoughtUpgrades = [Step:Upgrade]
     var bought:BoughtUpgrades {
-        get {///ble type: boughtDictionary
+        get {
             let dict = self.boughtDictionary.map { (key, value) in
                 (Step(rawValue: key) ?? .blue1, value)
             }
@@ -64,7 +63,6 @@ struct PlayerStepModel:Codable {
         } else {
             print("fatalerrorcannotbuy ")
         }
-        print(bought, " htyrgtefd ")
     }
     
     func canBuy(_ step:Step, price:Int? = nil) -> Bool {

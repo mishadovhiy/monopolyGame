@@ -215,18 +215,28 @@ class RobotManager: ObservableObject {
         let property: Step = .init(rawValue: action?.value ?? "")!
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds((250..<3000).randomElement() ?? 0), execute: {
             let last = Int(action?.additionalValue ?? "") ?? 0
-            
+            print(last, #file, #function, #line, " lastPlacedBet ")
             let differenceBalance = enemy.balance - last
             if differenceBalance <= 2 {
                 self.setBetDeclined()
                 return
             }
-            var difference = last - (property.buyPrice ?? 0)
+            var difference = (property.buyPrice ?? 0) - last
+            let percented = Double(last) * 1.2
+
             if difference <= 2 {
-                difference = differenceBalance
+                if percented > Double(enemy.balance) {
+                    difference = differenceBalance
+                } else {
+                    difference = Int(percented)
+                }
                 if [false, false, false, false, false, true, false, false, true].randomElement() ?? false {
                     self.setBetDeclined()
                     return
+                }
+            } else {
+                if percented < Double(enemy.balance) {
+                    difference = Int(percented)
                 }
             }
             if difference <= 2 {
