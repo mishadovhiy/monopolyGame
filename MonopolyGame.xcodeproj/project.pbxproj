@@ -63,6 +63,7 @@
 		827CD0682DC0DFD4006F6BFB /* GameRound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827CD0672DC0DFD4006F6BFB /* GameRound.swift */; };
 		827CD0802DC0EC67006F6BFB /* ContiniueBettingModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 827CD07E2DC0EC67006F6BFB /* ContiniueBettingModel.mlmodel */; };
 		827CD0812DC0EC67006F6BFB /* UpgradeSkipModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 827CD07F2DC0EC67006F6BFB /* UpgradeSkipModel.mlmodel */; };
+		828DE5DA2E7C210700A5B67B /* AudioType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828DE5D92E7C210700A5B67B /* AudioType.swift */; };
 		82A7F86E2DB8CEA000048BD7 /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7F86D2DB8CEA000048BD7 /* PrivacyPolicyView.swift */; };
 		82A7F8702DB8CEB900048BD7 /* UpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7F86F2DB8CEB900048BD7 /* UpdateView.swift */; };
 		82A7F8742DB8DC6300048BD7 /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7F8732DB8DC6300048BD7 /* SupportView.swift */; };
@@ -143,6 +144,7 @@
 		827CD0672DC0DFD4006F6BFB /* GameRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRound.swift; sourceTree = "<group>"; };
 		827CD07E2DC0EC67006F6BFB /* ContiniueBettingModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; name = ContiniueBettingModel.mlmodel; path = mlHolders/createML/buy/ContiniueBettingModel.mlmodel; sourceTree = SOURCE_ROOT; };
 		827CD07F2DC0EC67006F6BFB /* UpgradeSkipModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; name = UpgradeSkipModel.mlmodel; path = mlHolders/createML/buy/UpgradeSkipModel.mlmodel; sourceTree = SOURCE_ROOT; };
+		828DE5D92E7C210700A5B67B /* AudioType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioType.swift; sourceTree = "<group>"; };
 		82A7F86D2DB8CEA000048BD7 /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
 		82A7F86F2DB8CEB900048BD7 /* UpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateView.swift; sourceTree = "<group>"; };
 		82A7F8732DB8DC6300048BD7 /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 		82126EA82DAADA360081983A /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				828DE5D82E7C20ED00A5B67B /* Helpers */,
 				82126EA62DAADA360081983A /* DataModel */,
 				82C51E2A2DAD6B5F00EC71F4 /* Service */,
 			);
@@ -284,7 +287,6 @@
 				82126EB22DAADA360081983A /* View */,
 				82126EB42DAADA360081983A /* ViewModel */,
 				82126EB52DAADA360081983A /* Assets.xcassets */,
-				82126F2C2DACDBBC0081983A /* Keys.swift */,
 				82E3A5092E7A3CC2003A4C9A /* Path */,
 				825AE4592DB3A0960075B26B /* Mics */,
 				82126EA22DAADA360081983A /* Extension */,
@@ -368,6 +370,15 @@
 				827CD07F2DC0EC67006F6BFB /* UpgradeSkipModel.mlmodel */,
 			);
 			path = CoreML;
+			sourceTree = "<group>";
+		};
+		828DE5D82E7C20ED00A5B67B /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				82126F2C2DACDBBC0081983A /* Keys.swift */,
+				828DE5D92E7C210700A5B67B /* AudioType.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		82C290002D9EEDD100E6EC40 = {
@@ -551,6 +562,7 @@
 				82126EBE2DAADA360081983A /* Step.swift in Sources */,
 				820679A72DB6193C00B8DEF6 /* BetModel.swift in Sources */,
 				82AB64432DC0ED5B00BAC72A /* BuyAuctionModel.mlmodel in Sources */,
+				828DE5DA2E7C210700A5B67B /* AudioType.swift in Sources */,
 				820679A52DB6192600B8DEF6 /* Trade.swift in Sources */,
 				827CD0682DC0DFD4006F6BFB /* GameRound.swift in Sources */,
 				82E3A5002E7A0DD4003A4C9A /* Font.swift in Sources */,
