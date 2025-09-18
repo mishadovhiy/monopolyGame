@@ -323,20 +323,37 @@ struct BoardPopoverView: View {
     }
     
     var deviceListView: some View {
-        VStack {
-            List(viewModel.multiplierModel.deviceList, id: \.identifier) { device in
-                Button {
-                    viewModel.multiplierModel.connectToUser(deviceID: device.identifier)
-                } label: {
-                    Text(device.deviceName)
-                }
+        ScrollView(.vertical) {
+            VStack(spacing: 10) {
+                if viewModel.multiplierModel.deviceList.isEmpty {
+                    Text("Devices not found")
+                        .font(.system(size: 18))
+                        .foregroundColor(.white)
+                        .padding(.top, 10)
+                    Text("Turn on bluetooth on other device, and try again")
+                        .font(.system(size: 14))
+                        .foregroundColor(.white.opacity(0.5))
 
+                }
+                ForEach(viewModel.multiplierModel.deviceList, id: \.identifier) { device in
+                    Button {
+                        viewModel.multiplierModel.connectToUser(deviceID: device.identifier)
+                    } label: {
+                        Text(device.deviceName)
+                            .font(.system(size: 14))
+                    }
+                    .tint(.white)
+                }
+                
             }
+            .padding(10)
         }
-        .background(.white)
-        .onChange(of: viewModel.multiplierModel.deviceList.count) { newValue in
-            print(newValue, " yrgtefredasz ")
-        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.secondaryBackground)
+        .cornerRadius(10)
+        .padding(.top, 120)
+        .padding(.horizontal, 20)
+        .shadow(radius: 20)
     }
 
 }

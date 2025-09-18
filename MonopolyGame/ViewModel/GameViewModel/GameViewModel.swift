@@ -390,6 +390,7 @@ class GameViewModel: ObservableObject {
                      chestPresenting == nil,
                      chancePresenting == nil,
                      message == nil,
+                     !(multiplierModel.type.canConnect && !multiplierModel.isConnected),
                      (myPlayerInJail && myPlayerPosition.id == playerPosition.id ? false : (myPlayerPosition.id != playerPosition.id ? true : !myPlayerInJail))
         ]
         return !array.contains(false)
