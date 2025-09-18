@@ -290,10 +290,13 @@ struct GameView: View {
             }
             .background(content: {
                 Color(.lightGreen)
-                    .padding(.leading, 50)
-                    .padding(.top, 20)
-                    .padding(.trailing, 130)
+                    .cornerRadius(20)
+                    .padding(.leading, 40)
+                    .padding(.top, 15)
+                    .padding(.trailing, 100)
+                    .padding(.bottom, 10)
                     .clipped()
+                    .shadow(color: .black, radius: 30)
                 
             })
             .padding(.vertical, 65)
@@ -311,7 +314,6 @@ struct GameView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             })
             .frame(width: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection), height: viewModel.itemWidth * CGFloat(Step.numberOfItemsInSection))
-            .cornerRadius(10)
             .overlay(content: {
                 if !viewModel.usingDice {
                     diceNumberView
@@ -339,8 +341,8 @@ struct GameView: View {
                 if !isEquel && viewModel.playerPosition.inJail {
                     
                 } else {
-                    #warning("bug when oponent and current user done buttons are active, commented below")
-//                    viewModel.isEquelDices = isEquel
+#warning("bug when oponent and current user done buttons are active, commented below")
+                    //                    viewModel.isEquelDices = isEquel
                 }
                 viewModel.dicePressed = false
                 viewModel.diceDestination = diceResult
@@ -381,6 +383,7 @@ struct GameView: View {
                     .scaledToFit()
                     .frame(width: 45, height: 45)
                     .cornerRadius(40)
+                    .padding(.leading, 10)
             }
             VStack(alignment:.leading) {
                 Text(isPlayer ? "Your" : "Enemy" + " Balance ")
@@ -395,16 +398,19 @@ struct GameView: View {
             }
             .padding(.top, 13)
             .padding(.bottom, 15)
-            .overlay {
-                if self.viewModel.playerPosition.id == player.id {
-                    Color.red.frame(width: 10, height: 10)
-                        .opacity(0.4)
-                }
-                
-            }
         }
         .padding(.trailing, 13)
         .background(isHiglightingPositive ? .green : (isHiglightingNegative ? .red : .secondaryBackground))
+        .overlay {
+            if self.viewModel.playerPosition.id == player.id {
+                VStack {
+                    Spacer()
+                    Color.green.frame(height: 10)
+                        .transition(.move(edge: .bottom))
+                }
+            }
+            
+        }
         .cornerRadius(13)
         .padding(.leading, 5)
     }
@@ -538,11 +544,14 @@ struct GameView: View {
                 .font(.system(size: 10))
                 .foregroundColor(.black)
                 .overlay {
-                    if let _ = occupiedBy {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(viewModel.myPlayerPosition.bought.keys.contains(step) ? .red : .blue)
-                            .frame(width:20, height: 20)
-                            .offset(y:[0, 3].contains(section) ? 20 : -20)
+                    if let occupiedBy {
+                        let isCurrent = occupiedBy.id == viewModel.myPlayerPosition.id
+                        Image(uiImage: isCurrent ? .init(named: db.db.profile.imageURL) ?? .init(named: "profile1")! : .robot)
+                            .resizable()
+                            .frame(width: isCurrent ? 20 : 20, height: isCurrent ? 20 : 20)
+                            .scaledToFit()
+                            .offset(y:[0, 3].contains(section) ? -20 : 20)
+                            .shadow(radius: 10)
                     }
                     
                 }
@@ -578,7 +587,22 @@ struct GameView: View {
         .clipped()
     }
     
+    @ViewBuilder
     func propertyBackgroundView(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
+        let cornersAts: UIRectCorner? = {
+            switch section {
+            case 0:
+                return isFirst ? [.bottomRight] : nil
+            case 1:
+                return isFirst ? [.bottomLeft] : nil
+            case 2:
+                return isFirst ? [.topLeft] : nil
+            case 3:
+                return isFirst ? [.topRight] : nil
+            default:
+                return nil
+            }
+        }()
         RoundedRectangle(cornerRadius: 0)
             .fill(Color(.lightGreen))
             .overlay(content: {
@@ -600,6 +624,9 @@ struct GameView: View {
                     }
                 }
             })
+            .clipShape(
+                RoundedCorners(radius: cornersAts != nil ? 20 : 0, corners: cornersAts ?? .topLeft)
+            )
             .frame(width: (viewModel.itemWidth - 8) - (isVerticalStack ? (isFirst ? 0 : 10) : 0), height: (viewModel.itemWidth - 8) - (!isVerticalStack ? (isFirst ? 0 : 10) : 0))
     }
     
@@ -663,16 +690,17 @@ struct GameView: View {
                 Spacer()
             }
         }
-        Text("\(step.index + 1)")
-            .font(.system(size: 10, weight:.semibold))
-            .multilineTextAlignment(.leading)
-            .foregroundColor(.primaryBackground)
+        //        Text("\(step.index + 1)")
+        //            .font(.system(size: 10, weight:.semibold))
+        //            .multilineTextAlignment(.leading)
+        //            .foregroundColor(.primaryBackground)
+        //            .opacity(0.3)
         if let price = step.buyPrice {
             Text("$\(price)")
-                .font(.system(size: 9))
-            
+                .font(.system(size: 13))
                 .multilineTextAlignment(.leading)
-                .foregroundColor(.black.opacity(0.3))
+                .foregroundColor(.black.opacity(step.backgroundImage != nil ? 0.4 : 0.8))
+                .shadow(radius: 9)
         }
         if isVerticalStack {
             if section == 0 {
@@ -685,23 +713,23 @@ struct GameView: View {
         _ step:Step,
         _ isVerticalStack:Bool,
         _ section:Int) -> some View {
-        HStack(content: {
-            if !isVerticalStack {
-                if section == 1 {
-                    Spacer()
+            HStack(content: {
+                if !isVerticalStack {
+                    if section == 1 {
+                        Spacer()
+                    }
                 }
-            }
-            VStack {
-                propertyTextualContent(step, isVerticalStack, section)
-            }
-            if !isVerticalStack {
-                if section != 1 {
-                    Spacer()
+                VStack {
+                    propertyTextualContent(step, isVerticalStack, section)
                 }
-            }
-        })
-        .padding(5)
-    }
+                if !isVerticalStack {
+                    if section != 1 {
+                        Spacer()
+                    }
+                }
+            })
+            .padding(5)
+        }
     
     func propertyItem(_ step:Step, isFirst:Bool, isVerticalStack:Bool, section:Int) -> some View {
         let disabled = viewModel.propertyTapDisabled(step)
@@ -739,9 +767,9 @@ struct GameView: View {
                          isFirst: i == (isVerticalStack && section == 0 ? items.last : (!isVerticalStack && section == 1 ? items.last : items.first)),
                          isVerticalStack:isVerticalStack,
                          section: section)
-                .overlay {
-                    upgateImages(i)
-                }
+            .overlay {
+                upgateImages(i)
+            }
             
         }
     }
@@ -776,9 +804,9 @@ struct GameView: View {
                 Image(player == 0 ? .pawn : .pawn1)
                     .resizable()
                     .scaledToFit()
-                    .frame(width:20)
-                    .offset(x: player == 0 ? -10 : 10)
-                    .shadow(radius: 5)
+                    .frame(width:50)
+                //                    .offset(x: player == 0 ? -10 : 10)
+                    .shadow(color: .black, radius: 10)
                 
             })
         
@@ -829,6 +857,21 @@ struct GameView: View {
             }
         }
         .animation(.bouncy, value: viewModel.playersArray[player].playerPosition.index)
+        
+    }
+}
 
+
+struct RoundedCorners: Shape {
+    var radius: CGFloat = 10
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
     }
 }

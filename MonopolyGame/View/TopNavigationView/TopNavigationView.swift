@@ -49,8 +49,10 @@ struct TopNavigationView: View {
             HStack {
                 Spacer()
                     .frame(maxWidth: viewModel.isGamePresenting ? 70 : (viewModel.navigationPresenting.profile ? 35 : 15))
-                    .animation(.bouncy, value: viewModel.isGamePresenting)
+                .animation(.bouncy, value: viewModel.isGamePresenting || viewModel.navigationPresenting.profile)
                 profileImageButton
+                    .padding(.top, viewModel.isGamePresenting ? -8 : (viewModel.navigationPresenting.profile ? 12 : 0))
+                    .animation(.bouncy, value: viewModel.isGamePresenting)
                 Spacer()
             }
             .animation(.bouncy, value: viewModel.isGamePresenting)
