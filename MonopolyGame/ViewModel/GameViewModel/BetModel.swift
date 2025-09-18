@@ -34,7 +34,8 @@ extension GameViewModel {
         }
         
         var betSliderRange:ClosedRange<Float> {
-            var from = (Float(bet.last?.1 ?? 1))
+            let last = Float(bet.last?.1 ?? 1)
+            var from = last
             if from > 0 {
                 from += 1
             }
@@ -55,7 +56,13 @@ extension GameViewModel {
             if to <= 100 {
                 to = 2000
             }
-            return (1...(3000 + from))
+            if from < last {
+                return ((last / 100)...((500 + last) / 100))
+
+            } else {
+                return ((last / 100)...((500 + from) / 100))
+
+            }
             //        0...10
         }
     }

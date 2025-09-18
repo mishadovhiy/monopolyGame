@@ -556,6 +556,7 @@ class GameViewModel: ObservableObject {
             self.messagePressedSecondary = .init(title: "auction", pressed: {
                 self.bet.playerPalance = self.myPlayerPosition.balance
                 self.bet.betProperty = property
+                print(self.bet, " vyhukjygguh ")
             })
             self.message = .property(.init(property: property))
         }
@@ -731,13 +732,19 @@ extension GameViewModel {
     //after chest/chance - player not setted to next if current player is enemy
     private func chestChanceDidSet() {
         guard let type = chestPresenting ?? chancePresenting else {
-            
             return
         }
         switch type.action {
         case .propertySelection(let propertySelectionAction):
-            if !playersArray.flatMap({$0.bought}).filter({$0.value.index >= 1}).isEmpty {
+            if !playersArray.flatMap({$0.bought}).filter({$0.value.index >= 0}).isEmpty {
                 selectingProperty = propertySelectionAction
+
+                if !multiplierModel.type.canConnect && enemyPosition.id == playerPosition.id {
+                    selectingProperty = nil
+                    chestPresenting = nil
+                    chancePresenting = nil
+                    self.performNextPlayer()
+                }
             } else {
                 selectingProperty = nil
                 if chestPresenting != nil {
@@ -762,6 +769,8 @@ extension GameViewModel {
         _ isTopCardList: Bool)
     {
         let presentingCard = !isTopCardList ? chestPresenting : chancePresenting
+    
+        print(presentingCard, " tgerfwedwefrg ")
         if presentingCard != nil {
             if !isTopCardList {
                 chestChanceDidSet()
