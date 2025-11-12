@@ -59,7 +59,7 @@ struct HomeView: View {
     }
     
     var connectionTypePicker: some View {
-        HStack(spacing: viewModel.gameConnectionPresenting ? 10 : 0) {
+        HStack(spacing: viewModel.gameConnectionPickerPresenting ? 10 : 0) {
             ForEach(MultiplierManager.ConnectionType.allCases, id: \.rawValue) { type in
                 Button {
                     db.audioManager?.play(.menuPlay)
@@ -75,9 +75,9 @@ struct HomeView: View {
                             .frame(width: 15)
                         Text(type.rawValue.addSpaceBeforeCapitalizedLetters.capitalized)
                             .font(.system(size: 12))
-                            .opacity(viewModel.gameConnectionPresenting ? 1 : 0)
+                            .opacity(viewModel.gameConnectionPickerPresenting ? 1 : 0)
                     })
-                    .padding(.horizontal, viewModel.gameConnectionPresenting ? 15 : -50)
+                    .padding(.horizontal, viewModel.gameConnectionPickerPresenting ? 15 : -50)
                         .padding(.vertical, 7)
                         .foregroundColor(.black)
                         .background(.light)
@@ -88,40 +88,40 @@ struct HomeView: View {
 
             }
         }
-        .frame(maxHeight: viewModel.gameConnectionPresenting ? 35 : 0)
+        .frame(maxHeight: viewModel.gameConnectionPickerPresenting ? 35 : 0)
         .clipped()
-        .animation(.bouncy, value: viewModel.gameConnectionPresenting)
+        .animation(.bouncy, value: viewModel.gameConnectionPickerPresenting)
     }
     
     @ViewBuilder
     var playButton: some View {
-        VStack(spacing: viewModel.gameConnectionPresenting ? 10 : -15) {
+        VStack(spacing: viewModel.gameConnectionPickerPresenting ? 10 : -15) {
             connectionTypePicker
             Button {
-                db.audioManager?.play(!viewModel.gameConnectionPresenting ? .menuRegular : .menu)
+                db.audioManager?.play(!viewModel.gameConnectionPickerPresenting ? .menuRegular : .menu)
                 viewModel.popToRootView(force: true)
                 withAnimation {
-                    viewModel.gameConnectionPresenting.toggle()
+                    viewModel.gameConnectionPickerPresenting.toggle()
                 }
             } label: {
                 VStack(spacing: 0, content: {
                     CloseIconPath()
-                        .trim(to: viewModel.gameConnectionPresenting ? 1 : 0)
+                        .trim(to: viewModel.gameConnectionPickerPresenting ? 1 : 0)
                         .stroke(.black, lineWidth: 2)
                         .blendMode(.destinationOut)
 
-                        .frame(width: viewModel.gameConnectionPresenting ? 40 : 0, height: viewModel.gameConnectionPresenting ?  40 : 0)
-                        .animation(.smooth, value: viewModel.gameConnectionPresenting)
+                        .frame(width: viewModel.gameConnectionPickerPresenting ? 40 : 0, height: viewModel.gameConnectionPickerPresenting ?  40 : 0)
+                        .animation(.smooth, value: viewModel.gameConnectionPickerPresenting)
                         
                     Text("Play")
                         
                         .font(.system(size: 32, weight: .bold))
                         .kerning(2)
-                        .frame(height: viewModel.gameConnectionPresenting ? 0 : 35)
+                        .frame(height: viewModel.gameConnectionPickerPresenting ? 0 : 35)
                         .multilineTextAlignment(.center)
                         .blendMode(.destinationOut)
                         .clipped()
-                        .animation(.smooth, value: viewModel.gameConnectionPresenting)
+                        .animation(.smooth, value: viewModel.gameConnectionPickerPresenting)
 
 
                 })
@@ -143,7 +143,7 @@ struct HomeView: View {
             }
             .zIndex(2)
         }
-        .animation(.bouncy, value: viewModel.gameConnectionPresenting)
+        .animation(.bouncy, value: viewModel.gameConnectionPickerPresenting)
     }
     
     @ViewBuilder

@@ -13,7 +13,7 @@ struct HomeViewModel {
     var profileWidth:CGFloat {
         isNavigationPushed && isGamePresenting ? 0 : (navigationPresenting.profile ? (navigationPresenting.profileProtoPicker ? 0 : 56) : (isNavigationPushed ? 0 : 56))
     }
-    var gameConnectionPresenting: Bool = false
+    var gameConnectionPickerPresenting: Bool = false
     var selectedGameConnectionType: MultiplierManager.ConnectionType?
     var supportRequestCompletion:MessageContent?
     
@@ -55,7 +55,7 @@ return
         }
         set {
             if !newValue {
-                gameConnectionPresenting = false
+                gameConnectionPickerPresenting = false
                 selectedGameConnectionType = nil
             }
         }
