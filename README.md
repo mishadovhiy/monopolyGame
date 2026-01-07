@@ -17,3 +17,4 @@ Experience the classic board game of strategy and negotiation in a sleek, mobile
         Unlockable Content: Earn rewards and unlock new boards, tokens, and themes as you progress and dominate the leaderboard.<br>
         Are you ready to build your empire and become the ultimate tycoon? Download Monopoly: Modern Edition now and roll the dice to success!
 
+about project: https://mishadovhiy.com/#monopoly
